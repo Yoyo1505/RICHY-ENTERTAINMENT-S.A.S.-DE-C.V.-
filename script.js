@@ -54,7 +54,7 @@ function downloadPDF() {
     const doc = new jsPDF();
 
     // Agregar la marca de agua con el logo
-    const logo = 'data:image/jpeg;base64,tu_contenido_base64_aqui';
+    const logo = 'https://github.com/Yoyo1505/RICHY-ENTERTAINMENT-S.A.S.-DE-C.V.-/blob/817cf54a44acd63652f566fa4ad7fa5515df4aa8/Logo.jpg';
     doc.addImage(logo, 'JPEG', 75, 5, 60, 30, '', 'FAST');
 
     doc.setFontSize(10);
