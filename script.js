@@ -53,12 +53,24 @@ function downloadPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    // Cargar el logo desde el elemento HTML
-    const logoImg = document.getElementById('logo');
-    if (logoImg.complete && logoImg.naturalHeight !== 0) {
-        doc.addImage(logoImg, 'JPEG', 75, 5, 60, 30); // Centered logo at the top
-    }
+    // Cargar el logo dinámicamente
+    const logo = new Image();
+    logo.src = 'Logo.jpg'; // Asegúrate de que Logo.jpg esté en el directorio correcto
+    logo.onload = function() {
+        doc.addImage(logo, 'JPEG', 75, 5, 60, 30); // Logo centrado en la parte superior
 
+        // Generar el resto del PDF
+        generatePDFContent(doc);
+        doc.save("presupuesto.pdf");
+    };
+    logo.onerror = function() {
+        console.error("Error al cargar el logo. Generando PDF sin logo.");
+        generatePDFContent(doc);
+        doc.save("presupuesto.pdf");
+    };
+}
+
+function generatePDFContent(doc) {
     doc.setFontSize(10);
     const clientName = document.getElementById('client-name').value || 'Nombre del Cliente';
     const clientCity = document.getElementById('client-city').value || 'Ciudad';
@@ -91,7 +103,7 @@ function downloadPDF() {
         startY: y
     });
 
-    y = doc.lastAutoTable.finalY + 10; // Position after the table
+    y = doc.lastAutoTable.finalY + 10; // Posición después de la tabla
     const taxRate = document.getElementById('tax').value || 0;
     const total = document.getElementById('total').innerText;
     doc.text(`Impuestos: ${taxRate}%`, 150, y);
@@ -101,7 +113,7 @@ function downloadPDF() {
     // Línea negra y nombre/firma del cliente
     y += 20;
     doc.setLineWidth(0.5);
-    doc.line(10, y, 60, y); // Black line above the signature
+    doc.line(10, y, 60, y); // Línea negra arriba de la firma
     y += 5;
     doc.text("Nombre y Firma del Cliente:", 10, y);
 
@@ -110,8 +122,6 @@ function downloadPDF() {
     doc.text("CDMX", 150, y);
     doc.text("52 55 7341 3969", 150, y + 5);
     doc.text("transpo_rick@hotmail.com", 150, y + 10);
-
-    doc.save("presupuesto.pdf");
 }
 
 if ('serviceWorker' in navigator) {
