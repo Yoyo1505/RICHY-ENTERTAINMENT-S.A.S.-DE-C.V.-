@@ -1,0 +1,19 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+.item {
+    display: flex;
+    margin-bottom: 10px;
+}
+.item label {
+    flex: 1;
+}
+.item input {
+    flex: 1;
+    margin-left: 10px;
+}
+.total {
+    margin-top: 20px;
+    font-size: 1.2em;
+}
