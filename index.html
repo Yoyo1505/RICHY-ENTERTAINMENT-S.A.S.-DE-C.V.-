@@ -3,57 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Presupuesto</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="manifest" href="manifest.json">
-    <script src="script.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+    <title>Generador de Cotización</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        input[type="number"] {
+            width: 80px;
+        }
+        .price {
+            text-align: right;
+        }
+        button {
+            margin: 10px 0;
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Presupuesto</h1>
-    <div id="client-info">
-        <label for="client-name">Nombre del Cliente:</label>
-        <input type="text" id="client-name" placeholder="Nombre del Cliente">
-        <label for="client-city">Ciudad:</label>
-        <input type="text" id="client-city" placeholder="Ciudad">
-        <label for="client-phone">Teléfono:</label>
-        <input type="text" id="client-phone" placeholder="Teléfono">
-        <label for="client-email">Email:</label>
-        <input type="email" id="client-email" placeholder="Email">
+    <h1>Generador de Cotización</h1>
+
+    <!-- Datos del cliente -->
+    <div>
+        <label>Nombre del Cliente: <input type="text" id="client-name" placeholder="Nombre del Cliente"></label><br>
+        <label>Ciudad: <input type="text" id="client-city" placeholder="Ciudad"></label><br>
+        <label>Teléfono: <input type="text" id="client-phone" placeholder="Teléfono"></label><br>
+        <label>Email: <input type="text" id="client-email" placeholder="Email"></label><br>
     </div>
-    <div id="add-item">
-        <label for="item-select">Seleccionar Concepto:</label>
-        <select id="item-select">
-            <option value="">Seleccionar Concepto</option>
-        </select>
-        <button onclick="addItem()">Agregar Concepto</button>
+
+    <!-- Selección de ítems -->
+    <div>
+        <label>Agregar Ítem: 
+            <select id="item-select">
+                <option value="">Selecciona un ítem</option>
+            </select>
+        </label>
+        <button id="add-item-btn">Agregar</button> <!-- Botón con ID para mejor control -->
     </div>
+
+    <!-- Tabla de ítems -->
     <table id="items">
         <thead>
             <tr>
                 <th>Unidad</th>
                 <th>Concepto</th>
-                <th>Servicio</th>
+                <th>Vehículo</th>
                 <th>P.U.</th>
-                <th>Precio Final</th>
+                <th>Precio</th>
             </tr>
         </thead>
         <tbody></tbody>
-        <tfoot>
-            <tr>
-                <td colspan="4" style="text-align: right;">Impuestos (%)</td>
-                <td><input type="number" id="tax" placeholder="Porcentaje de Impuestos"></td>
-            </tr>
-            <tr>
-                <td colspan="4" style="text-align: right;">Total</td>
-                <td id="total">$0.00</td>
-            </tr>
-        </tfoot>
     </table>
-    <button onclick="calculateTotal()">Calcular Total</button>
+
+    <!-- Impuestos y total -->
+    <div>
+        <label>Impuestos (%): <input type="number" id="tax" value="0" onchange="calculateTotal()"></label><br>
+        <strong>Total: <span id="total">$0.00</span></strong>
+    </div>
+
+    <!-- Botón para descargar PDF -->
     <button onclick="downloadPDF()">Descargar PDF</button>
-    <!-- Hidden image for PDF generation -->
-    <img id="logo" src="Logo.jpg" style="display: none;" alt="Logo">
+
+    <!-- Incluir jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        const { jsPDF } = window.jspdf;
+
+        const items = [
+            "AUTOBUS 45 PLAZAS", "CAMIONETA CARGA", "CAMIONETA VAN", "COMIDAS DEL OPERADOR",
+            "COMISION BANCARIA 0.5%", "COORDINADOR", "DERECHOS DE PISO", "HORAS EXTRA",
+            "HOSPEDAJE", "MINIBUS 31 PLAZAS", "PARKING", "SEDAN", "SPRINTER", "SUBURBAN",
+            "SUBURBAN ADVANCE", "SUBURBAN BLINDADA NIVEL 3", "SUBURBAN HIGW COUNTRY",
+            "SUBURBAN LINEA ANTIGUA", "TOYOTA HIENCE", "TRAMO CARRETERO", "VAN DE CARGA", "VIATICOS"
+        ];
+
+        const itemsContainer = document.querySelector('#items tbody');
+        const itemSelect = document.getElementById('item-select');
+
+        // Llenar el menú desplegable con los conceptos
+        items.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item;
+            option.textContent = item;
+            itemSelect.appendChild(option);
+        });
+
+        // Agregar evento al botón "Agregar"
+        document.getElementById('add-item-btn').addEventListener('click', addItem);
+
+        function addItem() {
+            const selectedItem = itemSelect.value;
+            if (selectedItem) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="number" placeholder="Cantidad" class="unit" onchange="calculateTotal()"></td>
+                    <td>Servicio de Transportación Ejecutiva</td>
+                    <td>${selectedItem}</td>
+                    <td><input type="number" placeholder="P.U." class="unit-price" onchange="calculateTotal()"></td>
+                    <td class="price">$0.00</td>
+                `;
+                itemsContainer.appendChild(row);
+                itemSelect.value = ''; // Reiniciar el select
+            } else {
+                alert('Por favor, selecciona un ítem antes de agregar.');
+            }
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            const rows = document.querySelectorAll('#items tbody tr');
+            rows.forEach(row => {
+                const unitInput = row.querySelector('.unit').value || 0;
+                const unitPriceInput = row.querySelector('.unit-price').value || 0;
+                const priceCell = row.querySelector('.price');
+                const price = unitInput * unitPriceInput;
+                priceCell.textContent = `$${price.toFixed(2)}`;
+                total += price;
+            });
+            const taxRate = parseFloat(document.getElementById('tax').value) || 0;
+            total += total * (taxRate / 100);
+            document.getElementById('total').innerText = `$${total.toFixed(2)}`;
+        }
+
+        function downloadPDF() {
+            const doc = new jsPDF();
+
+            // Cargar el logo
+            const logo = new Image();
+            logo.src = 'Logo.jpg'; // Asegúrate de que Logo.jpg esté en el directorio correcto
+            logo.onload = function() {
+                doc.addImage(logo, 'JPEG', 75, 5, 60, 30); // Logo centrado en la parte superior
+                generatePDFContent(doc);
+                doc.save("presupuesto.pdf");
+            };
+            logo.onerror = function() {
+                console.error("Error al cargar el logo. Generando PDF sin logo.");
+                generatePDFContent(doc);
+                doc.save("presupuesto.pdf");
+            };
+        }
+
+        function generatePDFContent(doc) {
+            doc.setFontSize(10);
+            const clientName = document.getElementById('client-name').value || 'Nombre del Cliente';
+            const clientCity = document.getElementById('client-city').value || 'Ciudad';
+            const clientPhone = document.getElementById('client-phone').value || 'Teléfono';
+            const clientEmail = document.getElementById('client-email').value || 'Email';
+
+            doc.text("COTIZACIÓN", 10, 50);
+            doc.text(`Nombre del Cliente: ${clientName}`, 10, 60);
+            doc.text(`Ciudad: ${clientCity}`, 10, 65);
+            doc.text(`Teléfono: ${clientPhone}`, 10, 70);
+            doc.text(`Email: ${clientEmail}`, 10, 75);
+
+            let y = 85;
+            const tableData = [];
+            const rows = document.querySelectorAll('#items tbody tr');
+            rows.forEach(row => {
+                const unit = row.querySelector('.unit').value || '';
+                const concept = 'Servicio de Transportación Ejecutiva';
+                const vehicle = row.cells[2].textContent;
+                const unitPrice = row.querySelector('.unit-price').value || 0;
+                const price = row.querySelector('.price').textContent || 0;
+                if (unit && unitPrice && price) {
+                    tableData.push([unit, concept, vehicle, unitPrice, price]);
+                }
+            });
+
+            doc.autoTable({
+                head: [['Unidad', 'Concepto', 'Vehículo', 'P.U.', 'Precio']],
+                body: tableData,
+                startY: y
+            });
+
+            y = doc.lastAutoTable.finalY + 10; // Posición después de la tabla
+            const taxRate = document.getElementById('tax').value || 0;
+            const total = document.getElementById('total').innerText;
+            doc.text(`Impuestos: ${taxRate}%`, 150, y);
+            y += 10;
+            doc.text(`Total: ${total}`, 150, y);
+
+            // Línea negra y nombre/firma del cliente
+            y += 20;
+            doc.setLineWidth(0.5);
+            doc.line(10, y, 60, y); // Línea negra arriba de la firma
+            y += 5;
+            doc.text("Nombre y Firma del Cliente:", 10, y);
+
+            // Datos del vendedor alineados abajo
+            doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 150, y - 5);
+            doc.text("CDMX", 150, y);
+            doc.text("52 55 7341 3969", 150, y + 5);
+            doc.text("transpo_rick@hotmail.com", 150, y + 10);
+        }
+    </script>
 </body>
 </html>
