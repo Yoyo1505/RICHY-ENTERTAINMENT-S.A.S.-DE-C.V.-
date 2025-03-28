@@ -78,8 +78,9 @@
     <!-- Botón para descargar PDF -->
     <button onclick="downloadPDF()">Descargar PDF</button>
 
-    <!-- Incluir jsPDF -->
+    <!-- Incluir jsPDF y autoTable -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script>
         const { jsPDF } = window.jspdf;
 
@@ -127,8 +128,8 @@
             let total = 0;
             const rows = document.querySelectorAll('#items tbody tr');
             rows.forEach(row => {
-                const unitInput = row.querySelector('.unit').value || 0;
-                const unitPriceInput = row.querySelector('.unit-price').value || 0;
+                const unitInput = parseFloat(row.querySelector('.unit').value) || 0;
+                const unitPriceInput = parseFloat(row.querySelector('.unit-price').value) || 0;
                 const priceCell = row.querySelector('.price');
                 const price = unitInput * unitPriceInput;
                 priceCell.textContent = `$${price.toFixed(2)}`;
@@ -146,19 +147,19 @@
             const logo = new Image();
             logo.src = 'Logo.jpg'; // Asegúrate de que Logo.jpg esté en el directorio correcto
             logo.onload = function() {
-                // Logo tres veces más grande (ancho: 300, alto: 150, ajustado al máximo de la página)
-                const pageWidth = doc.internal.pageSize.getWidth(); // Ancho de la página (210 para A4)
-                const logoWidth = 180; // Máximo ajustado para caber en A4 (210 - márgenes)
-                const logoHeight = 90; // Proporción ajustada (originalmente 2:1)
+                // Logo tres veces más grande (ajustado al máximo de la página)
+                const pageWidth = doc.internal.pageSize.getWidth(); // 210 para A4
+                const logoWidth = 180; // Máximo práctico para A4
+                const logoHeight = 90; // Proporción 2:1
                 const x = (pageWidth - logoWidth) / 2; // Centrar horizontalmente
-                doc.addImage(logo, 'JPEG', x, 5, logoWidth, logoHeight); // Logo mucho más grande
+                doc.addImage(logo, 'JPEG', x, 5, logoWidth, logoHeight); // Logo grande y centrado
                 generatePDFContent(doc);
-                doc.save("presupuesto.pdf");
+                doc.save("presupuesto.pdf"); // Generar y descargar el PDF
             };
             logo.onerror = function() {
                 console.error("Error al cargar el logo. Generando PDF sin logo.");
                 generatePDFContent(doc);
-                doc.save("presupuesto.pdf");
+                doc.save("presupuesto.pdf"); // Generar y descargar incluso sin logo
             };
         }
 
@@ -169,52 +170,56 @@
             const clientPhone = document.getElementById('client-phone').value || 'Teléfono';
             const clientEmail = document.getElementById('client-email').value || 'Email';
 
-            // Ajustar posición del contenido para el logo mucho más grande
-            doc.text("COTIZACIÓN", 10, 110); // Movido más abajo
+            // Ajustar posición del contenido para el logo grande
+            doc.text("COTIZACIÓN", 10, 110);
             doc.text(`Nombre del Cliente: ${clientName}`, 10, 120);
             doc.text(`Ciudad: ${clientCity}`, 10, 125);
             doc.text(`Teléfono: ${clientPhone}`, 10, 130);
             doc.text(`Email: ${clientEmail}`, 10, 135);
 
-            let y = 145; // Ajustado para el logo más grande
+            let y = 145; // Espacio suficiente para el logo
             const tableData = [];
             const rows = document.querySelectorAll('#items tbody tr');
             rows.forEach(row => {
                 const unit = row.querySelector('.unit').value || '';
                 const concept = 'Servicio de Transportación Ejecutiva';
                 const vehicle = row.cells[2].textContent;
-                const unitPrice = row.querySelector('.unit-price').value || 0;
-                const price = row.querySelector('.price').textContent || 0;
-                if (unit && unitPrice && price) {
+                const unitPrice = row.querySelector('.unit-price').value || '';
+                const price = row.querySelector('.price').textContent || '$0.00';
+                if (unit && unitPrice && price !== '$0.00') {
                     tableData.push([unit, concept, vehicle, unitPrice, price]);
                 }
             });
 
+            // Generar tabla con autoTable
             doc.autoTable({
                 head: [['Unidad', 'Concepto', 'Vehículo', 'P.U.', 'Precio']],
                 body: tableData,
-                startY: y
+                startY: y,
+                theme: 'grid',
+                styles: { fontSize: 8 }
             });
 
-            y = doc.lastAutoTable.finalY + 10; // Posición después de la tabla
+            // Posición después de la tabla
+            y = doc.lastAutoTable.finalY + 10;
             const taxRate = document.getElementById('tax').value || 0;
             const total = document.getElementById('total').innerText;
             doc.text(`Impuestos: ${taxRate}%`, 150, y);
             y += 10;
             doc.text(`Total: ${total}`, 150, y);
 
-            // Línea negra y nombre/firma del cliente
+            // Línea negra y firma del cliente
             y += 20;
             doc.setLineWidth(0.5);
-            doc.line(10, y, 60, y); // Línea negra arriba de la firma
+            doc.line(10, y, 60, y);
             y += 5;
             doc.text("Nombre y Firma del Cliente:", 10, y);
 
-            // Datos del vendedor movidos el doble de distancia
-            doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 10, y + 30); // Doble de 15 = 30
-            doc.text("CDMX", 10, y + 40); // Doble de 20 = 40
-            doc.text("52 55 7341 3969", 10, y + 50); // Doble de 25 = 50
-            doc.text("transpo_rick@hotmail.com", 10, y + 60); // Doble de 30 = 60
+            // Datos del vendedor al doble de distancia
+            doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 10, y + 30);
+            doc.text("CDMX", 10, y + 40);
+            doc.text("52 55 7341 3969", 10, y + 50);
+            doc.text("transpo_rick@hotmail.com", 10, y + 60);
         }
     </script>
 </body>
