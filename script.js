@@ -53,9 +53,11 @@ function downloadPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    // Agregar la marca de agua con el logo
-    const logo = 'data:image/jpeg;base64,tu_contenido_base64_aqui';
-    doc.addImage(logo, 'JPEG', 75, 5, 60, 30, '', 'FAST');
+    // Cargar el logo desde el elemento HTML
+    const logoImg = document.getElementById('logo');
+    if (logoImg.complete && logoImg.naturalHeight !== 0) {
+        doc.addImage(logoImg, 'JPEG', 75, 5, 60, 30); // Centered logo at the top
+    }
 
     doc.setFontSize(10);
     const clientName = document.getElementById('client-name').value || 'Nombre del Cliente';
@@ -69,12 +71,7 @@ function downloadPDF() {
     doc.text(`Teléfono: ${clientPhone}`, 10, 70);
     doc.text(`Email: ${clientEmail}`, 10, 75);
 
-    doc.text(`RICHY ENTERTAINMENT S.A.S. DE C.V.`, 10, 85);
-    doc.text(`CDMX`, 10, 90);
-    doc.text(`52 55 7341 3969`, 10, 95);
-    doc.text(`transpo_rick@hotmail.com`, 10, 100);
-
-    let y = 110;
+    let y = 85;
     const tableData = [];
     const rows = document.querySelectorAll('#items tbody tr');
     rows.forEach(row => {
@@ -94,18 +91,25 @@ function downloadPDF() {
         startY: y
     });
 
-    y += tableData.length * 10 + 10;
+    y = doc.lastAutoTable.finalY + 10; // Position after the table
     const taxRate = document.getElementById('tax').value || 0;
     const total = document.getElementById('total').innerText;
     doc.text(`Impuestos: ${taxRate}%`, 150, y);
     y += 10;
     doc.text(`Total: ${total}`, 150, y);
 
-    // Espacio para nombre y firma del cliente
+    // Línea negra y nombre/firma del cliente
     y += 20;
-    doc.line(10, y, 200, y); // Línea sobre el nombre y firma del cliente
+    doc.setLineWidth(0.5);
+    doc.line(10, y, 60, y); // Black line above the signature
     y += 5;
     doc.text("Nombre y Firma del Cliente:", 10, y);
+
+    // Datos del vendedor alineados abajo
+    doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 150, y - 5);
+    doc.text("CDMX", 150, y);
+    doc.text("52 55 7341 3969", 150, y + 5);
+    doc.text("transpo_rick@hotmail.com", 150, y + 10);
 
     doc.save("presupuesto.pdf");
 }
