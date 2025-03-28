@@ -146,12 +146,12 @@
             const logo = new Image();
             logo.src = 'Logo.jpg'; // Asegúrate de que Logo.jpg esté en el directorio correcto
             logo.onload = function() {
-                // Logo más grande y centrado (ancho: 100, alto: 50)
+                // Logo tres veces más grande (ancho: 300, alto: 150, ajustado al máximo de la página)
                 const pageWidth = doc.internal.pageSize.getWidth(); // Ancho de la página (210 para A4)
-                const logoWidth = 200;
-                const logoHeight = 100;
+                const logoWidth = 180; // Máximo ajustado para caber en A4 (210 - márgenes)
+                const logoHeight = 90; // Proporción ajustada (originalmente 2:1)
                 const x = (pageWidth - logoWidth) / 2; // Centrar horizontalmente
-                doc.addImage(logo, 'JPEG', x, 5, logoWidth, logoHeight); // Logo centrado y más grande
+                doc.addImage(logo, 'JPEG', x, 5, logoWidth, logoHeight); // Logo mucho más grande
                 generatePDFContent(doc);
                 doc.save("presupuesto.pdf");
             };
@@ -169,14 +169,14 @@
             const clientPhone = document.getElementById('client-phone').value || 'Teléfono';
             const clientEmail = document.getElementById('client-email').value || 'Email';
 
-            // Ajustar posición del contenido para dar espacio al logo más grande
-            doc.text("COTIZACIÓN", 10, 70); // Movido hacia abajo
-            doc.text(`Nombre del Cliente: ${clientName}`, 10, 80);
-            doc.text(`Ciudad: ${clientCity}`, 10, 85);
-            doc.text(`Teléfono: ${clientPhone}`, 10, 90);
-            doc.text(`Email: ${clientEmail}`, 10, 95);
+            // Ajustar posición del contenido para el logo mucho más grande
+            doc.text("COTIZACIÓN", 10, 110); // Movido más abajo
+            doc.text(`Nombre del Cliente: ${clientName}`, 10, 120);
+            doc.text(`Ciudad: ${clientCity}`, 10, 125);
+            doc.text(`Teléfono: ${clientPhone}`, 10, 130);
+            doc.text(`Email: ${clientEmail}`, 10, 135);
 
-            let y = 105; // Ajustado para el logo más grande
+            let y = 145; // Ajustado para el logo más grande
             const tableData = [];
             const rows = document.querySelectorAll('#items tbody tr');
             rows.forEach(row => {
@@ -210,11 +210,11 @@
             y += 5;
             doc.text("Nombre y Firma del Cliente:", 10, y);
 
-            // Datos del vendedor movidos a la izquierda
-            doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 10, y + 25); // Movido a la izquierda
-            doc.text("CDMX", 10, y + 20);
-            doc.text("52 55 7341 3969", 10, y + 25);
-            doc.text("transpo_rick@hotmail.com", 10, y + 30);
+            // Datos del vendedor movidos el doble de distancia
+            doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 10, y + 30); // Doble de 15 = 30
+            doc.text("CDMX", 10, y + 40); // Doble de 20 = 40
+            doc.text("52 55 7341 3969", 10, y + 50); // Doble de 25 = 50
+            doc.text("transpo_rick@hotmail.com", 10, y + 60); // Doble de 30 = 60
         }
     </script>
 </body>
