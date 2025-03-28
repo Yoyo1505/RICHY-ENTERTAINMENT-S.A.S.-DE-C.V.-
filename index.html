@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presupuesto</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <script src="script.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <h1>Presupuesto</h1>
+    <div id="client-info">
+        <label for="client-name">Nombre del Cliente:</label>
+        <input type="text" id="client-name" placeholder="Nombre del Cliente">
+        <label for="client-city">Ciudad:</label>
+        <input type="text" id="client-city" placeholder="Ciudad">
+        <label for="client-phone">Teléfono:</label>
+        <input type="text" id="client-phone" placeholder="Teléfono">
+        <label for="client-email">Email:</label>
+        <input type="email" id="client-email" placeholder="Email">
+    </div>
+    <div id="add-item">
+        <label for="item-select">Seleccionar Concepto:</label>
+        <select id="item-select">
+            <option value="">Seleccionar Concepto</option>
+        </select>
+        <button onclick="addItem()">Agregar Concepto</button>
+    </div>
+    <table id="items">
+        <thead>
+            <tr>
+                <th>Unidad</th>
+                <th>Concepto</th>
+                <th>Vehículo</th>
+                <th>P.U.</th>
+                <th>Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Filas de productos se agregarán aquí -->
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4" style="text-align: right;">Impuestos (%)</td>
+                <td><input type="number" id="tax" placeholder="Porcentaje de Impuestos"></td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: right;">Total</td>
+                <td id="total">$0.00</td>
+            </tr>
+        </tfoot>
+    </table>
+    <button onclick="calculateTotal()">Calcular Total</button>
+    <button onclick="downloadPDF()">Descargar PDF</button>
+</body>
+</html>
