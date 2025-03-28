@@ -148,8 +148,8 @@
             logo.onload = function() {
                 // Logo más grande y centrado (ancho: 100, alto: 50)
                 const pageWidth = doc.internal.pageSize.getWidth(); // Ancho de la página (210 para A4)
-                const logoWidth = 100;
-                const logoHeight = 50;
+                const logoWidth = 200;
+                const logoHeight = 100;
                 const x = (pageWidth - logoWidth) / 2; // Centrar horizontalmente
                 doc.addImage(logo, 'JPEG', x, 5, logoWidth, logoHeight); // Logo centrado y más grande
                 generatePDFContent(doc);
@@ -211,7 +211,7 @@
             doc.text("Nombre y Firma del Cliente:", 10, y);
 
             // Datos del vendedor movidos a la izquierda
-            doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 10, y + 15); // Movido a la izquierda
+            doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 10, y + 25); // Movido a la izquierda
             doc.text("CDMX", 10, y + 20);
             doc.text("52 55 7341 3969", 10, y + 25);
             doc.text("transpo_rick@hotmail.com", 10, y + 30);
