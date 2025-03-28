@@ -54,7 +54,7 @@ function downloadPDF() {
     const doc = new jsPDF();
 
     // Agregar la marca de agua con el logo
-    const logo = 'https://github.com/Yoyo1505/RICHY-ENTERTAINMENT-S.A.S.-DE-C.V.-/blob/817cf54a44acd63652f566fa4ad7fa5515df4aa8/Logo.jpg';
+    const logo = 'data:image/jpeg;base64,tu_contenido_base64_aqui';
     doc.addImage(logo, 'JPEG', 75, 5, 60, 30, '', 'FAST');
 
     doc.setFontSize(10);
@@ -100,6 +100,10 @@ function downloadPDF() {
     doc.text(`Impuestos: ${taxRate}%`, 150, y);
     y += 10;
     doc.text(`Total: ${total}`, 150, y);
+
+    // Espacio para nombre y firma del cliente
+    y += 20;
+    doc.text("Nombre y Firma del Cliente:", 10, y);
 
     doc.save("presupuesto.pdf");
 }
