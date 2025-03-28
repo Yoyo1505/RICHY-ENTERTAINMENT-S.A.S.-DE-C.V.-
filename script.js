@@ -69,12 +69,12 @@ function downloadPDF() {
     doc.text(`Teléfono: ${clientPhone}`, 10, 70);
     doc.text(`Email: ${clientEmail}`, 10, 75);
 
-    doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 150, 50);
-    doc.text("CDMX", 150, 55);
-    doc.text("52 55 7341 3969", 150, 60);
-    doc.text("transpo_rick@hotmail.com", 150, 65);
+    doc.text(`RICHY ENTERTAINMENT S.A.S. DE C.V.`, 10, 85);
+    doc.text(`CDMX`, 10, 90);
+    doc.text(`52 55 7341 3969`, 10, 95);
+    doc.text(`transpo_rick@hotmail.com`, 10, 100);
 
-    let y = 85;
+    let y = 110;
     const tableData = [];
     const rows = document.querySelectorAll('#items tbody tr');
     rows.forEach(row => {
@@ -103,6 +103,8 @@ function downloadPDF() {
 
     // Espacio para nombre y firma del cliente
     y += 20;
+    doc.line(10, y, 200, y); // Línea sobre el nombre y firma del cliente
+    y += 5;
     doc.text("Nombre y Firma del Cliente:", 10, y);
 
     doc.save("presupuesto.pdf");
