@@ -38,7 +38,7 @@
 <body>
     <h1>Generador de Cotización</h1>
 
-    <!-- Datos del cliente y folio -->
+    <!-- Datos del cliente con folio -->
     <div>
         <label>Número de Folio: <input type="text" id="folio-number" placeholder="Folio"></label><br>
         <label>Nombre del Cliente: <input type="text" id="client-name" placeholder="Nombre del Cliente"></label><br>
@@ -117,7 +117,7 @@
                     <td>Servicio de Transportación Ejecutiva</td>
                     <td>${selectedItem}</td>
                     <td><input type="number" placeholder="P.U." class="unit-price" onchange="calculateTotal()"></td>
-                    <td class="price">$0.00</td>
+                    <td class="price">$proporción ajustada">$0.00</td>
                 `;
                 itemsContainer.appendChild(row);
                 itemSelect.value = '';
@@ -150,7 +150,7 @@
             logo.src = 'Logo.jpg';
             logo.onload = function() {
                 const pageWidth = doc.internal.pageSize.getWidth();
-                const logoWidth = 50; // Tamaño más pequeño
+                const logoWidth = 50; // Logo más pequeño
                 const logoHeight = 25; // Proporción ajustada
                 const x = (pageWidth - logoWidth) / 2;
                 doc.addImage(logo, 'JPEG', x, 5, logoWidth, logoHeight);
