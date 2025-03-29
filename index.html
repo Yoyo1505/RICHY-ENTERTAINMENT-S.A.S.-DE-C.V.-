@@ -117,7 +117,7 @@
                     <td>Servicio de Transportación Ejecutiva</td>
                     <td>${selectedItem}</td>
                     <td><input type="number" placeholder="P.U." class="unit-price" onchange="calculateTotal()"></td>
-                    <td class="price">$proporción ajustada">$0.00</td>
+                    <td class="price">$0.00</td>
                 `;
                 itemsContainer.appendChild(row);
                 itemSelect.value = '';
@@ -150,8 +150,8 @@
             logo.src = 'Logo.jpg';
             logo.onload = function() {
                 const pageWidth = doc.internal.pageSize.getWidth();
-                const logoWidth = 50; // Logo más pequeño
-                const logoHeight = 25; // Proporción ajustada
+                const logoWidth = 100; // Logo de 100x50
+                const logoHeight = 50; // Proporción ajustada
                 const x = (pageWidth - logoWidth) / 2;
                 doc.addImage(logo, 'JPEG', x, 5, logoWidth, logoHeight);
                 generatePDFContent(doc);
@@ -173,23 +173,11 @@
             const clientEmail = document.getElementById('client-email').value || 'Email';
 
             // Folio en la parte superior derecha
-            doc.text(`Folio: ${folio}`, 160, 35);
+            doc.text(`Folio: ${folio}`, 160, 65);
 
-            doc.text("COTIZACIÓN", 10, 50);
+            doc.text("COTIZACIÓN", 10, 80);
 
-            // Datos del vendedor primero
-            doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 10, 60);
-            doc.text("CDMX", 10, 70);
-            doc.text("52 55 7341 3969", 10, 80);
-            doc.text("transpo_rick@hotmail.com", 10, 90);
-
-            // Datos del cliente después
-            doc.text(`Nombre del Cliente: ${clientName}`, 10, 110);
-            doc.text(`Ciudad: ${clientCity}`, 10, 120);
-            doc.text(`Teléfono: ${clientPhone}`, 10, 130);
-            doc.text(`Email: ${clientEmail}`, 10, 140);
-
-            let y = 150;
+            let y = 90;
             const tableData = [];
             const rows = document.querySelectorAll('#items tbody tr');
             rows.forEach(row => {
@@ -222,12 +210,17 @@
             y += 10;
             doc.text(`Total: ${total}`, 150, y);
 
-            // Línea negra y firma del cliente
-            y += 20;
-            doc.setLineWidth(0.5);
-            doc.line(10, y, 60, y);
-            y += 5;
-            doc.text("Nombre y Firma del Cliente:", 10, y);
+            // Datos del cliente en la parte inferior izquierda
+            doc.text(`Nombre del Cliente: ${clientName}`, 10, 260);
+            doc.text(`Ciudad: ${clientCity}`, 10, 270);
+            doc.text(`Teléfono: ${clientPhone}`, 10, 280);
+            doc.text(`Email: ${clientEmail}`, 10, 290);
+
+            // Datos del vendedor en la parte inferior derecha
+            doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 120, 260);
+            doc.text("CDMX", 120, 270);
+            doc.text("52 55 7341 3969", 120, 280);
+            doc.text("transpo_rick@hotmail.com", 120, 290);
         }
     </script>
 </body>
