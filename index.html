@@ -150,9 +150,9 @@
             logo.src = 'Logo.jpg';
             logo.onload = function() {
                 const pageWidth = doc.internal.pageSize.getWidth();
-                const logoWidth = 100; // Logo de 100x50
-                const logoHeight = 50; // Proporción ajustada
-                const x = (pageWidth - logoWidth) / 2;
+                const logoWidth = 145; // Logo de 145x90
+                const logoHeight = 90; // Proporción ajustada
+                const x = (pageWidth - logoWidth) / 2; // Centrado horizontalmente
                 doc.addImage(logo, 'JPEG', x, 5, logoWidth, logoHeight);
                 generatePDFContent(doc);
                 doc.save("presupuesto.pdf");
@@ -173,11 +173,11 @@
             const clientEmail = document.getElementById('client-email').value || 'Email';
 
             // Folio en la parte superior derecha
-            doc.text(`Folio: ${folio}`, 160, 65);
+            doc.text(`Folio: ${folio}`, 160, 100);
 
-            doc.text("COTIZACIÓN", 10, 80);
+            doc.text("COTIZACIÓN", 10, 110);
 
-            let y = 90;
+            let y = 120;
             const tableData = [];
             const rows = document.querySelectorAll('#items tbody tr');
             rows.forEach(row => {
@@ -210,13 +210,15 @@
             y += 10;
             doc.text(`Total: ${total}`, 150, y);
 
-            // Datos del cliente en la parte inferior izquierda
+            // Datos del cliente en la parte inferior izquierda con fuente más pequeña
+            doc.setFontSize(8);
             doc.text(`Nombre del Cliente: ${clientName}`, 10, 260);
-            doc.text(`Ciudad: ${clientCity}`, 10, 270);
-            doc.text(`Teléfono: ${clientPhone}`, 10, 280);
-            doc.text(`Email: ${clientEmail}`, 10, 290);
+            doc.text(`Ciudad: ${clientCity}`, 10, 265);
+            doc.text(`Teléfono: ${clientPhone}`, 10, 270);
+            doc.text(`Email: ${clientEmail}`, 10, 275);
 
-            // Datos del vendedor en la parte inferior derecha
+            // Datos del vendedor en la parte inferior derecha con fuente tamaño 10
+            doc.setFontSize(10);
             doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 120, 260);
             doc.text("CDMX", 120, 270);
             doc.text("52 55 7341 3969", 120, 280);
