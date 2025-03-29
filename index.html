@@ -15,12 +15,13 @@
             margin-top: 20px;
         }
         th, td {
-            border: 1px solid #ddd;
+            border: 1px solid #2196F3; /* Borde azul */
             padding: 8px;
             text-align: left;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #2196F3; /* Fondo azul */
+            color: white;
         }
         input[type="number"] {
             width: 80px;
@@ -37,8 +38,9 @@
 <body>
     <h1>Generador de Cotización</h1>
 
-    <!-- Datos del cliente -->
+    <!-- Datos del cliente y folio -->
     <div>
+        <label>Número de Folio: <input type="text" id="folio-number" placeholder="Folio"></label><br>
         <label>Nombre del Cliente: <input type="text" id="client-name" placeholder="Nombre del Cliente"></label><br>
         <label>Ciudad: <input type="text" id="client-city" placeholder="Ciudad"></label><br>
         <label>Teléfono: <input type="text" id="client-phone" placeholder="Teléfono"></label><br>
@@ -145,39 +147,49 @@
 
             // Cargar el logo
             const logo = new Image();
-            logo.src = 'Logo.jpg'; // Asegúrate de que Logo.jpg esté en el directorio correcto
+            logo.src = 'Logo.jpg';
             logo.onload = function() {
-                // Logo más grande
-                const pageWidth = doc.internal.pageSize.getWidth(); // 210 para A4
-                const logoWidth = 190; // Más grande que antes
-                const logoHeight = 95; // Proporción ajustada
-                const x = (pageWidth - logoWidth) / 2; // Centrar horizontalmente
-                doc.addImage(logo, 'JPEG', x, 5, logoWidth, logoHeight); // Logo más grande y centrado
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const logoWidth = 50; // Tamaño más pequeño
+                const logoHeight = 25; // Proporción ajustada
+                const x = (pageWidth - logoWidth) / 2;
+                doc.addImage(logo, 'JPEG', x, 5, logoWidth, logoHeight);
                 generatePDFContent(doc);
-                doc.save("presupuesto.pdf"); // Generar y descargar el PDF
+                doc.save("presupuesto.pdf");
             };
             logo.onerror = function() {
                 console.error("Error al cargar el logo. Generando PDF sin logo.");
                 generatePDFContent(doc);
-                doc.save("presupuesto.pdf"); // Generar y descargar incluso sin logo
+                doc.save("presupuesto.pdf");
             };
         }
 
         function generatePDFContent(doc) {
             doc.setFontSize(10);
+            const folio = document.getElementById('folio-number').value || 'Sin Folio';
             const clientName = document.getElementById('client-name').value || 'Nombre del Cliente';
             const clientCity = document.getElementById('client-city').value || 'Ciudad';
             const clientPhone = document.getElementById('client-phone').value || 'Teléfono';
             const clientEmail = document.getElementById('client-email').value || 'Email';
 
-            // Ajustar posición del contenido para el logo más grande
-            doc.text("COTIZACIÓN", 10, 110);
-            doc.text(`Nombre del Cliente: ${clientName}`, 10, 120);
-            doc.text(`Ciudad: ${clientCity}`, 10, 130);
-            doc.text(`Teléfono: ${clientPhone}`, 10, 140);
-            doc.text(`Email: ${clientEmail}`, 10, 150);
+            // Folio en la parte superior derecha
+            doc.text(`Folio: ${folio}`, 160, 35);
 
-            let y = 160; // Espacio suficiente para el logo más grande
+            doc.text("COTIZACIÓN", 10, 50);
+
+            // Datos del vendedor primero
+            doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 10, 60);
+            doc.text("CDMX", 10, 70);
+            doc.text("52 55 7341 3969", 10, 80);
+            doc.text("transpo_rick@hotmail.com", 10, 90);
+
+            // Datos del cliente después
+            doc.text(`Nombre del Cliente: ${clientName}`, 10, 110);
+            doc.text(`Ciudad: ${clientCity}`, 10, 120);
+            doc.text(`Teléfono: ${clientPhone}`, 10, 130);
+            doc.text(`Email: ${clientEmail}`, 10, 140);
+
+            let y = 150;
             const tableData = [];
             const rows = document.querySelectorAll('#items tbody tr');
             rows.forEach(row => {
@@ -191,13 +203,15 @@
                 }
             });
 
-            // Generar tabla con autoTable
+            // Generar tabla con autoTable (color azul)
             doc.autoTable({
                 head: [['Unidad', 'Concepto', 'Vehículo', 'P.U.', 'Precio']],
                 body: tableData,
                 startY: y,
                 theme: 'grid',
-                styles: { fontSize: 8 }
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [33, 150, 243] }, // Azul RGB
+                alternateRowStyles: { fillColor: [245, 245, 245] }
             });
 
             // Posición después de la tabla
@@ -214,12 +228,6 @@
             doc.line(10, y, 60, y);
             y += 5;
             doc.text("Nombre y Firma del Cliente:", 10, y);
-
-            // Datos del vendedor más a la izquierda
-            doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 10, y + 30); // Alineado a la izquierda
-            doc.text("CDMX", 10, y + 40);
-            doc.text("52 55 7341 3969", 10, y + 50);
-            doc.text("transpo_rick@hotmail.com", 10, y + 60);
         }
     </script>
 </body>
