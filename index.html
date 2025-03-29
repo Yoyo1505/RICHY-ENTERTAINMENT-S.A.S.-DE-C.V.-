@@ -165,18 +165,26 @@
         }
 
         function generatePDFContent(doc) {
-            doc.setFontSize(10);
-            const folio = document.getElementById('folio-number').value || 'Sin Folio';
-            const clientName = document.getElementById('client-name').value || 'Nombre del Cliente';
-            const clientCity = document.getElementById('client-city').value || 'Ciudad';
-            const clientPhone = document.getElementById('client-phone').value || 'Teléfono';
-            const clientEmail = document.getElementById('client-email').value || 'Email';
+            // Configuración general de fuentes y colores
+            doc.setFont("Helvetica", "normal");
+            doc.setTextColor(33, 33, 33); // Color gris oscuro para el texto
 
             // Folio en la parte superior derecha
+            const folio = document.getElementById('folio-number').value || 'Sin Folio';
+            doc.setFontSize(10);
+            doc.setTextColor(255, 0, 0); // Folio en rojo
             doc.text(`Folio: ${folio}`, 160, 100);
+            doc.setTextColor(33, 33, 33); // Restaurar color
 
-            doc.text("COTIZACIÓN", 10, 110);
+            // Título "COTIZACIÓN" centrado
+            doc.setFontSize(16);
+            doc.setFont("Helvetica", "bold");
+            const title = "COTIZACIÓN";
+            const titleWidth = doc.getTextWidth(title);
+            const pageWidth = doc.internal.pageSize.getWidth();
+            doc.text(title, (pageWidth - titleWidth) / 2, 110);
 
+            // Tabla de ítems
             let y = 120;
             const tableData = [];
             const rows = document.querySelectorAll('#items tbody tr');
@@ -191,38 +199,104 @@
                 }
             });
 
-            // Generar tabla con autoTable (color azul)
+            // Generar tabla con autoTable (estilo mejorado)
             doc.autoTable({
                 head: [['Unidad', 'Concepto', 'Vehículo', 'P.U.', 'Precio']],
                 body: tableData,
                 startY: y,
                 theme: 'grid',
-                styles: { fontSize: 8 },
-                headStyles: { fillColor: [33, 150, 243] }, // Azul RGB
-                alternateRowStyles: { fillColor: [245, 245, 245] }
+                styles: { 
+                    fontSize: 8, 
+                    font: "Helvetica", 
+                    textColor: [33, 33, 33], 
+                    lineWidth: 0.5, 
+                    lineColor: [33, 150, 243] // Bordes azules
+                },
+                headStyles: { 
+                    fillColor: [33, 150, 243], // Fondo azul para el encabezado
+                    textColor: [255, 255, 255], // Texto blanco
+                    fontSize: 9,
+                    fontStyle: "bold"
+                },
+                alternateRowStyles: { 
+                    fillColor: [240, 240, 240] // Fondo gris claro para filas alternas
+                },
+                columnStyles: {
+                    0: { cellWidth: 20 }, // Unidad
+                    1: { cellWidth: 50 }, // Concepto
+                    2: { cellWidth: 50 }, // Vehículo
+                    3: { cellWidth: 30 }, // P.U.
+                    4: { cellWidth: 30, halign: 'right' } // Precio (alineado a la derecha)
+                },
+                margin: { top: 120 }
             });
 
             // Posición después de la tabla
             y = doc.lastAutoTable.finalY + 10;
+
+            // Impuestos y Total (alineado a la derecha)
             const taxRate = document.getElementById('tax').value || 0;
             const total = document.getElementById('total').innerText;
+            doc.setFontSize(10);
+            doc.setFont("Helvetica", "bold");
             doc.text(`Impuestos: ${taxRate}%`, 150, y);
-            y += 10;
+            y += 8;
             doc.text(`Total: ${total}`, 150, y);
 
-            // Datos del cliente en la parte inferior izquierda con fuente más pequeña
-            doc.setFontSize(8);
-            doc.text(`Nombre del Cliente: ${clientName}`, 10, 260);
-            doc.text(`Ciudad: ${clientCity}`, 10, 265);
-            doc.text(`Teléfono: ${clientPhone}`, 10, 270);
-            doc.text(`Email: ${clientEmail}`, 10, 275);
+            // Línea divisoria antes de los datos del cliente y vendedor
+            y += 10;
+            doc.setDrawColor(33, 150, 243); // Línea azul
+            doc.setLineWidth(0.5);
+            doc.line(10, y, 200, y);
+            y += 10;
 
-            // Datos del vendedor en la parte inferior derecha con fuente tamaño 10
+            // Datos del cliente (izquierda)
+            const clientName = document.getElementById('client-name').value || 'Nombre del Cliente';
+            const clientCity = document.getElementById('client-city').value || 'Ciudad';
+            const clientPhone = document.getElementById('client-phone').value || 'Teléfono';
+            const clientEmail = document.getElementById('client-email').value || 'Email';
+
+            doc.setFontSize(9);
+            doc.setFont("Helvetica", "bold");
+            doc.text("Datos del Cliente", 10, y);
+            doc.setFont("Helvetica", "normal");
+            y += 5;
+            doc.text(`Nombre: ${clientName}`, 10, y);
+            y += 5;
+            doc.text(`Ciudad: ${clientCity}`, 10, y);
+            y += 5;
+            doc.text(`Teléfono: ${clientPhone}`, 10, y);
+            y += 5;
+            doc.text(`Email: ${clientEmail}`, 10, y);
+
+            // Datos del vendedor (derecha) con información bancaria
+            doc.setFontSize(9);
+            doc.setFont("Helvetica", "bold");
+            doc.text("Datos del Vendedor", 120, y - 20);
+            doc.setFont("Helvetica", "normal");
+            doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 120, y - 15);
+            doc.text("CDMX", 120, y - 10);
+            doc.text("52 55 7341 3969", 120, y - 5);
+            doc.text("transpo_rick@hotmail.com", 120, y);
+
+            // Información bancaria
+            y += 5;
+            doc.setFont("Helvetica", "bold");
+            doc.text("Información Bancaria", 120, y);
+            doc.setFont("Helvetica", "normal");
+            y += 5;
+            doc.text("Banco: Santander", 120, y);
+            y += 5;
+            doc.text("Nombre: Richy Entertainment, SAS de CV", 120, y);
+            y += 5;
+            doc.text("Cuenta No.: 65-51041870-7", 120, y);
+            y += 5;
+            doc.text("Clabe Interbancaria: 014180655104187070", 120, y);
+
+            // Pie de página (opcional)
             doc.setFontSize(8);
-            doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 120, 260);
-            doc.text("CDMX", 120, 270);
-            doc.text("52 55 7341 3969", 120, 280);
-            doc.text("transpo_rick@hotmail.com", 120, 290);
+            doc.setTextColor(100, 100, 100);
+            doc.text("Generado por Richy Entertainment S.A.S. de C.V. - " + new Date().toLocaleDateString(), 10, 290);
         }
     </script>
 </body>
