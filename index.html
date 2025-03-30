@@ -147,11 +147,11 @@
 
             // Cargar el logo
             const logo = new Image();
-            logo.src = 'Logo.jpg';
+            logo.src = 'Logo.jpg'; // Asumiendo que el logo está en el mismo directorio o en GitHub
             logo.onload = function() {
                 const pageWidth = doc.internal.pageSize.getWidth();
-                const logoWidth = 145; // Logo de 145x90
-                const logoHeight = 90; // Proporción ajustada
+                const logoWidth = 135; // Ancho del logo ajustado a 135px
+                const logoHeight = 65; // Alto del logo ajustado a 65px
                 const x = (pageWidth - logoWidth) / 2; // Centrado horizontalmente
                 doc.addImage(logo, 'JPEG', x, 5, logoWidth, logoHeight);
                 generatePDFContent(doc);
@@ -210,7 +210,7 @@
             doc.line(10, 50, 200, 50);
 
             // Tabla de ítems
-            let y = 60;
+            let y = 80; // Ajustado para dar espacio al logo más grande
             const tableData = [];
             const rows = document.querySelectorAll('#items tbody tr');
             rows.forEach(row => {
@@ -259,7 +259,7 @@
                     3: { cellWidth: 30, halign: 'right' }, // P.U.
                     4: { cellWidth: 30, halign: 'right' } // Precio
                 },
-                margin: { top: 60 }
+                margin: { top: 80 } // Ajustado para el logo más grande
             });
 
             // Posición después de la tabla
@@ -370,14 +370,6 @@
             doc.setTextColor(255, 255, 255); // Texto blanco
             doc.text("© 2025 Richy Entertainment S.A.S. de C.V. | Todos los derechos reservados", 10, 285);
             doc.text("Generado el: " + new Date().toLocaleDateString('es-MX'), 160, 285);
-
-            // Marca de agua (opcional)
-            doc.setFontSize(40);
-            doc.setTextColor(200, 200, 200, 0.3); // Gris claro con opacidad
-            doc.setFont("Helvetica", "bold");
-            const watermark = "RICHY ENTERTAINMENT";
-            const watermarkWidth = doc.getTextWidth(watermark);
-            doc.text(watermark, (pageWidth - watermarkWidth) / 2, 150, { angle: 45 });
         }
     </script>
 </body>
