@@ -329,7 +329,7 @@
         <div class="total-section">
             <div class="form-group">
                 <label for="tax">Impuestos (%)</label>
-                <input type="number" id="tax" value="16" min="0" step="0.1" onchange="calculateTotal()">
+                <input type="number" id="tax" value="16" min="0" step="0.1" oninput="debouncedCalculateTotal()">
             </div>
             <div>
                 <strong>TOTAL: <span id="total">$0.00</span></strong>
@@ -359,18 +359,13 @@
             const { jsPDF } = window.jspdf;
             let logoData = null;
 
-            // Preload logo
+            // Preload logo (simplified)
             function preloadLogo() {
                 return new Promise((resolve) => {
                     const img = new Image();
                     img.src = 'logo.png';
                     img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
-                        logoData = canvas.toDataURL('image/png');
+                        logoData = img.src; // Use the image directly
                         console.log("Logo preloaded successfully");
                         resolve();
                     };
@@ -413,17 +408,17 @@
                     console.log("Añadiendo ítem a la tabla:", selectedItem);
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td><input type="number" class="unit" min="1" value="1" onchange="calculateTotal()"></td>
+                        <td><input type="number" class="unit" min="1" value="1" oninput="debouncedCalculateTotal()"></td>
                         <td>Servicio de Transportación Ejecutiva</td>
                         <td>${selectedItem}</td>
-                        <td><input type="number" class="unit-price" min="0" step="0.01" value="0" onchange="calculateTotal()"></td>
+                        <td><input type="number" class="unit-price" min="0" step="0.01" value="0" oninput="debouncedCalculateTotal()"></td>
                         <td class="price">$0.00</td>
                         <td><button class="remove-btn" onclick="removeItem(this)">Eliminar</button></td>
                     `;
                     itemsContainer.appendChild(row);
                     console.log("Fila añadida a la tabla");
                     itemSelect.value = '';
-                    calculateTotal();
+                    debouncedCalculateTotal();
                     console.log("Número de filas tras añadir:", itemsContainer.children.length);
                 } else {
                     alert('Por favor, selecciona un ítem antes de agregar.');
@@ -437,10 +432,17 @@
                 if (row) {
                     row.remove();
                     console.log("Fila eliminada");
-                    calculateTotal();
+                    debouncedCalculateTotal();
                 } else {
                     console.error("No se encontró la fila para eliminar");
                 }
+            }
+
+            // Debounce function to prevent excessive calculations
+            let debounceTimeout;
+            function debouncedCalculateTotal() {
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(calculateTotal, 300);
             }
 
             function calculateTotal() {
@@ -532,38 +534,29 @@
                     const pageWidth = doc.internal.pageSize.getWidth() - marginLeft - marginRight;
                     const pageHeight = doc.internal.pageSize.getHeight();
 
+                    // Simplified header
                     function addHeader() {
+                        doc.setFillColor(13, 17, 32);
+                        doc.rect(0, 0, doc.internal.pageSize.getWidth(), 40, 'F');
                         if (logoData) {
-                            doc.setFillColor(13, 17, 32);
-                            doc.rect(0, 0, doc.internal.pageSize.getWidth(), 50, 'F');
-                            const logoWidth = 50;
-                            const logoHeight = (document.getElementById('logo').naturalHeight / document.getElementById('logo').naturalWidth) * logoWidth;
-                            doc.addImage(logoData, 'PNG', marginLeft, 5, logoWidth, logoHeight);
-
-                            doc.setFont("times", "italic");
+                            doc.addImage(logoData, 'PNG', marginLeft, 5, 40, 30);
+                            doc.setFont("helvetica", "bold");
+                            doc.setFontSize(12);
+                            doc.setTextColor(255, 255, 255);
+                            doc.text("Richy Entertainment", marginLeft + 45, 25);
+                        } else {
+                            doc.setFont("helvetica", "bold");
                             doc.setFontSize(14);
                             doc.setTextColor(255, 255, 255);
-                            doc.text("Soluciones de Transportación Ejecutiva", marginLeft + logoWidth + 10, 35);
-                            return 60;
-                        } else {
-                            doc.setFillColor(13, 17, 32);
-                            doc.rect(0, 0, doc.internal.pageSize.getWidth(), 50, 'F');
-                            doc.setFont("times", "italic");
-                            doc.setFontSize(16);
-                            doc.setTextColor(255, 255, 255);
-                            doc.text("Soluciones de Transportación Ejecutiva", doc.internal.pageSize.getWidth() / 2, 38, { align: 'center' });
-                            return 60;
+                            doc.text("Richy Entertainment", doc.internal.pageSize.getWidth() / 2, 25, { align: 'center' });
                         }
+                        return 50;
                     }
 
                     const headerHeight = addHeader();
 
                     const folio = document.getElementById('folio-number').value || 'Sin folio';
-                    const date = new Date().toLocaleDateString('es-MX', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    });
+                    const date = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
 
                     doc.setFont("helvetica", "normal");
                     doc.setFontSize(10);
@@ -571,34 +564,28 @@
                     doc.text(`Folio: ${folio}`, marginLeft, headerHeight + 5);
                     doc.text(`Fecha: ${date}`, doc.internal.pageSize.getWidth() - marginRight, headerHeight + 5, { align: 'right' });
 
-                    doc.setFont("times", "bold");
-                    doc.setFontSize(20);
-                    doc.setTextColor(13, 17, 32);
-                    doc.text("Cotización", doc.internal.pageSize.getWidth() / 2, headerHeight + 20, { align: 'center' });
-
-                    doc.setFont("times", "bold");
+                    doc.setFont("helvetica", "bold");
                     doc.setFontSize(16);
                     doc.setTextColor(13, 17, 32);
-                    doc.text("Datos del Cliente", marginLeft, headerHeight + 35);
+                    doc.text("Cotización", doc.internal.pageSize.getWidth() / 2, headerHeight + 15, { align: 'center' });
+
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(14);
+                    doc.setTextColor(13, 17, 32);
+                    doc.text("Datos del Cliente", marginLeft, headerHeight + 25);
 
                     const clientName = document.getElementById('client-name').value || 'No especificado';
                     const clientCity = document.getElementById('client-city').value || 'No especificado';
                     const clientPhone = document.getElementById('client-phone').value || 'No especificado';
                     const clientEmail = document.getElementById('client-email').value || 'No especificado';
 
-                    doc.setFillColor(255, 255, 255);
-                    doc.rect(marginLeft, headerHeight + 40, pageWidth, 50, 'F');
-                    doc.setDrawColor(176, 190, 197);
-                    doc.setLineWidth(0.5);
-                    doc.rect(marginLeft, headerHeight + 40, pageWidth, 50);
-
                     doc.setFont("helvetica", "normal");
-                    doc.setFontSize(12);
+                    doc.setFontSize(10);
                     doc.setTextColor(51, 51, 51);
-                    doc.text(`Nombre: ${clientName}`, marginLeft + 10, headerHeight + 50);
-                    doc.text(`Ciudad: ${clientCity}`, marginLeft + 10, headerHeight + 60);
-                    doc.text(`Teléfono: ${clientPhone}`, marginLeft + 10, headerHeight + 70);
-                    doc.text(`Email: ${clientEmail}`, marginLeft + 10, headerHeight + 80);
+                    doc.text(`Nombre: ${clientName}`, marginLeft, headerHeight + 35);
+                    doc.text(`Ciudad: ${clientCity}`, marginLeft, headerHeight + 40);
+                    doc.text(`Teléfono: ${clientPhone}`, marginLeft, headerHeight + 45);
+                    doc.text(`Email: ${clientEmail}`, marginLeft, headerHeight + 50);
 
                     const tableData = [];
                     const rows = document.querySelectorAll('#items tbody tr');
@@ -624,63 +611,48 @@
                     doc.autoTable({
                         head: [['Cant.', 'Concepto', 'Descripción', 'P. Unitario', 'Total']],
                         body: tableData,
-                        startY: headerHeight + 95,
+                        startY: headerHeight + 60,
                         headStyles: {
                             fillColor: [13, 17, 32],
                             textColor: [255, 255, 255],
-                            fontSize: 12,
-                            font: "times",
-                            fontStyle: 'bold',
-                            halign: 'center',
-                            cellPadding: 5
+                            fontSize: 10,
+                            halign: 'center'
                         },
                         bodyStyles: {
-                            fontSize: 11,
-                            textColor: [51, 51, 51],
-                            font: "helvetica"
+                            fontSize: 9,
+                            textColor: [51, 51, 51]
                         },
                         columnStyles: {
                             0: { cellWidth: 20, halign: 'center' },
-                            1: { cellWidth: 45, halign: 'left' },
-                            2: { cellWidth: 65, halign: 'left' },
+                            1: { cellWidth: 45 },
+                            2: { cellWidth: 65 },
                             3: { cellWidth: 35, halign: 'right' },
                             4: { cellWidth: 35, halign: 'right' }
                         },
                         margin: { left: marginLeft, right: marginRight },
                         styles: {
-                            cellPadding: 4,
-                            lineWidth: 0.2,
-                            lineColor: [201, 193, 151],
-                            overflow: 'linebreak'
-                        },
-                        alternateRowStyles: {
-                            fillColor: [255, 255, 255]
-                        },
-                        didDrawPage: function(data) {
-                            const pageCount = doc.internal.getNumberOfPages();
-                            doc.setFont("helvetica", "italic");
-                            doc.setFontSize(8);
-                            doc.setTextColor(51, 51, 51);
-                            doc.text(`Página ${data.pageNumber} de ${pageCount}`, doc.internal.pageSize.getWidth() - marginRight - 10, pageHeight - 10, { align: 'right' });
+                            cellPadding: 2,
+                            lineWidth: 0.1,
+                            lineColor: [201, 193, 151]
                         }
                     });
 
                     const notes = document.getElementById('notes').value;
                     if (notes) {
-                        const notesY = doc.lastAutoTable.finalY + 15;
-                        doc.setFont("times", "bold");
-                        doc.setFontSize(14);
+                        const notesY = doc.lastAutoTable.finalY + 10;
+                        doc.setFont("helvetica", "bold");
+                        doc.setFontSize(12);
                         doc.setTextColor(13, 17, 32);
                         doc.text("Anotaciones", marginLeft, notesY);
 
                         doc.setFont("helvetica", "normal");
-                        doc.setFontSize(11);
+                        doc.setFontSize(9);
                         doc.setTextColor(51, 51, 51);
                         const splitNotes = doc.splitTextToSize(notes, pageWidth - 20);
-                        doc.text(splitNotes, marginLeft + 10, notesY + 10);
+                        doc.text(splitNotes, marginLeft, notesY + 5);
                     }
 
-                    const finalY = (notes ? doc.lastAutoTable.finalY + 30 + (doc.splitTextToSize(notes, pageWidth - 20).length * 6) : doc.lastAutoTable.finalY + 30);
+                    const finalY = (notes ? doc.lastAutoTable.finalY + 20 + (doc.splitTextToSize(notes, pageWidth - 20).length * 4) : doc.lastAutoTable.finalY + 20);
                     const taxRate = parseFloat(document.getElementById('tax').value) || 0;
                     const totalText = document.getElementById('total').textContent;
                     const total = parseFloat(totalText.replace('$', '').replace(/,/g, '')) || 0;
@@ -688,46 +660,30 @@
                     const taxAmount = total - subtotal;
                     const totalInWords = numberToWordsSpanish(total);
 
-                    doc.setFillColor(13, 17, 32);
-                    doc.rect(marginLeft, finalY, pageWidth, 50, 'F');
-                    doc.setDrawColor(176, 190, 197);
-                    doc.setLineWidth(0.5);
-                    doc.rect(marginLeft + 5, finalY + 5, pageWidth - 10, 40);
-
-                    doc.setFont("times", "bold");
-                    doc.setFontSize(16);
-                    doc.setTextColor(255, 255, 255);
-                    doc.text("Resumen de Pago", marginLeft + 10, finalY + 15);
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(12);
+                    doc.setTextColor(13, 17, 32);
+                    doc.text("Resumen de Pago", marginLeft, finalY + 10);
 
                     doc.setFont("helvetica", "normal");
-                    doc.setFontSize(12);
-                    doc.text(`Subtotal:`, marginLeft + pageWidth - 90, finalY + 25);
-                    doc.text(`$${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 20, finalY + 25, { align: 'right' });
-
-                    doc.text(`Impuestos (${taxRate.toLocaleString('en-US')}%):`, marginLeft + pageWidth - 90, finalY + 35);
-                    doc.text(`$${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 20, finalY + 35, { align: 'right' });
-
-                    doc.setFont("times", "bold");
-                    doc.setFontSize(14);
-                    doc.text(`Total:`, marginLeft + pageWidth - 90, finalY + 45);
-                    doc.text(`${totalText}`, marginLeft + pageWidth - 20, finalY + 45, { align: 'right' });
-
-                    doc.setFont("helvetica", "italic");
                     doc.setFontSize(10);
-                    const splitTotalInWords = doc.splitTextToSize(totalInWords, pageWidth - 30);
-                    doc.text(splitTotalInWords, marginLeft + 10, finalY + 55);
+                    doc.text(`Subtotal: $${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft, finalY + 15);
+                    doc.text(`Impuestos (${taxRate.toLocaleString('en-US')}%): $${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft, finalY + 20);
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(12);
+                    doc.text(`Total: ${totalText}`, marginLeft, finalY + 25);
+                    doc.setFont("helvetica", "italic");
+                    doc.setFontSize(9);
+                    const splitTotalInWords = doc.splitTextToSize(totalInWords, pageWidth - 20);
+                    doc.text(splitTotalInWords, marginLeft, finalY + 30);
 
-                    const footerY = pageHeight - 40;
-                    doc.setFillColor(13, 17, 32);
-                    doc.rect(0, footerY, doc.internal.pageSize.getWidth(), 40, 'F');
+                    const footerY = pageHeight - 20;
                     doc.setFont("helvetica", "normal");
                     doc.setFontSize(8);
-                    doc.setTextColor(255, 255, 255);
-                    doc.text("Richy Entertainment S.A.S. de C.V.  •  Tel: 52 55 7341 3969  •  Email: transpo_rick@hotmail.com", doc.internal.pageSize.getWidth() / 2, footerY + 15, { align: 'center' });
-                    doc.text("Banco: Santander  •  Cuenta: 65-51041870-7  •  CLABE: 014180655104187070", doc.internal.pageSize.getWidth() / 2, footerY + 22, { align: 'center' });
-                    doc.text("© 2025 Richy Entertainment - Todos los derechos reservados", doc.internal.pageSize.getWidth() / 2, footerY + 30, { align: 'center' });
+                    doc.setTextColor(51, 51, 51);
+                    doc.text("Richy Entertainment • Tel: 52 55 7341 3969 • Email: transpo_rick@hotmail.com", doc.internal.pageSize.getWidth() / 2, footerY + 10, { align: 'center' });
+                    doc.text("© 2025 Richy Entertainment - Todos los derechos reservados", doc.internal.pageSize.getWidth() / 2, footerY + 15, { align: 'center' });
 
-                    createPrintPreview(doc);
                     const fileName = `Cotización_${folio}_${clientName.replace(/[^a-z0-9]/gi, '_')}.pdf`;
                     doc.save(fileName);
                     console.log("PDF generado exitosamente");
@@ -735,21 +691,6 @@
                     console.error("Error al generar el PDF:", error);
                     alert("Hubo un error al generar el PDF. Revisa la consola para más detalles.");
                 }
-            }
-
-            function createPrintPreview(pdf) {
-                const pdfContainer = document.getElementById('pdf-container');
-                pdfContainer.innerHTML = '';
-
-                const iframe = document.createElement('iframe');
-                iframe.style.width = '100%';
-                iframe.style.height = '800px';
-                iframe.style.border = 'none';
-
-                pdfContainer.appendChild(iframe);
-
-                iframe.src = pdf.output('datauristring');
-                pdfContainer.style.display = 'block';
             }
 
             calculateTotal();
