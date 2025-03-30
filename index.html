@@ -353,7 +353,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script>
-        // Ensure DOM is fully loaded before attaching event listeners
         document.addEventListener('DOMContentLoaded', function() {
             console.log("DOM fully loaded and parsed");
 
@@ -394,32 +393,24 @@
             const itemSelect = document.getElementById('item-select');
             const addItemBtn = document.getElementById('add-item-btn');
 
-            if (!itemsContainer) {
-                console.error("Items container (tbody) not found!");
-                return;
-            }
-            if (!itemSelect) {
-                console.error("Item select dropdown not found!");
-                return;
-            }
-            if (!addItemBtn) {
-                console.error("Add item button not found!");
+            if (!itemsContainer || !itemSelect || !addItemBtn) {
+                console.error("Error: Uno o más elementos no se encontraron en el DOM.");
                 return;
             }
 
-            console.log("All elements found, attaching event listener to add-item-btn");
+            console.log("Elementos encontrados, añadiendo evento al botón de agregar ítem");
             addItemBtn.addEventListener('click', function() {
-                console.log("Add item button clicked");
+                console.log("Botón de agregar ítem cliqueado");
                 addItem();
             });
 
             function addItem() {
-                console.log("addItem function called");
+                console.log("Función addItem llamada");
                 const selectedItem = itemSelect.value;
-                console.log("Selected item:", selectedItem);
+                console.log("Ítem seleccionado:", selectedItem);
 
                 if (selectedItem) {
-                    console.log("Adding item to table:", selectedItem);
+                    console.log("Añadiendo ítem a la tabla:", selectedItem);
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td><input type="number" class="unit" min="1" value="1" onchange="calculateTotal()"></td>
@@ -430,47 +421,49 @@
                         <td><button class="remove-btn" onclick="removeItem(this)">Eliminar</button></td>
                     `;
                     itemsContainer.appendChild(row);
-                    console.log("Row added to table");
+                    console.log("Fila añadida a la tabla");
                     itemSelect.value = '';
                     calculateTotal();
-                    console.log("Item added successfully");
+                    console.log("Número de filas tras añadir:", itemsContainer.children.length);
                 } else {
                     alert('Por favor, selecciona un ítem antes de agregar.');
-                    console.log("No item selected");
+                    console.log("No se seleccionó ningún ítem");
                 }
             }
 
             function removeItem(button) {
-                console.log("removeItem function called");
+                console.log("Función removeItem llamada");
                 const row = button.closest('tr');
                 if (row) {
                     row.remove();
-                    console.log("Row removed");
+                    console.log("Fila eliminada");
                     calculateTotal();
                 } else {
-                    console.error("Row not found for removal");
+                    console.error("No se encontró la fila para eliminar");
                 }
             }
 
             function calculateTotal() {
-                console.log("calculateTotal function called");
+                console.log("Función calculateTotal llamada");
                 let subtotal = 0;
                 const rows = document.querySelectorAll('#items tbody tr');
-                
-                rows.forEach(row => {
+                console.log("Número de filas en calculateTotal:", rows.length);
+
+                rows.forEach((row, index) => {
                     const unit = parseFloat(row.querySelector('.unit').value) || 0;
                     const unitPrice = parseFloat(row.querySelector('.unit-price').value) || 0;
                     const total = unit * unitPrice;
                     row.querySelector('.price').textContent = `$${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
                     subtotal += total;
+                    console.log(`Fila ${index + 1}: Cantidad=${unit}, Precio Unitario=${unitPrice}, Total=${total}`);
                 });
-                
+
                 const taxRate = parseFloat(document.getElementById('tax').value) || 0;
                 const taxAmount = subtotal * (taxRate / 100);
                 const total = subtotal + taxAmount;
-                
+
                 document.getElementById('total').textContent = `$${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-                console.log("Total calculated:", total);
+                console.log("Subtotal:", subtotal, "Impuestos:", taxAmount, "Total:", total);
             }
 
             function numberToWordsSpanish(num) {
@@ -527,12 +520,13 @@
 
             async function generatePDF() {
                 try {
+                    console.log("Función generatePDF llamada");
                     const doc = new jsPDF({
                         orientation: 'portrait',
                         unit: 'mm',
                         format: 'a4'
                     });
-                    
+
                     const marginLeft = 15;
                     const marginRight = 15;
                     const pageWidth = doc.internal.pageSize.getWidth() - marginLeft - marginRight;
@@ -608,8 +602,9 @@
 
                     const tableData = [];
                     const rows = document.querySelectorAll('#items tbody tr');
+                    console.log("Número de filas en generatePDF:", rows.length);
 
-                    rows.forEach(row => {
+                    rows.forEach((row, index) => {
                         const quantity = parseFloat(row.querySelector('.unit').value).toLocaleString('en-US') || '1';
                         const concept = 'Servicio de Transportación Ejecutiva';
                         const item = row.cells[2].textContent;
@@ -623,6 +618,7 @@
                             `$${unitPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
                             `$${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
                         ]);
+                        console.log(`Datos de fila ${index + 1}:`, tableData[index]);
                     });
 
                     doc.autoTable({
@@ -707,10 +703,10 @@
                     doc.setFontSize(12);
                     doc.text(`Subtotal:`, marginLeft + pageWidth - 90, finalY + 25);
                     doc.text(`$${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 20, finalY + 25, { align: 'right' });
-                    
+
                     doc.text(`Impuestos (${taxRate.toLocaleString('en-US')}%):`, marginLeft + pageWidth - 90, finalY + 35);
                     doc.text(`$${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 20, finalY + 35, { align: 'right' });
-                    
+
                     doc.setFont("times", "bold");
                     doc.setFontSize(14);
                     doc.text(`Total:`, marginLeft + pageWidth - 90, finalY + 45);
@@ -734,24 +730,24 @@
                     createPrintPreview(doc);
                     const fileName = `Cotización_${folio}_${clientName.replace(/[^a-z0-9]/gi, '_')}.pdf`;
                     doc.save(fileName);
-                    console.log("PDF generated successfully");
+                    console.log("PDF generado exitosamente");
                 } catch (error) {
-                    console.error("Error generating PDF:", error);
-                    alert("Error generating PDF. Check console for details.");
+                    console.error("Error al generar el PDF:", error);
+                    alert("Hubo un error al generar el PDF. Revisa la consola para más detalles.");
                 }
             }
 
             function createPrintPreview(pdf) {
                 const pdfContainer = document.getElementById('pdf-container');
                 pdfContainer.innerHTML = '';
-                
+
                 const iframe = document.createElement('iframe');
                 iframe.style.width = '100%';
                 iframe.style.height = '800px';
                 iframe.style.border = 'none';
-                
+
                 pdfContainer.appendChild(iframe);
-                
+
                 iframe.src = pdf.output('datauristring');
                 pdfContainer.style.display = 'block';
             }
