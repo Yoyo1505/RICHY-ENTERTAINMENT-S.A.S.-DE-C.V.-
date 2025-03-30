@@ -80,12 +80,17 @@
             color: var(--azul-marino);
         }
         
-        input, select {
+        input, select, textarea {
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             width: 100%;
             max-width: 300px;
+        }
+        
+        textarea {
+            max-width: 100%;
+            resize: vertical;
         }
         
         button {
@@ -244,6 +249,10 @@
                     <option value="VIATICOS">VIATICOS</option>
                 </select>
                 <button id="add-item-btn">Agregar Ítem</button>
+            </div>
+            <div class="form-group">
+                <label for="notes">Anotaciones</label>
+                <textarea id="notes" rows="3" placeholder="Escribe aquí notas adicionales..."></textarea>
             </div>
 
             <table id="items">
@@ -488,7 +497,7 @@
 
             // Título de la cotización (tamaño reducido)
             doc.setFont("times", "bold");
-            doc.setFontSize(16); // Tamaño reducido de 20 a 16
+            doc.setFontSize(16);
             doc.setTextColor(0, 35, 102);
             doc.text("Cotización", doc.internal.pageSize.getWidth() / 2, headerHeight + 20, { align: 'center' });
             
@@ -585,8 +594,24 @@
                 }
             });
 
-            // Totales con número en letras
-            const finalY = doc.lastAutoTable.finalY + 20;
+            // Anotaciones
+            const notes = document.getElementById('notes').value;
+            if (notes) {
+                const notesY = doc.lastAutoTable.finalY + 10;
+                doc.setFont("times", "bold");
+                doc.setFontSize(12);
+                doc.setTextColor(0, 35, 102);
+                doc.text("Anotaciones", marginLeft, notesY);
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.setTextColor(50, 50, 50);
+                const splitNotes = doc.splitTextToSize(notes, pageWidth);
+                doc.text(splitNotes, marginLeft, notesY + 7);
+            }
+
+            // Totales con número en letras solo para el total
+            const finalY = (notes ? doc.lastAutoTable.finalY + 20 + (doc.splitTextToSize(notes, pageWidth).length * 5) : doc.lastAutoTable.finalY + 20);
             const taxRate = parseFloat(document.getElementById('tax').value) || 0;
             const totalText = document.getElementById('total').textContent;
             const total = parseFloat(totalText.replace('$', '')) || 0;
@@ -595,10 +620,10 @@
             const totalInWords = numberToWordsSpanish(total);
 
             doc.setFillColor(0, 35, 102);
-            doc.roundedRect(marginLeft, finalY, pageWidth, 55, 8, 8, 'F');
+            doc.roundedRect(marginLeft, finalY, pageWidth, 45, 8, 8, 'F');
             doc.setDrawColor(255, 255, 255);
             doc.setLineWidth(0.5);
-            doc.roundedRect(marginLeft + 2, finalY + 2, pageWidth - 4, 51, 6, 6);
+            doc.roundedRect(marginLeft + 2, finalY + 2, pageWidth - 4, 41, 6, 6);
 
             doc.setFont("times", "bold");
             doc.setFontSize(16);
@@ -620,7 +645,8 @@
 
             doc.setFont("helvetica", "italic");
             doc.setFontSize(10);
-            doc.text(`(${totalInWords})`, marginLeft + pageWidth - 10, finalY + 52, { align: 'right' });
+            const splitTotalInWords = doc.splitTextToSize(totalInWords, pageWidth - 20);
+            doc.text(splitTotalInWords, marginLeft + 10, finalY + 50);
 
             // Pie de página estilizado
             const footerY = pageHeight - 35;
