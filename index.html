@@ -149,6 +149,7 @@
             const loadImage = (src) => {
                 return new Promise((resolve, reject) => {
                     const img = new Image();
+                    img.crossOrigin = "Anonymous"; // Para evitar problemas de CORS
                     img.src = src;
                     img.onload = () => resolve(img);
                     img.onerror = () => reject(new Error("Error al cargar el logo"));
@@ -156,8 +157,8 @@
             };
 
             try {
-                // Cargar el logo (ajústalo a la ruta correcta o URL de GitHub)
-                const logoSrc = 'Logo.jpg'; // Cambia esto si está en GitHub, ej: 'https://raw.githubusercontent.com/usuario/repositorio/main/Logo.jpg'
+                // Cargar el logo desde una URL pública de ejemplo (reemplaza con tu URL de GitHub)
+                const logoSrc = 'https://via.placeholder.com/135x65'; // URL de prueba, cámbiala por 'Logo.jpg' o tu URL de GitHub
                 const logo = await loadImage(logoSrc);
 
                 // Generar el contenido del PDF con el logo
@@ -165,7 +166,7 @@
                 doc.save("cotizacion_richy_entertainment.pdf");
             } catch (error) {
                 console.error(error.message);
-                // Generar el PDF sin logo si falla la carga
+                // Generar el PDF sin logo si falla
                 generatePDFContent(doc, null);
                 doc.save("cotizacion_richy_entertainment.pdf");
             }
@@ -179,10 +180,10 @@
             // Agregar el logo si está disponible
             if (logo) {
                 const pageWidth = doc.internal.pageSize.getWidth();
-                const logoWidth = 135; // Ancho del logo ajustado a 135px
-                const logoHeight = 65; // Alto del logo ajustado a 65px
+                const logoWidth = 135; // Ancho del logo
+                const logoHeight = 65; // Alto del logo
                 const x = (pageWidth - logoWidth) / 2; // Centrado horizontalmente
-                doc.addImage(logo, 'JPEG', x, 5, logoWidth, logoHeight);
+                doc.addImage(logo, 'JPEG', x, 10, logoWidth, logoHeight); // Posicionado en y=10
             }
 
             // Fondo de encabezado (rectángulo azul oscuro)
@@ -206,27 +207,14 @@
             doc.text(`Folio: ${folio}`, 170, 20);
             doc.setTextColor(33, 33, 33); // Restaurar color
 
-            // Título "COTIZACIÓN" centrado con sombra
-            doc.setFontSize(18);
-            doc.setFont("Helvetica", "bold");
-            const title = "COTIZACIÓN";
-            const titleWidth = doc.getTextWidth(title);
-            const pageWidth = doc.internal.pageSize.getWidth();
-            doc.setTextColor(33, 62, 99); // Azul oscuro para el título
-            doc.text(title, (pageWidth - titleWidth) / 2, 45);
-
-            // Sombra para el título
-            doc.setTextColor(200, 200, 200); // Sombra gris clara
-            doc.text(title, (pageWidth - titleWidth) / 2 + 0.5, 45 + 0.5);
-            doc.setTextColor(33, 62, 99); // Restaurar color
-
-            // Línea decorativa debajo del título
+            // Eliminado el título "COTIZACIÓN" y su sombra para priorizar el logo
+            // Línea decorativa debajo del espacio del logo
             doc.setDrawColor(33, 150, 243); // Línea azul
             doc.setLineWidth(0.3);
-            doc.line(10, 50, 200, 50);
+            doc.line(10, 80, 200, 80); // Ajustado para dejar espacio al logo
 
             // Tabla de ítems
-            let y = 80; // Ajustado para dar espacio al logo más grande
+            let y = 90; // Ajustado para dar espacio al logo
             const tableData = [];
             const rows = document.querySelectorAll('#items tbody tr');
             rows.forEach(row => {
@@ -240,7 +228,7 @@
                 }
             });
 
-            // Generar tabla con autoTable (estilo mejorado)
+            // Generar tabla con autoTable
             doc.autoTable({
                 head: [['Unidad', 'Concepto', 'Vehículo', 'P.U.', 'Precio']],
                 body: tableData,
@@ -275,46 +263,44 @@
                     3: { cellWidth: 30, halign: 'right' }, // P.U.
                     4: { cellWidth: 30, halign: 'right' } // Precio
                 },
-                margin: { top: 80 } // Ajustado para el logo más grande
+                margin: { top: 90 } // Ajustado para el logo
             });
 
             // Posición después de la tabla
             y = doc.lastAutoTable.finalY + 10;
 
-            // Impuestos y Total (en un cuadro destacado)
+            // Impuestos y Total
             const taxRate = document.getElementById('tax').value || 0;
             const total = document.getElementById('total').innerText;
 
-            // Cuadro de fondo para impuestos y total
             doc.setFillColor(240, 245, 255); // Fondo azul claro
-            doc.rect(130, y - 5, 70, 20, 'F'); // Cuadro alrededor de impuestos y total
+            doc.rect(130, y - 5, 70, 20, 'F');
             doc.setDrawColor(33, 150, 243);
             doc.setLineWidth(0.3);
-            doc.rect(130, y - 5, 70, 20); // Borde del cuadro
+            doc.rect(130, y - 5, 70, 20);
 
             doc.setFontSize(10);
             doc.setFont("Helvetica", "bold");
-            doc.setTextColor(33, 62, 99); // Azul oscuro
+            doc.setTextColor(33, 62, 99);
             doc.text(`Impuestos: ${taxRate}%`, 135, y);
             y += 8;
             doc.text(`Total: ${total}`, 135, y);
-            doc.setTextColor(33, 33, 33); // Restaurar color
+            doc.setTextColor(33, 33, 33);
 
-            // Línea divisoria antes de los datos del cliente y vendedor
+            // Línea divisoria
             y += 10;
-            doc.setDrawColor(33, 150, 243); // Línea azul
+            doc.setDrawColor(33, 150, 243);
             doc.setLineWidth(0.5);
             doc.line(10, y, 200, y);
             y += 10;
 
-            // Datos del cliente (izquierda) con fondo
+            // Datos del cliente
             const clientName = document.getElementById('client-name').value || 'Nombre del Cliente';
             const clientCity = document.getElementById('client-city').value || 'Ciudad';
             const clientPhone = document.getElementById('client-phone').value || 'Teléfono';
             const clientEmail = document.getElementById('client-email').value || 'Email';
 
-            // Fondo para datos del cliente
-            doc.setFillColor(245, 245, 245); // Fondo gris claro
+            doc.setFillColor(245, 245, 245);
             doc.rect(10, y - 5, 90, 35, 'F');
             doc.setDrawColor(200, 200, 200);
             doc.rect(10, y - 5, 90, 35);
@@ -334,9 +320,9 @@
             y += 5;
             doc.text(`Email: ${clientEmail}`, 15, y);
 
-            // Datos del vendedor (derecha) con fondo
-            y -= 20; // Volver a la posición inicial para alinear con los datos del cliente
-            doc.setFillColor(245, 245, 245); // Fondo gris claro
+            // Datos del vendedor
+            y -= 20;
+            doc.setFillColor(245, 245, 245);
             doc.rect(110, y - 5, 90, 55, 'F');
             doc.setDrawColor(200, 200, 200);
             doc.rect(110, y - 5, 90, 55);
@@ -372,18 +358,16 @@
             y += 5;
             doc.text("Clabe Interbancaria: 014180655104187070", 115, y);
 
-            // Pie de página con fondo
-            doc.setFillColor(33, 62, 99); // Fondo azul oscuro
-            doc.rect(0, 270, 210, 30, 'F'); // Rectángulo de fondo para el pie de página
+            // Pie de página
+            doc.setFillColor(33, 62, 99);
+            doc.rect(0, 270, 210, 30, 'F');
 
-            // Línea decorativa en el pie de página
-            doc.setDrawColor(255, 215, 0); // Línea dorada
+            doc.setDrawColor(255, 215, 0);
             doc.setLineWidth(0.5);
             doc.line(10, 270, 200, 270);
 
-            // Texto del pie de página
             doc.setFontSize(8);
-            doc.setTextColor(255, 255, 255); // Texto blanco
+            doc.setTextColor(255, 255, 255);
             doc.text("© 2025 Richy Entertainment S.A.S. de C.V. | Todos los derechos reservados", 10, 285);
             doc.text("Generado el: " + new Date().toLocaleDateString('es-MX'), 160, 285);
         }
