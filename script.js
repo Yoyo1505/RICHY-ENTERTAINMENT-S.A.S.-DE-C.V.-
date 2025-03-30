@@ -1,4 +1,4 @@
-<!DOCTYPE<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -37,12 +37,21 @@
             margin-bottom: 30px;
             padding-bottom: 20px;
             border-bottom: 2px solid var(--rojo);
+            position: relative;
         }
         
         .logo {
             width: 180px;
             height: auto;
             margin-right: 30px;
+        }
+        
+        .small-logo {
+            width: 30px;
+            height: auto;
+            position: absolute;
+            top: 25px;
+            right: 25px;
         }
         
         .titulo {
@@ -196,6 +205,7 @@
                 <h1>Richy Entertainment</h1>
                 <p>Sistema de Generación de Cotizaciones</p>
             </div>
+            <img class="small-logo" src="logo.png" alt="Small Logo">
         </div>
 
         <div class="form-section">
@@ -291,29 +301,47 @@
     <script>
         const { jsPDF } = window.jspdf;
         let logoData = null;
+        let smallLogoData = null;
 
         function preloadLogo() {
-            return new Promise((resolve, reject) => {
-                const logo = document.getElementById('logo');
-                const img = new Image();
-                img.crossOrigin = "Anonymous";
-                img.src = logo.src;
-                
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-                    logoData = canvas.toDataURL('image/png');
-                    resolve();
-                };
-                
-                img.onerror = function() {
-                    console.log("Logo no cargado, se usará texto alternativo");
-                    resolve();
-                };
-            });
+            return Promise.all([
+                new Promise((resolve) => {
+                    const logo = document.getElementById('logo');
+                    const img = new Image();
+                    img.crossOrigin = "Anonymous";
+                    img.src = logo.src;
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        logoData = canvas.toDataURL('image/png');
+                        resolve();
+                    };
+                    img.onerror = () => {
+                        console.log("Main logo not loaded, using fallback");
+                        resolve();
+                    };
+                }),
+                new Promise((resolve) => {
+                    const img = new Image();
+                    img.src = 'logo.png';
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        smallLogoData = canvas.toDataURL('image/png');
+                        resolve();
+                    };
+                    img.onerror = () => {
+                        console.log("Small logo not loaded, skipping");
+                        resolve();
+                    };
+                })
+            ]);
         }
 
         preloadLogo();
@@ -433,7 +461,6 @@
             const pageWidth = doc.internal.pageSize.getWidth() - marginLeft - marginRight;
             const pageHeight = doc.internal.pageSize.getHeight();
 
-            // Encabezado estilizado
             function addHeader() {
                 if (logoData) {
                     doc.setFillColor(0, 35, 102);
@@ -447,6 +474,10 @@
                     const logoHeight = (document.getElementById('logo').naturalHeight / document.getElementById('logo').naturalWidth) * logoWidth;
                     doc.addImage(logoData, 'PNG', marginLeft + 5, 10, logoWidth, logoHeight);
                     
+                    if (smallLogoData) {
+                        doc.addImage(smallLogoData, 'PNG', doc.internal.pageSize.getWidth() - marginRight - 15, 10, 10, 10);
+                    }
+
                     doc.setFont("times", "italic");
                     doc.setFontSize(12);
                     doc.setTextColor(220, 220, 220);
@@ -481,7 +512,6 @@
 
             const headerHeight = addHeader();
 
-            // Datos de folio y fecha
             const folio = document.getElementById('folio-number').value || 'Sin folio';
             const date = new Date().toLocaleDateString('es-MX', {
                 year: 'numeric',
@@ -495,7 +525,6 @@
             doc.text(`Folio: ${folio}`, marginLeft, headerHeight + 5);
             doc.text(`Fecha: ${date}`, doc.internal.pageSize.getWidth() - marginRight, headerHeight + 5, { align: 'right' });
 
-            // Título de la cotización (tamaño reducido)
             doc.setFont("times", "bold");
             doc.setFontSize(16);
             doc.setTextColor(0, 35, 102);
@@ -505,7 +534,6 @@
             doc.setLineWidth(0.5);
             doc.line(marginLeft + 20, headerHeight + 22, doc.internal.pageSize.getWidth() - marginRight - 20, headerHeight + 22);
 
-            // Datos del cliente
             doc.setFont("times", "bold");
             doc.setFontSize(14);
             doc.setTextColor(0, 35, 102);
@@ -530,16 +558,15 @@
             doc.text(`Teléfono: ${clientPhone}`, marginLeft + 5, headerHeight + 64);
             doc.text(`Email: ${clientEmail}`, marginLeft + 5, headerHeight + 71);
 
-            // Tabla de ítems
             const tableData = [];
             const rows = document.querySelectorAll('#items tbody tr');
 
             rows.forEach(row => {
-                const quantity = row.querySelector('.unit').value || '1';
+                const quantity = parseFloat(row.querySelector('.unit').value).toLocaleString('en-US') || '1';
                 const concept = 'Servicio de Transportación Ejecutiva';
                 const item = row.cells[2].textContent;
                 const unitPrice = parseFloat(row.querySelector('.unit-price').value) || 0;
-                const total = parseFloat(row.querySelector('.price').textContent.replace('$', '')) || 0;
+                const total = parseFloat(row.querySelector('.price').textContent.replace('$', '').replace(/,/g, '')) || 0;
 
                 tableData.push([
                     quantity,
@@ -594,7 +621,6 @@
                 }
             });
 
-            // Anotaciones
             const notes = document.getElementById('notes').value;
             if (notes) {
                 const notesY = doc.lastAutoTable.finalY + 10;
@@ -610,45 +636,43 @@
                 doc.text(splitNotes, marginLeft, notesY + 7);
             }
 
-            // Totales con número en letras solo para el total
             const finalY = (notes ? doc.lastAutoTable.finalY + 20 + (doc.splitTextToSize(notes, pageWidth).length * 5) : doc.lastAutoTable.finalY + 20);
             const taxRate = parseFloat(document.getElementById('tax').value) || 0;
             const totalText = document.getElementById('total').textContent;
-            const total = parseFloat(totalText.replace('$', '')) || 0;
+            const total = parseFloat(totalText.replace('$', '').replace(/,/g, '')) || 0;
             const subtotal = total / (1 + taxRate/100);
             const taxAmount = total - subtotal;
             const totalInWords = numberToWordsSpanish(total);
 
             doc.setFillColor(0, 35, 102);
-            doc.roundedRect(marginLeft, finalY, pageWidth, 45, 8, 8, 'F');
+            doc.roundedRect(marginLeft, finalY, pageWidth, 35, 6, 6, 'F');
             doc.setDrawColor(255, 255, 255);
             doc.setLineWidth(0.5);
-            doc.roundedRect(marginLeft + 2, finalY + 2, pageWidth - 4, 41, 6, 6);
+            doc.roundedRect(marginLeft + 2, finalY + 2, pageWidth - 4, 31, 4, 4);
 
-            doc.setFont("times", "bold");
-            doc.setFontSize(16);
-            doc.setTextColor(255, 255, 255);
-            doc.text("Resumen de Pago", marginLeft + 10, finalY + 12);
-
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(12);
-            doc.text(`Subtotal:`, marginLeft + pageWidth - 80, finalY + 25);
-            doc.text(`$${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 10, finalY + 25, { align: 'right' });
-            
-            doc.text(`Impuestos (${taxRate.toLocaleString('en-US')}%):`, marginLeft + pageWidth - 80, finalY + 34);
-            doc.text(`$${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 10, finalY + 34, { align: 'right' });
-            
             doc.setFont("times", "bold");
             doc.setFontSize(14);
-            doc.text(`Total:`, marginLeft + pageWidth - 80, finalY + 43);
-            doc.text(`${totalText}`, marginLeft + pageWidth - 10, finalY + 43, { align: 'right' });
+            doc.setTextColor(255, 255, 255);
+            doc.text("Resumen de Pago", marginLeft + 8, finalY + 10);
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.text(`Subtotal:`, marginLeft + pageWidth - 80, finalY + 20);
+            doc.text(`$${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 10, finalY + 20, { align: 'right' });
+            
+            doc.text(`Impuestos (${taxRate.toLocaleString('en-US')}%):`, marginLeft + pageWidth - 80, finalY + 27);
+            doc.text(`$${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 10, finalY + 27, { align: 'right' });
+            
+            doc.setFont("times", "bold");
+            doc.setFontSize(12);
+            doc.text(`Total:`, marginLeft + pageWidth - 80, finalY + 34);
+            doc.text(`${totalText}`, marginLeft + pageWidth - 10, finalY + 34, { align: 'right' });
 
             doc.setFont("helvetica", "italic");
-            doc.setFontSize(10);
+            doc.setFontSize(9);
             const splitTotalInWords = doc.splitTextToSize(totalInWords, pageWidth - 20);
-            doc.text(splitTotalInWords, marginLeft + 10, finalY + 50);
+            doc.text(splitTotalInWords, marginLeft + 10, finalY + 41);
 
-            // Pie de página estilizado
             const footerY = pageHeight - 35;
             doc.setFillColor(0, 35, 102);
             doc.rect(0, footerY, doc.internal.pageSize.getWidth(), 35, 'F');
@@ -668,7 +692,6 @@
             doc.setTextColor(255, 255, 255);
             doc.text("© 2025 Richy Entertainment - Todos los derechos reservados", doc.internal.pageSize.getWidth() / 2, footerY + 28, { align: 'center' });
 
-            // Detalles decorativos laterales
             doc.setDrawColor(209, 0, 0);
             doc.setLineWidth(0.8);
             doc.line(5, 10, 5, pageHeight - 10);
