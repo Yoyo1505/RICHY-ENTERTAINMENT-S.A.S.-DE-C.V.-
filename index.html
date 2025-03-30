@@ -9,26 +9,6 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        table { 
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #2196F3;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #2196F3;
-            color: white;
-        }
-        input[type="number"] {
-            width: 80px;
-        }
-        .price {
-            text-align: right;
-        }
         button {
             margin: 10px 0;
             padding: 10px;
@@ -44,172 +24,42 @@
     <!-- Precargar el logo en el HTML -->
     <img id="logo-img" src="https://via.placeholder.com/135x65" alt="Logo">
 
-    <!-- Datos del cliente con folio -->
-    <div>
-        <label>Número de Folio: <input type="text" id="folio-number" placeholder="Folio"></label><br>
-        <label>Nombre del Cliente: <input type="text" id="client-name" placeholder="Nombre del Cliente"></label><br>
-        <label>Ciudad: <input type="text" id="client-city" placeholder="Ciudad"></label><br>
-        <label>Teléfono: <input type="text" id="client-phone" placeholder="Teléfono"></label><br>
-        <label>Email: <input type="text" id="client-email" placeholder="Email"></label><br>
-    </div>
-
-    <!-- Selección de ítems -->
-    <div>
-        <label>Agregar Ítem: 
-            <select id="item-select">
-                <option value="">Selecciona un ítem</option>
-            </select>
-        </label>
-        <button id="add-item-btn">Agregar</button>
-    </div>
-
-    <!-- Tabla de ítems -->
-    <table id="items">
-        <thead>
-            <tr>
-                <th>Unidad</th>
-                <th>Concepto</th>
-                <th>Vehículo</th>
-                <th>P.U.</th>
-                <th>Precio</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-
-    <!-- Impuestos y total -->
-    <div>
-        <label>Impuestos (%): <input type="number" id="tax" value="0" onchange="calculateTotal()"></label><br>
-        <strong>Total: <span id="total">$0.00</span></strong>
-    </div>
-
     <!-- Botón para descargar PDF -->
     <button onclick="downloadPDF()">Descargar PDF</button>
 
-    <!-- Incluir jsPDF y autoTable -->
+    <!-- Incluir solo jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script>
         const { jsPDF } = window.jspdf;
 
-        const items = [
-            "AUTOBUS 45 PLAZAS", "CAMIONETA CARGA", "CAMIONETA VAN", "COMIDAS DEL OPERADOR",
-            "COMISION BANCARIA 0.5%", "COORDINADOR", "DERECHOS DE PISO", "HORAS EXTRA",
-            "HOSPEDAJE", "MINIBUS 31 PLAZAS", "PARKING", "SEDAN", "SPRINTER", "SUBURBAN",
-            "SUBURBAN ADVANCE", "SUBURBAN BLINDADA NIVEL 3", "SUBURBAN HIGW COUNTRY",
-            "SUBURBAN LINEA ANTIGUA", "TOYOTA HIENCE", "TRAMO CARRETERO", "VAN DE CARGA", "VIATICOS"
-        ];
-
-        const itemsContainer = document.querySelector('#items tbody');
-        const itemSelect = document.getElementById('item-select');
-
-        // Llenar el menú desplegable con los conceptos
-        items.forEach(item => {
-            const option = document.createElement('option');
-            option.value = item;
-            option.textContent = item;
-            itemSelect.appendChild(option);
-        });
-
-        // Agregar evento al botón "Agregar"
-        document.getElementById('add-item-btn').addEventListener('click', addItem);
-
-        function addItem() {
-            const selectedItem = itemSelect.value;
-            if (selectedItem) {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><input type="number" placeholder="Cantidad" class="unit" onchange="calculateTotal()"></td>
-                    <td>Servicio de Transportación Ejecutiva</td>
-                    <td>${selectedItem}</td>
-                    <td><input type="number" placeholder="P.U." class="unit-price" onchange="calculateTotal()"></td>
-                    <td class="price">$0.00</td>
-                `;
-                itemsContainer.appendChild(row);
-                itemSelect.value = '';
-            } else {
-                alert('Por favor, selecciona un ítem antes de agregar.');
-            }
-        }
-
-        function calculateTotal() {
-            let total = 0;
-            const rows = document.querySelectorAll('#items tbody tr');
-            rows.forEach(row => {
-                const unitInput = parseFloat(row.querySelector('.unit').value) || 0;
-                const unitPriceInput = parseFloat(row.querySelector('.unit-price').value) || 0;
-                const priceCell = row.querySelector('.price');
-                const price = unitInput * unitPriceInput;
-                priceCell.textContent = `$${price.toFixed(2)}`;
-                total += price;
-            });
-            const taxRate = parseFloat(document.getElementById('tax').value) || 0;
-            total += total * (taxRate / 100);
-            document.getElementById('total').innerText = `$${total.toFixed(2)}`;
-        }
-
         function downloadPDF() {
-            const doc = new jsPDF();
+            try {
+                const doc = new jsPDF();
 
-            // Obtener la imagen precargada del HTML
-            const logo = document.getElementById('logo-img');
+                // Obtener la imagen precargada del HTML
+                const logo = document.getElementById('logo-img');
 
-            // Generar el contenido básico del PDF
-            let y = 10;
+                // Agregar texto básico
+                doc.setFontSize(12);
+                doc.text("Prueba de Cotización", 10, 10);
 
-            // Agregar el logo en la parte superior si está disponible
-            if (logo && logo.complete && logo.naturalWidth !== 0) {
-                const pageWidth = doc.internal.pageSize.getWidth();
-                const logoWidth = 135;
-                const logoHeight = 65;
-                const x = (pageWidth - logoWidth) / 2;
-                doc.addImage(logo, 'JPEG', x, y, logoWidth, logoHeight);
-                y += 70; // Espacio después del logo
-            } else {
-                console.log("Logo no cargado, omitiendo...");
-                y += 10; // Espacio mínimo si no hay logo
-            }
-
-            // Encabezado básico
-            doc.setFontSize(10);
-            doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 10, y);
-            const folio = document.getElementById('folio-number').value || 'Sin Folio';
-            doc.text(`Folio: ${folio}`, 170, y);
-            y += 10;
-
-            // Tabla de ítems
-            const tableData = [];
-            const rows = document.querySelectorAll('#items tbody tr');
-            rows.forEach(row => {
-                const unit = row.querySelector('.unit').value || '';
-                const concept = 'Servicio de Transportación Ejecutiva';
-                const vehicle = row.cells[2].textContent;
-                const unitPrice = row.querySelector('.unit-price').value || '';
-                const price = row.querySelector('.price').textContent || '$0.00';
-                if (unit && unitPrice && price !== '$0.00') {
-                    tableData.push([unit, concept, vehicle, unitPrice, price]);
+                // Agregar el logo si está disponible
+                if (logo && logo.complete && logo.naturalWidth !== 0) {
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const logoWidth = 135;
+                    const logoHeight = 65;
+                    const x = (pageWidth - logoWidth) / 2;
+                    doc.addImage(logo, 'JPEG', x, 20, logoWidth, logoHeight);
+                } else {
+                    doc.text("Logo no cargado", 10, 20);
                 }
-            });
 
-            doc.autoTable({
-                head: [['Unidad', 'Concepto', 'Vehículo', 'P.U.', 'Precio']],
-                body: tableData,
-                startY: y,
-                theme: 'grid'
-            });
-
-            // Posición después de la tabla
-            y = doc.lastAutoTable.finalY + 10;
-
-            // Impuestos y Total
-            const taxRate = document.getElementById('tax').value || 0;
-            const total = document.getElementById('total').innerText;
-            doc.text(`Impuestos: ${taxRate}%`, 10, y);
-            y += 10;
-            doc.text(`Total: ${total}`, 10, y);
-
-            // Guardar el PDF
-            doc.save("cotizacion_richy_entertainment.pdf");
+                // Guardar el PDF
+                doc.save("cotizacion_richy_entertainment.pdf");
+            } catch (error) {
+                console.error("Error al generar el PDF:", error);
+                alert("Hubo un error al generar el PDF. Revisa la consola para más detalles.");
+            }
         }
     </script>
 </body>
