@@ -142,21 +142,33 @@
             document.getElementById('total').innerText = `$${total.toFixed(2)}`;
         }
 
-        function downloadPDF() {
+        async function downloadPDF() {
             const doc = new jsPDF();
 
-            // Cargar el logo
-            const logo = new Image();
-            logo.src = 'Logo.jpg'; // Asegúrate de que el logo esté en el directorio o usa la URL de GitHub
-            logo.onload = function() {
+            // Función para cargar el logo como promesa
+            const loadImage = (src) => {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.src = src;
+                    img.onload = () => resolve(img);
+                    img.onerror = () => reject(new Error("Error al cargar el logo"));
+                });
+            };
+
+            try {
+                // Cargar el logo (ajústalo a la ruta correcta o URL de GitHub)
+                const logoSrc = 'Logo.jpg'; // Cambia esto si está en GitHub, ej: 'https://raw.githubusercontent.com/usuario/repositorio/main/Logo.jpg'
+                const logo = await loadImage(logoSrc);
+
+                // Generar el contenido del PDF con el logo
                 generatePDFContent(doc, logo);
                 doc.save("cotizacion_richy_entertainment.pdf");
-            };
-            logo.onerror = function() {
-                console.error("Error al cargar el logo. Generando PDF sin logo.");
-                generatePDFContent(doc, null); // Generar sin logo si falla
+            } catch (error) {
+                console.error(error.message);
+                // Generar el PDF sin logo si falla la carga
+                generatePDFContent(doc, null);
                 doc.save("cotizacion_richy_entertainment.pdf");
-            };
+            }
         }
 
         function generatePDFContent(doc, logo) {
