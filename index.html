@@ -453,6 +453,7 @@
         const { jsPDF } = window.jspdf;
         let logoData = null;
 
+        // Preload logo
         function preloadLogo() {
             return new Promise((resolve) => {
                 const img = new Image();
@@ -468,22 +469,34 @@
                 };
                 img.onerror = () => {
                     console.log("Logo not loaded, using fallback");
+                    logoData = null; // Fallback if logo fails
                     resolve();
                 };
             });
         }
 
-        preloadLogo();
+        preloadLogo().then(() => {
+            console.log("Logo preloaded successfully or skipped.");
+        }).catch(err => {
+            console.error("Error preloading logo:", err);
+        });
 
+        // Add item functionality
         const itemsContainer = document.querySelector('#items tbody');
         const itemSelect = document.getElementById('item-select');
         const addItemBtn = document.getElementById('add-item-btn');
 
-        addItemBtn.addEventListener('click', addItem);
+        if (addItemBtn) {
+            addItemBtn.addEventListener('click', addItem);
+            console.log("Add item button listener attached.");
+        } else {
+            console.error("Add item button not found!");
+        }
 
         function addItem() {
             const selectedItem = itemSelect.value;
             if (selectedItem) {
+                alert("Adding item: " + selectedItem); // Debug
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><input type="number" class="unit" min="1" value="1" onchange="calculateTotal()"></td>
@@ -496,6 +509,7 @@
                 itemsContainer.appendChild(row);
                 itemSelect.value = '';
                 calculateTotal();
+                alert("Item added successfully!"); // Debug
             } else {
                 alert('Por favor, selecciona un ítem antes de agregar.');
             }
@@ -503,8 +517,11 @@
 
         function removeItem(button) {
             const row = button.closest('tr');
-            row.remove();
-            calculateTotal();
+            if (row) {
+                row.remove();
+                calculateTotal();
+                alert("Item removed!"); // Debug
+            }
         }
 
         function calculateTotal() {
@@ -579,245 +596,251 @@
         }
 
         async function generatePDF() {
-            const doc = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
-            });
-            
-            const marginLeft = 15;
-            const marginRight = 15;
-            const pageWidth = doc.internal.pageSize.getWidth() - marginLeft - marginRight;
-            const pageHeight = doc.internal.pageSize.getHeight();
+            try {
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                
+                const marginLeft = 15;
+                const marginRight = 15;
+                const pageWidth = doc.internal.pageSize.getWidth() - marginLeft - marginRight;
+                const pageHeight = doc.internal.pageSize.getHeight();
 
-            function addHeader() {
-                if (logoData) {
-                    doc.setFillColor(13, 17, 32);
-                    doc.rect(0, 0, doc.internal.pageSize.getWidth(), 60, 'F');
-                    for (let i = 0; i < 60; i += 15) {
-                        doc.setFillColor(13 + i/5, 17 + i/5, 32 + i/5);
-                        doc.rect(0, i, doc.internal.pageSize.getWidth(), 5, 'F');
+                function addHeader() {
+                    if (logoData) {
+                        doc.setFillColor(13, 17, 32);
+                        doc.rect(0, 0, doc.internal.pageSize.getWidth(), 60, 'F');
+                        for (let i = 0; i < 60; i += 15) {
+                            doc.setFillColor(13 + i/5, 17 + i/5, 32 + i/5);
+                            doc.rect(0, i, doc.internal.pageSize.getWidth(), 5, 'F');
+                        }
+
+                        const logoWidth = 65;
+                        const logoHeight = (document.getElementById('logo').naturalHeight / document.getElementById('logo').naturalWidth) * logoWidth;
+                        doc.addImage(logoData, 'PNG', marginLeft, 5, logoWidth, logoHeight);
+
+                        doc.setFont("times", "italic");
+                        doc.setFontSize(16);
+                        doc.setTextColor(255, 255, 255);
+                        doc.text("Soluciones de Transportación Ejecutiva", marginLeft + logoWidth + 15, 40);
+                        
+                        doc.setDrawColor(201, 193, 151);
+                        doc.setLineWidth(2);
+                        doc.line(marginLeft, 60, doc.internal.pageSize.getWidth() - marginRight, 60);
+                        return 65;
+                    } else {
+                        doc.setFillColor(13, 17, 32);
+                        doc.rect(0, 0, doc.internal.pageSize.getWidth(), 60, 'F');
+                        for (let i = 0; i < 60; i += 15) {
+                            doc.setFillColor(13 + i/5, 17 + i/5, 32 + i/5);
+                            doc.rect(0, i, doc.internal.pageSize.getWidth(), 5, 'F');
+                        }
+                        
+                        doc.setFont("times", "italic");
+                        doc.setFontSize(18);
+                        doc.setTextColor(255, 255, 255);
+                        doc.text("Soluciones de Transportación Ejecutiva", doc.internal.pageSize.getWidth() / 2, 40, { align: 'center' });
+                        
+                        doc.setDrawColor(201, 193, 151);
+                        doc.setLineWidth(2);
+                        doc.line(marginLeft, 60, doc.internal.pageSize.getWidth() - marginRight, 60);
+                        return 65;
                     }
-
-                    const logoWidth = 65;
-                    const logoHeight = (document.getElementById('logo').naturalHeight / document.getElementById('logo').naturalWidth) * logoWidth;
-                    doc.addImage(logoData, 'PNG', marginLeft, 5, logoWidth, logoHeight);
-
-                    doc.setFont("times", "italic");
-                    doc.setFontSize(16);
-                    doc.setTextColor(255, 255, 255);
-                    doc.text("Soluciones de Transportación Ejecutiva", marginLeft + logoWidth + 15, 40);
-                    
-                    doc.setDrawColor(201, 193, 151);
-                    doc.setLineWidth(2);
-                    doc.line(marginLeft, 60, doc.internal.pageSize.getWidth() - marginRight, 60);
-                    return 65;
-                } else {
-                    doc.setFillColor(13, 17, 32);
-                    doc.rect(0, 0, doc.internal.pageSize.getWidth(), 60, 'F');
-                    for (let i = 0; i < 60; i += 15) {
-                        doc.setFillColor(13 + i/5, 17 + i/5, 32 + i/5);
-                        doc.rect(0, i, doc.internal.pageSize.getWidth(), 5, 'F');
-                    }
-                    
-                    doc.setFont("times", "italic");
-                    doc.setFontSize(18);
-                    doc.setTextColor(255, 255, 255);
-                    doc.text("Soluciones de Transportación Ejecutiva", doc.internal.pageSize.getWidth() / 2, 40, { align: 'center' });
-                    
-                    doc.setDrawColor(201, 193, 151);
-                    doc.setLineWidth(2);
-                    doc.line(marginLeft, 60, doc.internal.pageSize.getWidth() - marginRight, 60);
-                    return 65;
                 }
-            }
 
-            const headerHeight = addHeader();
+                const headerHeight = addHeader();
 
-            const folio = document.getElementById('folio-number').value || 'Sin folio';
-            const date = new Date().toLocaleDateString('es-MX', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(11);
-            doc.setTextColor(51, 51, 51);
-            doc.text(`Folio: ${folio}`, marginLeft, headerHeight + 5);
-            doc.text(`Fecha: ${date}`, doc.internal.pageSize.getWidth() - marginRight, headerHeight + 5, { align: 'right' });
-
-            doc.setFont("times", "bold");
-            doc.setFontSize(22);
-            doc.setTextColor(13, 17, 32);
-            doc.text("Cotización", doc.internal.pageSize.getWidth() / 2, headerHeight + 20, { align: 'center' });
-            
-            doc.setDrawColor(201, 193, 151);
-            doc.setLineWidth(1);
-            doc.line(marginLeft + 30, headerHeight + 25, doc.internal.pageSize.getWidth() - marginRight - 30, headerHeight + 25);
-
-            doc.setFont("times", "bold");
-            doc.setFontSize: 18;
-            doc.setTextColor(13, 17, 32);
-            doc.text("Datos del Cliente", marginLeft, headerHeight + 40);
-
-            const clientName = document.getElementById('client-name').value || 'No especificado';
-            const clientCity = document.getElementById('client-city').value || 'No especificado';
-            const clientPhone = document.getElementById('client-phone').value || 'No especificado';
-            const clientEmail = document.getElementById('client-email').value || 'No especificado';
-
-            doc.setFillColor(255, 255, 255);
-            doc.rect(marginLeft, headerHeight + 50, pageWidth, 60, 'F');
-            doc.setDrawColor(176, 190, 197);
-            doc.setLineWidth(0.5);
-            doc.rect(marginLeft, headerHeight + 50, pageWidth, 60);
-
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize: 13;
-            doc.setTextColor(51, 51, 51);
-            doc.text(`Nombre: ${clientName}`, marginLeft + 15, headerHeight + 65);
-            doc.text(`Ciudad: ${clientCity}`, marginLeft + 15, headerHeight + 75);
-            doc.text(`Teléfono: ${clientPhone}`, marginLeft + 15, headerHeight + 85);
-            doc.text(`Email: ${clientEmail}`, marginLeft + 15, headerHeight + 95);
-
-            const tableData = [];
-            const rows = document.querySelectorAll('#items tbody tr');
-
-            rows.forEach(row => {
-                const quantity = parseFloat(row.querySelector('.unit').value).toLocaleString('en-US') || '1';
-                const concept = 'Servicio de Transportación Ejecutiva';
-                const item = row.cells[2].textContent;
-                const unitPrice = parseFloat(row.querySelector('.unit-price').value) || 0;
-                const total = parseFloat(row.querySelector('.price').textContent.replace('$', '').replace(/,/g, '')) || 0;
-
-                tableData.push([
-                    quantity,
-                    concept,
-                    item,
-                    `$${unitPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
-                    `$${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
-                ]);
-            });
-
-            doc.autoTable({
-                head: [['Cant.', 'Concepto', 'Descripción', 'P. Unitario', 'Total']],
-                body: tableData,
-                startY: headerHeight + 115,
-                headStyles: {
-                    fillColor: [13, 17, 32],
-                    textColor: [255, 255, 255],
-                    fontSize: 13,
-                    font: "times",
-                    fontStyle: 'bold',
-                    halign: 'center',
-                    cellPadding: 6
-                },
-                bodyStyles: {
-                    fontSize: 12,
-                    textColor: [51, 51, 51],
-                    font: "helvetica"
-                },
-                columnStyles: {
-                    0: { cellWidth: 25, halign: 'center' },
-                    1: { cellWidth: 50, halign: 'left' },
-                    2: { cellWidth: 70, halign: 'left' },
-                    3: { cellWidth: 40, halign: 'right' },
-                    4: { cellWidth: 40, halign: 'right' }
-                },
-                margin: { left: marginLeft, right: marginRight },
-                styles: {
-                    cellPadding: 5,
-                    lineWidth: 0.3,
-                    lineColor: [201, 193, 151],
-                    overflow: 'linebreak'
-                },
-                alternateRowStyles: {
-                    fillColor: [255, 255, 255]
-                },
-                didDrawPage: function(data) {
-                    const pageCount = doc.internal.getNumberOfPages();
-                    doc.setFont("helvetica", "italic");
-                    doc.setFontSize: 9;
-                    doc.setTextColor(51, 51, 51);
-                    doc.text(`Página ${data.pageNumber} de ${pageCount}`, doc.internal.pageSize.getWidth() - marginRight - 15, pageHeight - 15, { align: 'right' });
-
-                    doc.setDrawColor(201, 193, 151);
-                    doc.setLineWidth(0.5);
-                    doc.line(marginLeft, 10, marginLeft, pageHeight - 10);
-                    doc.line(doc.internal.pageSize.getWidth() - marginRight, 10, doc.internal.pageSize.getWidth() - marginRight, pageHeight - 10);
-                }
-            });
-
-            const notes = document.getElementById('notes').value;
-            if (notes) {
-                const notesY = doc.lastAutoTable.finalY + 20;
-                doc.setFont("times", "bold");
-                doc.setFontSize: 15;
-                doc.setTextColor(13, 17, 32);
-                doc.text("Anotaciones", marginLeft, notesY);
+                const folio = document.getElementById('folio-number').value || 'Sin folio';
+                const date = new Date().toLocaleDateString('es-MX', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
 
                 doc.setFont("helvetica", "normal");
-                doc.setFontSize: 12;
+                doc.setFontSize(11);
                 doc.setTextColor(51, 51, 51);
-                const splitNotes = doc.splitTextToSize(notes, pageWidth - 30);
-                doc.text(splitNotes, marginLeft + 15, notesY + 10);
+                doc.text(`Folio: ${folio}`, marginLeft, headerHeight + 5);
+                doc.text(`Fecha: ${date}`, doc.internal.pageSize.getWidth() - marginRight, headerHeight + 5, { align: 'right' });
+
+                doc.setFont("times", "bold");
+                doc.setFontSize(22);
+                doc.setTextColor(13, 17, 32);
+                doc.text("Cotización", doc.internal.pageSize.getWidth() / 2, headerHeight + 20, { align: 'center' });
+                
+                doc.setDrawColor(201, 193, 151);
+                doc.setLineWidth(1);
+                doc.line(marginLeft + 30, headerHeight + 25, doc.internal.pageSize.getWidth() - marginRight - 30, headerHeight + 25);
+
+                doc.setFont("times", "bold");
+                doc.setFontSize(18);
+                doc.setTextColor(13, 17, 32);
+                doc.text("Datos del Cliente", marginLeft, headerHeight + 40);
+
+                const clientName = document.getElementById('client-name').value || 'No especificado';
+                const clientCity = document.getElementById('client-city').value || 'No especificado';
+                const clientPhone = document.getElementById('client-phone').value || 'No especificado';
+                const clientEmail = document.getElementById('client-email').value || 'No especificado';
+
+                doc.setFillColor(255, 255, 255);
+                doc.rect(marginLeft, headerHeight + 50, pageWidth, 60, 'F');
+                doc.setDrawColor(176, 190, 197);
+                doc.setLineWidth(0.5);
+                doc.rect(marginLeft, headerHeight + 50, pageWidth, 60);
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(13);
+                doc.setTextColor(51, 51, 51);
+                doc.text(`Nombre: ${clientName}`, marginLeft + 15, headerHeight + 65);
+                doc.text(`Ciudad: ${clientCity}`, marginLeft + 15, headerHeight + 75);
+                doc.text(`Teléfono: ${clientPhone}`, marginLeft + 15, headerHeight + 85);
+                doc.text(`Email: ${clientEmail}`, marginLeft + 15, headerHeight + 95);
+
+                const tableData = [];
+                const rows = document.querySelectorAll('#items tbody tr');
+
+                rows.forEach(row => {
+                    const quantity = parseFloat(row.querySelector('.unit').value).toLocaleString('en-US') || '1';
+                    const concept = 'Servicio de Transportación Ejecutiva';
+                    const item = row.cells[2].textContent;
+                    const unitPrice = parseFloat(row.querySelector('.unit-price').value) || 0;
+                    const total = parseFloat(row.querySelector('.price').textContent.replace('$', '').replace(/,/g, '')) || 0;
+
+                    tableData.push([
+                        quantity,
+                        concept,
+                        item,
+                        `$${unitPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+                        `$${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
+                    ]);
+                });
+
+                doc.autoTable({
+                    head: [['Cant.', 'Concepto', 'Descripción', 'P. Unitario', 'Total']],
+                    body: tableData,
+                    startY: headerHeight + 115,
+                    headStyles: {
+                        fillColor: [13, 17, 32],
+                        textColor: [255, 255, 255],
+                        fontSize: 13,
+                        font: "times",
+                        fontStyle: 'bold',
+                        halign: 'center',
+                        cellPadding: 6
+                    },
+                    bodyStyles: {
+                        fontSize: 12,
+                        textColor: [51, 51, 51],
+                        font: "helvetica"
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 25, halign: 'center' },
+                        1: { cellWidth: 50, halign: 'left' },
+                        2: { cellWidth: 70, halign: 'left' },
+                        3: { cellWidth: 40, halign: 'right' },
+                        4: { cellWidth: 40, halign: 'right' }
+                    },
+                    margin: { left: marginLeft, right: marginRight },
+                    styles: {
+                        cellPadding: 5,
+                        lineWidth: 0.3,
+                        lineColor: [201, 193, 151],
+                        overflow: 'linebreak'
+                    },
+                    alternateRowStyles: {
+                        fillColor: [255, 255, 255]
+                    },
+                    didDrawPage: function(data) {
+                        const pageCount = doc.internal.getNumberOfPages();
+                        doc.setFont("helvetica", "italic");
+                        doc.setFontSize(9);
+                        doc.setTextColor(51, 51, 51);
+                        doc.text(`Página ${data.pageNumber} de ${pageCount}`, doc.internal.pageSize.getWidth() - marginRight - 15, pageHeight - 15, { align: 'right' });
+
+                        doc.setDrawColor(201, 193, 151);
+                        doc.setLineWidth(0.5);
+                        doc.line(marginLeft, 10, marginLeft, pageHeight - 10);
+                        doc.line(doc.internal.pageSize.getWidth() - marginRight, 10, doc.internal.pageSize.getWidth() - marginRight, pageHeight - 10);
+                    }
+                });
+
+                const notes = document.getElementById('notes').value;
+                if (notes) {
+                    const notesY = doc.lastAutoTable.finalY + 20;
+                    doc.setFont("times", "bold");
+                    doc.setFontSize(15);
+                    doc.setTextColor(13, 17, 32);
+                    doc.text("Anotaciones", marginLeft, notesY);
+
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(12);
+                    doc.setTextColor(51, 51, 51);
+                    const splitNotes = doc.splitTextToSize(notes, pageWidth - 30);
+                    doc.text(splitNotes, marginLeft + 15, notesY + 10);
+                }
+
+                const finalY = (notes ? doc.lastAutoTable.finalY + 40 + (doc.splitTextToSize(notes, pageWidth - 30).length * 7) : doc.lastAutoTable.finalY + 40);
+                const taxRate = parseFloat(document.getElementById('tax').value) || 0;
+                const totalText = document.getElementById('total').textContent;
+                const total = parseFloat(totalText.replace('$', '').replace(/,/g, '')) || 0;
+                const subtotal = total / (1 + taxRate/100);
+                const taxAmount = total - subtotal;
+                const totalInWords = numberToWordsSpanish(total);
+
+                doc.setFillColor(13, 17, 32);
+                doc.rect(marginLeft, finalY, pageWidth, 60, 'F');
+                doc.setDrawColor(176, 190, 197);
+                doc.setLineWidth(0.5);
+                doc.rect(marginLeft + 5, finalY + 5, pageWidth - 10, 50);
+
+                doc.setFont("times", "bold");
+                doc.setFontSize(18);
+                doc.setTextColor(255, 255, 255);
+                doc.text("Resumen de Pago", marginLeft + 15, finalY + 20);
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(13);
+                doc.text(`Subtotal:`, marginLeft + pageWidth - 100, finalY + 30);
+                doc.text(`$${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 20, finalY + 30, { align: 'right' });
+                
+                doc.text(`Impuestos (${taxRate.toLocaleString('en-US')}%):`, marginLeft + pageWidth - 100, finalY + 40);
+                doc.text(`$${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 20, finalY + 40, { align: 'right' });
+                
+                doc.setFont("times", "bold");
+                doc.setFontSize(16);
+                doc.text(`Total:`, marginLeft + pageWidth - 100, finalY + 50);
+                doc.text(`${totalText}`, marginLeft + pageWidth - 20, finalY + 50, { align: 'right' });
+
+                doc.setFont("helvetica", "italic");
+                doc.setFontSize(11);
+                const splitTotalInWords = doc.splitTextToSize(totalInWords, pageWidth - 40);
+                doc.text(splitTotalInWords, marginLeft + 15, finalY + 65);
+
+                const footerY = pageHeight - 50;
+                doc.setFillColor(13, 17, 32);
+                doc.rect(0, footerY, doc.internal.pageSize.getWidth(), 50, 'F');
+                for (let i = 0; i < 50; i += 15) {
+                    doc.setFillColor(13 + i/5, 17 + i/5, 32 + i/5);
+                    doc.rect(0, footerY + i, doc.internal.pageSize.getWidth(), 5, 'F');
+                }
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9);
+                doc.setTextColor(201, 193, 151);
+                doc.text("Richy Entertainment S.A.S. de C.V.  •  Tel: 52 55 7341 3969  •  Email: transpo_rick@hotmail.com", doc.internal.pageSize.getWidth() / 2, footerY + 20, { align: 'center' });
+                doc.text("Banco: Santander  •  Cuenta: 65-51041870-7  •  CLABE: 014180655104187070", doc.internal.pageSize.getWidth() / 2, footerY + 28, { align: 'center' });
+                doc.text("© 2025 Richy Entertainment - Todos los derechos reservados", doc.internal.pageSize.getWidth() / 2, footerY + 36, { align: 'center' });
+
+                createPrintPreview(doc);
+                const fileName = `Cotización_${folio}_${clientName.replace(/[^a-z0-9]/gi, '_')}.pdf`;
+                doc.save(fileName);
+                alert("PDF generated successfully!"); // Debug
+            } catch (error) {
+                console.error("Error generating PDF:", error);
+                alert("Error generating PDF. Check console for details.");
             }
-
-            const finalY = (notes ? doc.lastAutoTable.finalY + 40 + (doc.splitTextToSize(notes, pageWidth - 30).length * 7) : doc.lastAutoTable.finalY + 40);
-            const taxRate = parseFloat(document.getElementById('tax').value) || 0;
-            const totalText = document.getElementById('total').textContent;
-            const total = parseFloat(totalText.replace('$', '').replace(/,/g, '')) || 0;
-            const subtotal = total / (1 + taxRate/100);
-            const taxAmount = total - subtotal;
-            const totalInWords = numberToWordsSpanish(total);
-
-            doc.setFillColor(13, 17, 32);
-            doc.rect(marginLeft, finalY, pageWidth, 60, 'F');
-            doc.setDrawColor(176, 190, 197);
-            doc.setLineWidth(0.5);
-            doc.rect(marginLeft + 5, finalY + 5, pageWidth - 10, 50);
-
-            doc.setFont("times", "bold");
-            doc.setFontSize: 18;
-            doc.setTextColor(255, 255, 255);
-            doc.text("Resumen de Pago", marginLeft + 15, finalY + 20);
-
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize: 13;
-            doc.text(`Subtotal:`, marginLeft + pageWidth - 100, finalY + 30);
-            doc.text(`$${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 20, finalY + 30, { align: 'right' });
-            
-            doc.text(`Impuestos (${taxRate.toLocaleString('en-US')}%):`, marginLeft + pageWidth - 100, finalY + 40);
-            doc.text(`$${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 20, finalY + 40, { align: 'right' });
-            
-            doc.setFont("times", "bold");
-            doc.setFontSize: 16;
-            doc.text(`Total:`, marginLeft + pageWidth - 100, finalY + 50);
-            doc.text(`${totalText}`, marginLeft + pageWidth - 20, finalY + 50, { align: 'right' });
-
-            doc.setFont("helvetica", "italic");
-            doc.setFontSize: 11;
-            const splitTotalInWords = doc.splitTextToSize(totalInWords, pageWidth - 40);
-            doc.text(splitTotalInWords, marginLeft + 15, finalY + 65);
-
-            const footerY = pageHeight - 50;
-            doc.setFillColor(13, 17, 32);
-            doc.rect(0, footerY, doc.internal.pageSize.getWidth(), 50, 'F');
-            for (let i = 0; i < 50; i += 15) {
-                doc.setFillColor(13 + i/5, 17 + i/5, 32 + i/5);
-                doc.rect(0, footerY + i, doc.internal.pageSize.getWidth(), 5, 'F');
-            }
-
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize: 9;
-            doc.setTextColor(201, 193, 151);
-            doc.text("Richy Entertainment S.A.S. de C.V.  •  Tel: 52 55 7341 3969  •  Email: transpo_rick@hotmail.com", doc.internal.pageSize.getWidth() / 2, footerY + 20, { align: 'center' });
-            doc.text("Banco: Santander  •  Cuenta: 65-51041870-7  •  CLABE: 014180655104187070", doc.internal.pageSize.getWidth() / 2, footerY + 28, { align: 'center' });
-            doc.text("© 2025 Richy Entertainment - Todos los derechos reservados", doc.internal.pageSize.getWidth() / 2, footerY + 36, { align: 'center' });
-
-            createPrintPreview(doc);
-            const fileName = `Cotización_${folio}_${clientName.replace(/[^a-z0-9]/gi, '_')}.pdf`;
-            doc.save(fileName);
         }
 
         function createPrintPreview(pdf) {
