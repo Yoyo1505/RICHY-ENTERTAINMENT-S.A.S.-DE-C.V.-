@@ -93,6 +93,13 @@
             resize: vertical;
         }
         
+        .item-notes {
+            width: 100%;
+            max-width: none;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+        
         button {
             background-color: var(--azul-marino);
             color: white;
@@ -125,6 +132,7 @@
         td {
             padding: 10px;
             border-bottom: 1px solid #ddd;
+            vertical-align: top;
         }
         
         tr:nth-child(even) {
@@ -251,7 +259,7 @@
                 <button id="add-item-btn">Agregar Ítem</button>
             </div>
             <div class="form-group">
-                <label for="notes">Anotaciones</label>
+                <label for="notes">Anotaciones Generales</label>
                 <textarea id="notes" rows="3" placeholder="Escribe aquí notas adicionales..."></textarea>
             </div>
 
@@ -331,7 +339,7 @@
                 row.innerHTML = `
                     <td><input type="number" class="unit" min="1" value="1" onchange="calculateTotal()"></td>
                     <td>Servicio de Transportación Ejecutiva</td>
-                    <td>${selectedItem}</td>
+                    <td>${selectedItem}<br><textarea class="item-notes" rows="2" placeholder="Notas del ítem..."></textarea></td>
                     <td><input type="number" class="unit-price" min="0" step="0.01" value="0" onchange="calculateTotal()"></td>
                     <td class="price">$0.00</td>
                     <td><button class="remove-btn" onclick="removeItem(this)">Eliminar</button></td>
@@ -495,7 +503,7 @@
             doc.text(`Folio: ${folio}`, marginLeft, headerHeight + 5);
             doc.text(`Fecha: ${date}`, doc.internal.pageSize.getWidth() - marginRight, headerHeight + 5, { align: 'right' });
 
-            // Título de la cotización (tamaño reducido)
+            // Título de la cotización
             doc.setFont("times", "bold");
             doc.setFontSize(16);
             doc.setTextColor(0, 35, 102);
@@ -530,21 +538,22 @@
             doc.text(`Teléfono: ${clientPhone}`, marginLeft + 5, headerHeight + 64);
             doc.text(`Email: ${clientEmail}`, marginLeft + 5, headerHeight + 71);
 
-            // Tabla de ítems
+            // Tabla de ítems con notas
             const tableData = [];
             const rows = document.querySelectorAll('#items tbody tr');
 
             rows.forEach(row => {
                 const quantity = row.querySelector('.unit').value || '1';
                 const concept = 'Servicio de Transportación Ejecutiva';
-                const item = row.cells[2].textContent;
+                const item = row.cells[2].textContent.split('\n')[0]; // Solo el nombre del ítem
+                const notes = row.querySelector('.item-notes').value || '';
                 const unitPrice = parseFloat(row.querySelector('.unit-price').value) || 0;
                 const total = parseFloat(row.querySelector('.price').textContent.replace('$', '')) || 0;
 
                 tableData.push([
                     quantity,
                     concept,
-                    item,
+                    `${item}${notes ? '\nNotas: ' + notes : ''}`,
                     `$${unitPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
                     `$${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
                 ]);
@@ -594,14 +603,14 @@
                 }
             });
 
-            // Anotaciones
+            // Anotaciones generales
             const notes = document.getElementById('notes').value;
             if (notes) {
                 const notesY = doc.lastAutoTable.finalY + 10;
                 doc.setFont("times", "bold");
                 doc.setFontSize(12);
                 doc.setTextColor(0, 35, 102);
-                doc.text("Anotaciones", marginLeft, notesY);
+                doc.text("Anotaciones Generales", marginLeft, notesY);
 
                 doc.setFont("helvetica", "normal");
                 doc.setFontSize(10);
@@ -610,7 +619,7 @@
                 doc.text(splitNotes, marginLeft, notesY + 7);
             }
 
-            // Totales con número en letras solo para el total
+            // Totales con número y letra
             const finalY = (notes ? doc.lastAutoTable.finalY + 20 + (doc.splitTextToSize(notes, pageWidth).length * 5) : doc.lastAutoTable.finalY + 20);
             const taxRate = parseFloat(document.getElementById('tax').value) || 0;
             const totalText = document.getElementById('total').textContent;
@@ -620,33 +629,27 @@
             const totalInWords = numberToWordsSpanish(total);
 
             doc.setFillColor(0, 35, 102);
-            doc.roundedRect(marginLeft, finalY, pageWidth, 45, 8, 8, 'F');
+            doc.roundedRect(marginLeft, finalY, pageWidth, 35, 8, 8, 'F');
             doc.setDrawColor(255, 255, 255);
             doc.setLineWidth(0.5);
-            doc.roundedRect(marginLeft + 2, finalY + 2, pageWidth - 4, 41, 6, 6);
+            doc.roundedRect(marginLeft + 2, finalY + 2, pageWidth - 4, 31, 6, 6);
 
-            doc.setFont("times", "bold");
-            doc.setFontSize(16);
-            doc.setTextColor(255, 255, 255);
-            doc.text("Resumen de Pago", marginLeft + 10, finalY + 12);
-
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(12);
-            doc.text(`Subtotal:`, marginLeft + pageWidth - 80, finalY + 25);
-            doc.text(`$${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 10, finalY + 25, { align: 'right' });
-            
-            doc.text(`Impuestos (${taxRate.toLocaleString('en-US')}%):`, marginLeft + pageWidth - 80, finalY + 34);
-            doc.text(`$${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 10, finalY + 34, { align: 'right' });
-            
             doc.setFont("times", "bold");
             doc.setFontSize(14);
-            doc.text(`Total:`, marginLeft + pageWidth - 80, finalY + 43);
-            doc.text(`${totalText}`, marginLeft + pageWidth - 10, finalY + 43, { align: 'right' });
+            doc.setTextColor(255, 255, 255);
+            doc.text("Resumen de Pago", marginLeft + 10, finalY + 10);
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.text(`Subtotal: $${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + 10, finalY + 18);
+            doc.text(`Impuestos (${taxRate.toLocaleString('en-US')}%): $${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + 10, finalY + 24);
+            doc.setFont("times", "bold");
+            doc.text(`Total: ${totalText}`, marginLeft + 10, finalY + 30);
 
             doc.setFont("helvetica", "italic");
-            doc.setFontSize(10);
+            doc.setFontSize(9);
             const splitTotalInWords = doc.splitTextToSize(totalInWords, pageWidth - 20);
-            doc.text(splitTotalInWords, marginLeft + 10, finalY + 50);
+            doc.text(splitTotalInWords, marginLeft + 10, finalY + 36);
 
             // Pie de página estilizado
             const footerY = pageHeight - 35;
@@ -669,8 +672,7 @@
             doc.text("© 2025 Richy Entertainment - Todos los derechos reservados", doc.internal.pageSize.getWidth() / 2, footerY + 28, { align: 'center' });
 
             // Detalles decorativos laterales
-            doc.setDrawColor(209, 0, 0);
-            doc.setLineWidth(0.8);
+            doc.setDrawColor(209 ruling: 0.8;
             doc.line(5, 10, 5, pageHeight - 10);
             doc.line(doc.internal.pageSize.getWidth() - 5, 10, doc.internal.pageSize.getWidth() - 5, pageHeight - 10);
 
