@@ -6,19 +6,20 @@
     <title>Generador de Cotizaciones | Richy Entertainment</title>
     <style>
         :root {
-            --azul-marino: #002366;
-            --rojo: #d10000;
+            --azul-primario: #1a237e; /* Deep indigo blue */
+            --naranja-acentuado: #ff5722; /* Vibrant orange-red */
             --blanco: #ffffff;
-            --gris-claro: #f5f5f5;
-            --gris-oscuro: #2e2e2e;
+            --gris-claro: #f7f7f7;
+            --gris-oscuro: #212121;
+            --sombra-suave: rgba(0, 0, 0, 0.15);
         }
         
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Roboto', 'Arial', sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 30px;
             background-color: var(--gris-claro);
-            color: #333;
+            color: var(--gris-oscuro);
             line-height: 1.6;
         }
         
@@ -26,32 +27,24 @@
             max-width: 1200px;
             margin: 0 auto;
             background-color: var(--blanco);
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--sombra-suave);
         }
         
         .header {
             display: flex;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid var(--rojo);
+            margin-bottom: 40px;
+            padding-bottom: 25px;
+            border-bottom: 3px solid var(--naranja-acentuado);
             position: relative;
         }
         
         .logo {
-            width: 180px;
+            width: 240px; /* 3x the original 80px assuming previous small logo was ~80px */
             height: auto;
-            margin-right: 30px;
-        }
-        
-        .small-logo {
-            width: 30px;
-            height: auto;
-            position: absolute;
-            top: 25px;
-            right: 25px;
+            margin-right: 40px;
         }
         
         .titulo {
@@ -59,42 +52,54 @@
         }
         
         h1 {
-            color: var(--azul-marino);
+            color: var(--azul-primario);
             margin: 0;
-            font-size: 28px;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 1px;
         }
         
         h2 {
-            color: var(--azul-marino);
-            border-bottom: 2px solid var(--rojo);
-            padding-bottom: 8px;
-            margin-top: 30px;
+            color: var(--azul-primario);
+            border-bottom: 2px solid var(--naranja-acentuado);
+            padding-bottom: 10px;
+            margin-top: 35px;
+            font-size: 24px;
+            font-weight: 600;
         }
         
         .form-section {
             background-color: var(--gris-claro);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 35px;
+            border: 1px solid rgba(26, 35, 126, 0.1);
         }
         
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: var(--azul-marino);
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--azul-primario);
         }
         
         input, select, textarea {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid rgba(33, 33, 33, 0.2);
+            border-radius: 6px;
             width: 100%;
-            max-width: 300px;
+            max-width: 320px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--naranja-acentuado);
+            outline: none;
         }
         
         textarea {
@@ -103,41 +108,45 @@
         }
         
         button {
-            background-color: var(--azul-marino);
-            color: white;
+            background-color: var(--azul-primario);
+            color: var(--blanco);
             border: none;
-            padding: 12px 20px;
-            border-radius: 4px;
+            padding: 14px 25px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
-            transition: background-color 0.3s;
-            margin-top: 10px;
+            font-weight: 500;
+            transition: background-color 0.3s, transform 0.2s;
         }
         
         button:hover {
-            background-color: var(--rojo);
+            background-color: var(--naranja-acentuado);
+            transform: translateY(-2px);
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin: 25px 0;
+            border-radius: 8px;
+            overflow: hidden;
         }
         
         th {
-            background-color: var(--azul-marino);
-            color: white;
-            padding: 12px;
+            background-color: var(--azul-primario);
+            color: var(--blanco);
+            padding: 14px;
             text-align: left;
+            font-weight: 600;
         }
         
         td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
+            padding: 12px;
+            border-bottom: 1px solid rgba(33, 33, 33, 0.1);
         }
         
         tr:nth-child(even) {
-            background-color: var(--gris-claro);
+            background-color: rgba(247, 247, 247, 0.5);
         }
         
         .price {
@@ -145,35 +154,37 @@
         }
         
         .total-section {
-            background-color: var(--azul-marino);
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
+            background-color: var(--azul-primario);
+            color: var(--blanco);
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 25px;
+            box-shadow: 0 2px 10px var(--sombra-suave);
         }
         
         .total-section label {
-            color: white;
+            color: var(--blanco);
         }
         
         #total {
-            font-size: 24px;
-            font-weight: bold;
+            font-size: 28px;
+            font-weight: 700;
         }
         
         .remove-btn {
-            background-color: var(--rojo);
-            padding: 5px 10px;
+            background-color: var(--naranja-acentuado);
+            padding: 6px 12px;
             font-size: 14px;
         }
         
         .remove-btn:hover {
-            background-color: #b00000;
+            background-color: #e64a19;
+            transform: translateY(-2px);
         }
         
         .item-controls {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             align-items: center;
         }
         
@@ -200,12 +211,11 @@
 <body>
     <div class="container">
         <div class="header">
-            <img class="logo" src="https://raw.githubusercontent.com/Yoyo1505/Cotizaciones/main/logo.png" alt="Richy Entertainment" id="logo" onerror="this.src='logo.png'">
+            <img class="logo" src="logo.png" alt="Richy Entertainment" id="logo">
             <div class="titulo">
                 <h1>Richy Entertainment</h1>
                 <p>Sistema de Generación de Cotizaciones</p>
             </div>
-            <img class="small-logo" src="logo.png" alt="Small Logo">
         </div>
 
         <div class="form-section">
@@ -291,7 +301,7 @@
         </div>
 
         <button onclick="generatePDF()">Generar PDF</button>
-        <button onclick="window.print()" style="margin-left: 10px;">Imprimir</button>
+        <button onclick="window.print()" style="margin-left: 15px;">Imprimir</button>
     </div>
 
     <div id="pdf-container" style="display: none;"></div>
@@ -301,47 +311,25 @@
     <script>
         const { jsPDF } = window.jspdf;
         let logoData = null;
-        let smallLogoData = null;
 
         function preloadLogo() {
-            return Promise.all([
-                new Promise((resolve) => {
-                    const logo = document.getElementById('logo');
-                    const img = new Image();
-                    img.crossOrigin = "Anonymous";
-                    img.src = logo.src;
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
-                        logoData = canvas.toDataURL('image/png');
-                        resolve();
-                    };
-                    img.onerror = () => {
-                        console.log("Main logo not loaded, using fallback");
-                        resolve();
-                    };
-                }),
-                new Promise((resolve) => {
-                    const img = new Image();
-                    img.src = 'logo.png';
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
-                        smallLogoData = canvas.toDataURL('image/png');
-                        resolve();
-                    };
-                    img.onerror = () => {
-                        console.log("Small logo not loaded, skipping");
-                        resolve();
-                    };
-                })
-            ]);
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.src = 'logo.png';
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    logoData = canvas.toDataURL('image/png');
+                    resolve();
+                };
+                img.onerror = () => {
+                    console.log("Logo not loaded, using fallback");
+                    resolve();
+                };
+            });
         }
 
         preloadLogo();
@@ -463,49 +451,42 @@
 
             function addHeader() {
                 if (logoData) {
-                    doc.setFillColor(0, 35, 102);
+                    doc.setFillColor(26, 35, 126); // var(--azul-primario)
                     doc.rect(0, 0, doc.internal.pageSize.getWidth(), 50, 'F');
                     for (let i = 0; i < 50; i++) {
-                        doc.setFillColor(0, 35 + i, 102 + i/2);
+                        doc.setFillColor(26, 35 + i/2, 126 + i/2);
                         doc.rect(0, i, doc.internal.pageSize.getWidth(), 1, 'F');
                     }
 
-                    const logoWidth = 45;
+                    const logoWidth = 60; // 3x larger than previous small logo (20mm -> 60mm)
                     const logoHeight = (document.getElementById('logo').naturalHeight / document.getElementById('logo').naturalWidth) * logoWidth;
-                    doc.addImage(logoData, 'PNG', marginLeft + 5, 10, logoWidth, logoHeight);
-                    
-                    if (smallLogoData) {
-                        doc.addImage(smallLogoData, 'PNG', doc.internal.pageSize.getWidth() - marginRight - 15, 10, 10, 10);
-                    }
+                    doc.addImage(logoData, 'PNG', marginLeft, 5, logoWidth, logoHeight);
 
                     doc.setFont("times", "italic");
-                    doc.setFontSize(12);
-                    doc.setTextColor(220, 220, 220);
-                    doc.text("Soluciones de Transportación Ejecutiva", marginLeft + logoWidth + 15, 35);
+                    doc.setFontSize(14);
+                    doc.setTextColor(245, 245, 245);
+                    doc.text("Soluciones de Transportación Ejecutiva", marginLeft + logoWidth + 10, 35);
                     
-                    doc.setDrawColor(209, 0, 0);
-                    doc.setLineWidth(1.2);
+                    doc.setDrawColor(255, 87, 34); // var(--naranja-acentuado)
+                    doc.setLineWidth(1.5);
                     doc.line(marginLeft, 55, doc.internal.pageSize.getWidth() - marginRight, 55);
                     return 60;
                 } else {
-                    doc.setFillColor(0, 35, 102);
+                    doc.setFillColor(26, 35, 126);
                     doc.rect(0, 0, doc.internal.pageSize.getWidth(), 50, 'F');
                     for (let i = 0; i < 50; i++) {
-                        doc.setFillColor(0, 35 + i/2, 102 + i);
+                        doc.setFillColor(26, 35 + i/2, 126 + i/2);
                         doc.rect(0, i, doc.internal.pageSize.getWidth(), 1, 'F');
                     }
                     
                     doc.setFont("times", "italic");
-                    doc.setFontSize(14);
-                    doc.setTextColor(220, 220, 220);
+                    doc.setFontSize(16);
+                    doc.setTextColor(245, 245, 245);
                     doc.text("Soluciones de Transportación Ejecutiva", doc.internal.pageSize.getWidth() / 2, 38, { align: 'center' });
                     
-                    doc.setDrawColor(209, 0, 0);
+                    doc.setDrawColor(255, 87, 34);
                     doc.setLineWidth(1.5);
                     doc.line(marginLeft, 55, doc.internal.pageSize.getWidth() - marginRight, 55);
-                    
-                    doc.setFillColor(209, 0, 0);
-                    doc.circle(doc.internal.pageSize.getWidth() / 2, 55, 2, 'F');
                     return 65;
                 }
             }
@@ -520,23 +501,23 @@
             });
 
             doc.setFont("helvetica", "normal");
-            doc.setFontSize(9);
+            doc.setFontSize(10);
             doc.setTextColor(100, 100, 100);
             doc.text(`Folio: ${folio}`, marginLeft, headerHeight + 5);
             doc.text(`Fecha: ${date}`, doc.internal.pageSize.getWidth() - marginRight, headerHeight + 5, { align: 'right' });
 
             doc.setFont("times", "bold");
-            doc.setFontSize(16);
-            doc.setTextColor(0, 35, 102);
+            doc.setFontSize(18);
+            doc.setTextColor(26, 35, 126);
             doc.text("Cotización", doc.internal.pageSize.getWidth() / 2, headerHeight + 20, { align: 'center' });
             
-            doc.setDrawColor(209, 0, 0);
-            doc.setLineWidth(0.5);
+            doc.setDrawColor(255, 87, 34);
+            doc.setLineWidth(0.6);
             doc.line(marginLeft + 20, headerHeight + 22, doc.internal.pageSize.getWidth() - marginRight - 20, headerHeight + 22);
 
             doc.setFont("times", "bold");
-            doc.setFontSize(14);
-            doc.setTextColor(0, 35, 102);
+            doc.setFontSize(16);
+            doc.setTextColor(26, 35, 126);
             doc.text("Datos del Cliente", marginLeft, headerHeight + 35);
 
             const clientName = document.getElementById('client-name').value || 'No especificado';
@@ -544,15 +525,15 @@
             const clientPhone = document.getElementById('client-phone').value || 'No especificado';
             const clientEmail = document.getElementById('client-email').value || 'No especificado';
 
-            doc.setFillColor(240, 245, 250);
+            doc.setFillColor(247, 247, 247);
             doc.roundedRect(marginLeft, headerHeight + 40, pageWidth, 40, 5, 5, 'F');
-            doc.setDrawColor(0, 35, 102);
+            doc.setDrawColor(26, 35, 126);
             doc.setLineWidth(0.3);
             doc.roundedRect(marginLeft, headerHeight + 40, pageWidth, 40, 5, 5);
 
             doc.setFont("helvetica", "normal");
             doc.setFontSize(11);
-            doc.setTextColor(50, 50, 50);
+            doc.setTextColor(33, 33, 33);
             doc.text(`Nombre: ${clientName}`, marginLeft + 5, headerHeight + 50);
             doc.text(`Ciudad: ${clientCity}`, marginLeft + 5, headerHeight + 57);
             doc.text(`Teléfono: ${clientPhone}`, marginLeft + 5, headerHeight + 64);
@@ -582,7 +563,7 @@
                 body: tableData,
                 startY: headerHeight + 85,
                 headStyles: {
-                    fillColor: [0, 35, 102],
+                    fillColor: [26, 35, 126],
                     textColor: [255, 255, 255],
                     fontSize: 11,
                     font: "times",
@@ -592,7 +573,7 @@
                 },
                 bodyStyles: {
                     fontSize: 10,
-                    textColor: [50, 50, 50],
+                    textColor: [33, 33, 33],
                     font: "helvetica"
                 },
                 columnStyles: {
@@ -610,7 +591,7 @@
                     overflow: 'linebreak'
                 },
                 alternateRowStyles: {
-                    fillColor: [245, 248, 250]
+                    fillColor: [247, 247, 247]
                 },
                 didDrawPage: function(data) {
                     const pageCount = doc.internal.getNumberOfPages();
@@ -626,12 +607,12 @@
                 const notesY = doc.lastAutoTable.finalY + 10;
                 doc.setFont("times", "bold");
                 doc.setFontSize(12);
-                doc.setTextColor(0, 35, 102);
+                doc.setTextColor(26, 35, 126);
                 doc.text("Anotaciones", marginLeft, notesY);
 
                 doc.setFont("helvetica", "normal");
                 doc.setFontSize(10);
-                doc.setTextColor(50, 50, 50);
+                doc.setTextColor(33, 33, 33);
                 const splitNotes = doc.splitTextToSize(notes, pageWidth);
                 doc.text(splitNotes, marginLeft, notesY + 7);
             }
@@ -644,7 +625,7 @@
             const taxAmount = total - subtotal;
             const totalInWords = numberToWordsSpanish(total);
 
-            doc.setFillColor(0, 35, 102);
+            doc.setFillColor(26, 35, 126);
             doc.roundedRect(marginLeft, finalY, pageWidth, 35, 6, 6, 'F');
             doc.setDrawColor(255, 255, 255);
             doc.setLineWidth(0.5);
@@ -674,16 +655,16 @@
             doc.text(splitTotalInWords, marginLeft + 10, finalY + 41);
 
             const footerY = pageHeight - 35;
-            doc.setFillColor(0, 35, 102);
+            doc.setFillColor(26, 35, 126);
             doc.rect(0, footerY, doc.internal.pageSize.getWidth(), 35, 'F');
             for (let i = 0; i < 35; i++) {
-                doc.setFillColor(0, 35 + i/2, 102 + i);
+                doc.setFillColor(26, 35 + i/2, 126 + i/2);
                 doc.rect(0, footerY + i, doc.internal.pageSize.getWidth(), 1, 'F');
             }
 
             doc.setFont("helvetica", "normal");
             doc.setFontSize(7);
-            doc.setTextColor(220, 220, 220);
+            doc.setTextColor(245, 245, 245);
             doc.text("Richy Entertainment S.A.S. de C.V.  •  Teléfono: 52 55 7341 3969  •  Email: transpo_rick@hotmail.com", doc.internal.pageSize.getWidth() / 2, footerY + 12, { align: 'center' });
             doc.text("Banco: Santander  •  Cuenta: 65-51041870-7  •  CLABE: 014180655104187070", doc.internal.pageSize.getWidth() / 2, footerY + 18, { align: 'center' });
             
@@ -692,7 +673,7 @@
             doc.setTextColor(255, 255, 255);
             doc.text("© 2025 Richy Entertainment - Todos los derechos reservados", doc.internal.pageSize.getWidth() / 2, footerY + 28, { align: 'center' });
 
-            doc.setDrawColor(209, 0, 0);
+            doc.setDrawColor(255, 87, 34);
             doc.setLineWidth(0.8);
             doc.line(5, 10, 5, pageHeight - 10);
             doc.line(doc.internal.pageSize.getWidth() - 5, 10, doc.internal.pageSize.getWidth() - 5, pageHeight - 10);
