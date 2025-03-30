@@ -147,27 +147,31 @@
 
             // Cargar el logo
             const logo = new Image();
-            logo.src = 'Logo.jpg'; // Asumiendo que el logo está en el mismo directorio o en GitHub
+            logo.src = 'Logo.jpg'; // Asegúrate de que el logo esté en el directorio o usa la URL de GitHub
             logo.onload = function() {
+                generatePDFContent(doc, logo);
+                doc.save("cotizacion_richy_entertainment.pdf");
+            };
+            logo.onerror = function() {
+                console.error("Error al cargar el logo. Generando PDF sin logo.");
+                generatePDFContent(doc, null); // Generar sin logo si falla
+                doc.save("cotizacion_richy_entertainment.pdf");
+            };
+        }
+
+        function generatePDFContent(doc, logo) {
+            // Configuración general de fuentes y colores
+            doc.setFont("Helvetica", "normal");
+            doc.setTextColor(33, 33, 33); // Color gris oscuro para el texto
+
+            // Agregar el logo si está disponible
+            if (logo) {
                 const pageWidth = doc.internal.pageSize.getWidth();
                 const logoWidth = 135; // Ancho del logo ajustado a 135px
                 const logoHeight = 65; // Alto del logo ajustado a 65px
                 const x = (pageWidth - logoWidth) / 2; // Centrado horizontalmente
                 doc.addImage(logo, 'JPEG', x, 5, logoWidth, logoHeight);
-                generatePDFContent(doc);
-                doc.save("cotizacion_richy_entertainment.pdf");
-            };
-            logo.onerror = function() {
-                console.error("Error al cargar el logo. Generando PDF sin logo.");
-                generatePDFContent(doc);
-                doc.save("cotizacion_richy_entertainment.pdf");
-            };
-        }
-
-        function generatePDFContent(doc) {
-            // Configuración general de fuentes y colores
-            doc.setFont("Helvetica", "normal");
-            doc.setTextColor(33, 33, 33); // Color gris oscuro para el texto
+            }
 
             // Fondo de encabezado (rectángulo azul oscuro)
             doc.setFillColor(33, 62, 99); // Azul oscuro elegante
