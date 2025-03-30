@@ -6,189 +6,286 @@
     <title>Generador de Cotizaciones | Richy Entertainment</title>
     <style>
         :root {
-            --navy-primario: #0d1120; /* Deep navy from logo background */
-            --gold-acentuado: #c9c197; /* Muted gold from "ENTERTAINMENT" text */
-            --beige-claro: #fefae3; /* Light beige for backgrounds */
+            --navy-primario: #0d1120;
+            --gold-acentuado: #c9c197;
             --blanco: #ffffff;
             --texto-oscuro: #333;
-            --sombra-suave: rgba(0, 0, 0, 0.1);
+            --sombra-suave: rgba(0, 0, 0, 0.05);
         }
-        
+
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
-            padding: 30px;
-            background-color: var(--beige-claro);
+            padding: 40px;
+            background-color: var(--blanco);
             color: var(--texto-oscuro);
             line-height: 1.6;
         }
-        
+
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
             background-color: var(--blanco);
             padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px var(--sombra-suave);
+            border-radius: 15px;
+            box-shadow: 0 6px 20px var(--sombra-suave);
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        .container::before,
+        .container::after {
+            content: '';
+            position: absolute;
+            width: 3px;
+            background: repeating-linear-gradient(
+                to bottom,
+                var(--gold-acentuado) 0,
+                var(--gold-acentuado) 5px,
+                transparent 5px,
+                transparent 10px
+            );
+            height: 100%;
+        }
+
+        .container::before {
+            left: 20px;
+        }
+
+        .container::after {
+            right: 20px;
+        }
+
         .header {
             display: flex;
             align-items: center;
             margin-bottom: 40px;
-            padding-bottom: 25px;
-            border-bottom: 3px solid var(--gold-acentuado);
+            padding-bottom: 20px;
         }
-        
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: repeating-linear-gradient(
+                to right,
+                var(--gold-acentuado) 0,
+                var(--gold-acentuado) 5px,
+                transparent 5px,
+                transparent 10px
+            );
+        }
+
         .logo {
-            width: 240px;
+            width: 250px;
             height: auto;
-            margin-right: 40px;
+            margin-right: 50px;
         }
-        
+
         .titulo {
             flex-grow: 1;
         }
-        
+
         h1 {
             color: var(--navy-primario);
             margin: 0;
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 700;
+            text-transform: uppercase;
         }
-        
+
         h2 {
             color: var(--navy-primario);
-            border-bottom: 2px solid var(--gold-acentuado);
-            padding-bottom: 10px;
-            margin-top: 35px;
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 600;
+            margin-top: 40px;
+            position: relative;
         }
-        
+
+        h2::before {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--gold-acentuado);
+        }
+
         .form-section {
-            background-color: var(--beige-claro);
-            padding: 25px;
+            padding: 30px;
             border-radius: 10px;
-            margin-bottom: 35px;
-            border: 1px solid var(--gold-acentuado);
+            margin-bottom: 40px;
+            border: 2px solid var(--gold-acentuado);
         }
-        
+
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
-        
+
         label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-weight: 500;
             color: var(--navy-primario);
+            font-size: 15px;
         }
-        
+
         input, select, textarea {
-            padding: 12px;
-            border: 1px solid var(--gold-acentuado);
-            border-radius: 6px;
+            padding: 14px;
+            border: 2px solid var(--gold-acentuado);
+            border-radius: 8px;
             width: 100%;
-            max-width: 320px;
-            font-size: 14px;
+            max-width: 350px;
+            font-size: 15px;
             background-color: var(--blanco);
+            transition: border-color 0.3s;
         }
-        
+
         input:focus, select:focus, textarea:focus {
             border-color: var(--navy-primario);
             outline: none;
         }
-        
+
         textarea {
             max-width: 100%;
             resize: vertical;
+            min-height: 100px;
         }
-        
+
         button {
             background-color: var(--navy-primario);
             color: var(--blanco);
             border: none;
-            padding: 14px 25px;
-            border-radius: 6px;
+            padding: 15px 30px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 600;
             transition: background-color 0.3s;
+            margin-right: 15px;
         }
-        
+
         button:hover {
             background-color: var(--gold-acentuado);
             color: var(--navy-primario);
         }
-        
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 25px 0;
-            border-radius: 8px;
+            margin: 30px 0;
+            border-radius: 10px;
             overflow: hidden;
         }
-        
+
         th {
             background-color: var(--navy-primario);
             color: var(--blanco);
-            padding: 14px;
+            padding: 15px;
             text-align: left;
             font-weight: 600;
+            font-size: 15px;
         }
-        
+
         td {
-            padding: 12px;
+            padding: 15px;
             border-bottom: 1px solid var(--gold-acentuado);
+            font-size: 14px;
         }
-        
+
         tr:nth-child(even) {
-            background-color: var(--beige-claro);
+            background-color: rgba(13, 17, 32, 0.05);
         }
-        
+
         .price {
             text-align: right;
         }
-        
+
         .total-section {
             background-color: var(--navy-primario);
             color: var(--blanco);
-            padding: 25px;
+            padding: 30px;
             border-radius: 10px;
-            margin-top: 25px;
+            margin-top: 40px;
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        .total-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background-color: var(--gold-acentuado);
+        }
+
         .total-section label {
             color: var(--blanco);
+            font-size: 15px;
         }
-        
+
         #total {
-            font-size: 28px;
+            font-size: 30px;
             font-weight: 700;
+            margin-top: 15px;
+            display: block;
         }
-        
+
         .remove-btn {
             background-color: var(--gold-acentuado);
             color: var(--navy-primario);
-            padding: 6px 12px;
+            padding: 8px 15px;
             font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
         }
-        
+
         .remove-btn:hover {
-            background-color: #b0a880;
+            background-color: #a99e7e;
         }
-        
+
         .item-controls {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             align-items: center;
+            margin-bottom: 20px;
         }
-        
+
         .item-select {
             flex-grow: 1;
         }
-        
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gold-acentuado);
+            color: var(--texto-oscuro);
+            font-size: 12px;
+        }
+
+        .footer a {
+            color: var(--navy-primario);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: var(--gold-acentuado);
+        }
+
         @media print {
             body * {
                 visibility: hidden;
@@ -297,8 +394,16 @@
             </div>
         </div>
 
-        <button onclick="generatePDF()">Generar PDF</button>
-        <button onclick="window.print()" style="margin-left: 15px;">Imprimir</button>
+        <div class="button-group">
+            <button onclick="generatePDF()">Generar PDF</button>
+            <button onclick="window.print()">Imprimir</button>
+        </div>
+
+        <div class="footer">
+            <p>Contacto: <a href="mailto:transpo_rick@hotmail.com">transpo_rick@hotmail.com</a> | Tel: 52 55 7341 3969</p>
+            <p>Banco: Santander | Cuenta: 65-51041870-7 | CLABE: 014180655104187070</p>
+            <p>&copy; 2025 Richy Entertainment - Todos los derechos reservados</p>
+        </div>
     </div>
 
     <div id="pdf-container" style="display: none;"></div>
@@ -448,11 +553,11 @@
 
             function addHeader() {
                 if (logoData) {
-                    doc.setFillColor(13, 17, 32); // var(--navy-primario)
+                    doc.setFillColor(13, 17, 32);
                     doc.rect(0, 0, doc.internal.pageSize.getWidth(), 50, 'F');
-                    for (let i = 0; i < 50; i++) {
-                        doc.setFillColor(13, 17 + i/5, 32 + i/5);
-                        doc.rect(0, i, doc.internal.pageSize.getWidth(), 1, 'F');
+                    for (let i = 0; i < 50; i += 10) {
+                        doc.setFillColor(13, 17 + i/10, 32 + i/10);
+                        doc.rect(0, i, doc.internal.pageSize.getWidth(), 2, 'F');
                     }
 
                     const logoWidth = 60;
@@ -461,24 +566,24 @@
 
                     doc.setFont("times", "italic");
                     doc.setFontSize(14);
-                    doc.setTextColor(254, 250, 227); // var(--beige-claro)
+                    doc.setTextColor(255, 255, 255);
                     doc.text("Soluciones de Transportación Ejecutiva", marginLeft + logoWidth + 10, 35);
                     
-                    doc.setDrawColor(201, 193, 151); // var(--gold-acentuado)
+                    doc.setDrawColor(201, 193, 151);
                     doc.setLineWidth(1.5);
                     doc.line(marginLeft, 55, doc.internal.pageSize.getWidth() - marginRight, 55);
                     return 60;
                 } else {
                     doc.setFillColor(13, 17, 32);
                     doc.rect(0, 0, doc.internal.pageSize.getWidth(), 50, 'F');
-                    for (let i = 0; i < 50; i++) {
-                        doc.setFillColor(13, 17 + i/5, 32 + i/5);
-                        doc.rect(0, i, doc.internal.pageSize.getWidth(), 1, 'F');
+                    for (let i = 0; i < 50; i += 10) {
+                        doc.setFillColor(13, 17 + i/10, 32 + i/10);
+                        doc.rect(0, i, doc.internal.pageSize.getWidth(), 2, 'F');
                     }
                     
                     doc.setFont("times", "italic");
                     doc.setFontSize(16);
-                    doc.setTextColor(254, 250, 227);
+                    doc.setTextColor(255, 255, 255);
                     doc.text("Soluciones de Transportación Ejecutiva", doc.internal.pageSize.getWidth() / 2, 38, { align: 'center' });
                     
                     doc.setDrawColor(201, 193, 151);
@@ -499,17 +604,17 @@
 
             doc.setFont("helvetica", "normal");
             doc.setFontSize(10);
-            doc.setTextColor(100, 100, 100);
+            doc.setTextColor(51, 51, 51);
             doc.text(`Folio: ${folio}`, marginLeft, headerHeight + 5);
             doc.text(`Fecha: ${date}`, doc.internal.pageSize.getWidth() - marginRight, headerHeight + 5, { align: 'right' });
 
             doc.setFont("times", "bold");
-            doc.setFontSize(18);
+            doc.setFontSize(20);
             doc.setTextColor(13, 17, 32);
             doc.text("Cotización", doc.internal.pageSize.getWidth() / 2, headerHeight + 20, { align: 'center' });
             
             doc.setDrawColor(201, 193, 151);
-            doc.setLineWidth(0.6);
+            doc.setLineWidth(0.8);
             doc.line(marginLeft + 20, headerHeight + 22, doc.internal.pageSize.getWidth() - marginRight - 20, headerHeight + 22);
 
             doc.setFont("times", "bold");
@@ -522,19 +627,19 @@
             const clientPhone = document.getElementById('client-phone').value || 'No especificado';
             const clientEmail = document.getElementById('client-email').value || 'No especificado';
 
-            doc.setFillColor(254, 250, 227);
-            doc.roundedRect(marginLeft, headerHeight + 40, pageWidth, 40, 5, 5, 'F');
+            doc.setFillColor(255, 255, 255);
+            doc.rect(marginLeft, headerHeight + 40, pageWidth, 50, 'F');
             doc.setDrawColor(13, 17, 32);
-            doc.setLineWidth(0.3);
-            doc.roundedRect(marginLeft, headerHeight + 40, pageWidth, 40, 5, 5);
+            doc.setLineWidth(0.5);
+            doc.rect(marginLeft, headerHeight + 40, pageWidth, 50);
 
             doc.setFont("helvetica", "normal");
-            doc.setFontSize(11);
+            doc.setFontSize(12);
             doc.setTextColor(51, 51, 51);
-            doc.text(`Nombre: ${clientName}`, marginLeft + 5, headerHeight + 50);
-            doc.text(`Ciudad: ${clientCity}`, marginLeft + 5, headerHeight + 57);
-            doc.text(`Teléfono: ${clientPhone}`, marginLeft + 5, headerHeight + 64);
-            doc.text(`Email: ${clientEmail}`, marginLeft + 5, headerHeight + 71);
+            doc.text(`Nombre: ${clientName}`, marginLeft + 10, headerHeight + 50);
+            doc.text(`Ciudad: ${clientCity}`, marginLeft + 10, headerHeight + 60);
+            doc.text(`Teléfono: ${clientPhone}`, marginLeft + 10, headerHeight + 70);
+            doc.text(`Email: ${clientEmail}`, marginLeft + 10, headerHeight + 80);
 
             const tableData = [];
             const rows = document.querySelectorAll('#items tbody tr');
@@ -558,63 +663,68 @@
             doc.autoTable({
                 head: [['Cant.', 'Concepto', 'Descripción', 'P. Unitario', 'Total']],
                 body: tableData,
-                startY: headerHeight + 85,
+                startY: headerHeight + 95,
                 headStyles: {
                     fillColor: [13, 17, 32],
                     textColor: [255, 255, 255],
-                    fontSize: 11,
+                    fontSize: 12,
                     font: "times",
                     fontStyle: 'bold',
                     halign: 'center',
-                    cellPadding: 4
+                    cellPadding: 5
                 },
                 bodyStyles: {
-                    fontSize: 10,
+                    fontSize: 11,
                     textColor: [51, 51, 51],
                     font: "helvetica"
                 },
                 columnStyles: {
-                    0: { cellWidth: 15, halign: 'center' },
-                    1: { cellWidth: 40, halign: 'left' },
-                    2: { cellWidth: 60, halign: 'left' },
-                    3: { cellWidth: 30, halign: 'right' },
-                    4: { cellWidth: 30, halign: 'right' }
+                    0: { cellWidth: 20, halign: 'center' },
+                    1: { cellWidth: 45, halign: 'left' },
+                    2: { cellWidth: 65, halign: 'left' },
+                    3: { cellWidth: 35, halign: 'right' },
+                    4: { cellWidth: 35, halign: 'right' }
                 },
                 margin: { left: marginLeft, right: marginRight },
                 styles: {
-                    cellPadding: 3,
-                    lineWidth: 0.1,
+                    cellPadding: 4,
+                    lineWidth: 0.2,
                     lineColor: [201, 193, 151],
                     overflow: 'linebreak'
                 },
                 alternateRowStyles: {
-                    fillColor: [254, 250, 227]
+                    fillColor: [255, 255, 255]
                 },
                 didDrawPage: function(data) {
                     const pageCount = doc.internal.getNumberOfPages();
                     doc.setFont("helvetica", "italic");
-                    doc.setFontSize(8);
-                    doc.setTextColor(120, 120, 120);
-                    doc.text(`Página ${data.pageNumber} de ${pageCount}`, doc.internal.pageSize.getWidth() - marginRight - 10, pageHeight - 5, { align: 'right' });
+                    doc.setFontSize: 8;
+                    doc.setTextColor(51, 51, 51);
+                    doc.text(`Página ${data.pageNumber} de ${pageCount}`, doc.internal.pageSize.getWidth() - marginRight - 10, pageHeight - 10, { align: 'right' });
+
+                    doc.setDrawColor(201, 193, 151);
+                    doc.setLineWidth(0.5);
+                    doc.line(marginLeft, 10, marginLeft, pageHeight - 10);
+                    doc.line(doc.internal.pageSize.getWidth() - marginRight, 10, doc.internal.pageSize.getWidth() - marginRight, pageHeight - 10);
                 }
             });
 
             const notes = document.getElementById('notes').value;
             if (notes) {
-                const notesY = doc.lastAutoTable.finalY + 10;
+                const notesY = doc.lastAutoTable.finalY + 15;
                 doc.setFont("times", "bold");
-                doc.setFontSize(12);
+                doc.setFontSize: 14;
                 doc.setTextColor(13, 17, 32);
                 doc.text("Anotaciones", marginLeft, notesY);
 
                 doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
+                doc.setFontSize: 11;
                 doc.setTextColor(51, 51, 51);
-                const splitNotes = doc.splitTextToSize(notes, pageWidth);
-                doc.text(splitNotes, marginLeft, notesY + 7);
+                const splitNotes = doc.splitTextToSize(notes, pageWidth - 20);
+                doc.text(splitNotes, marginLeft + 10, notesY + 10);
             }
 
-            const finalY = (notes ? doc.lastAutoTable.finalY + 20 + (doc.splitTextToSize(notes, pageWidth).length * 5) : doc.lastAutoTable.finalY + 20);
+            const finalY = (notes ? doc.lastAutoTable.finalY + 30 + (doc.splitTextToSize(notes, pageWidth - 20).length * 6) : doc.lastAutoTable.finalY + 30);
             const taxRate = parseFloat(document.getElementById('tax').value) || 0;
             const totalText = document.getElementById('total').textContent;
             const total = parseFloat(totalText.replace('$', '').replace(/,/g, '')) || 0;
@@ -623,57 +733,48 @@
             const totalInWords = numberToWordsSpanish(total);
 
             doc.setFillColor(13, 17, 32);
-            doc.roundedRect(marginLeft, finalY, pageWidth, 35, 6, 6, 'F');
+            doc.rect(marginLeft, finalY, pageWidth, 50, 'F');
             doc.setDrawColor(255, 255, 255);
             doc.setLineWidth(0.5);
-            doc.roundedRect(marginLeft + 2, finalY + 2, pageWidth - 4, 31, 4, 4);
+            doc.rect(marginLeft + 5, finalY + 5, pageWidth - 10, 40);
 
             doc.setFont("times", "bold");
-            doc.setFontSize(14);
+            doc.setFontSize: 16;
             doc.setTextColor(255, 255, 255);
-            doc.text("Resumen de Pago", marginLeft + 8, finalY + 10);
+            doc.text("Resumen de Pago", marginLeft + 10, finalY + 15);
 
             doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            doc.text(`Subtotal:`, marginLeft + pageWidth - 80, finalY + 20);
-            doc.text(`$${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 10, finalY + 20, { align: 'right' });
+            doc.setFontSize: 12;
+            doc.text(`Subtotal:`, marginLeft + pageWidth - 90, finalY + 25);
+            doc.text(`$${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 20, finalY + 25, { align: 'right' });
             
-            doc.text(`Impuestos (${taxRate.toLocaleString('en-US')}%):`, marginLeft + pageWidth - 80, finalY + 27);
-            doc.text(`$${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 10, finalY + 27, { align: 'right' });
+            doc.text(`Impuestos (${taxRate.toLocaleString('en-US')}%):`, marginLeft + pageWidth - 90, finalY + 35);
+            doc.text(`$${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 20, finalY + 35, { align: 'right' });
             
             doc.setFont("times", "bold");
-            doc.setFontSize(12);
-            doc.text(`Total:`, marginLeft + pageWidth - 80, finalY + 34);
-            doc.text(`${totalText}`, marginLeft + pageWidth - 10, finalY + 34, { align: 'right' });
+            doc.setFontSize: 14;
+            doc.text(`Total:`, marginLeft + pageWidth - 90, finalY + 45);
+            doc.text(`${totalText}`, marginLeft + pageWidth - 20, finalY + 45, { align: 'right' });
 
             doc.setFont("helvetica", "italic");
-            doc.setFontSize(9);
-            const splitTotalInWords = doc.splitTextToSize(totalInWords, pageWidth - 20);
-            doc.text(splitTotalInWords, marginLeft + 10, finalY + 41);
+            doc.setFontSize: 10;
+            const splitTotalInWords = doc.splitTextToSize(totalInWords, pageWidth - 30);
+            doc.text(splitTotalInWords, marginLeft + 10, finalY + 55);
 
-            const footerY = pageHeight - 35;
+            const footerY = pageHeight - 40;
             doc.setFillColor(13, 17, 32);
-            doc.rect(0, footerY, doc.internal.pageSize.getWidth(), 35, 'F');
-            for (let i = 0; i < 35; i++) {
-                doc.setFillColor(13, 17 + i/5, 32 + i/5);
-                doc.rect(0, footerY + i, doc.internal.pageSize.getWidth(), 1, 'F');
+            doc.rect(0, footerY, doc.internal.pageSize.getWidth(), 40, 'F');
+            for (let i = 0; i < 40; i += 10) {
+                doc.setFillColor(13, 17 + i/10, 32 + i/10);
+                doc.rect(0, footerY + i, doc.internal.pageSize.getWidth(), 2, 'F');
             }
 
             doc.setFont("helvetica", "normal");
-            doc.setFontSize(7);
-            doc.setTextColor(254, 250, 227);
-            doc.text("Richy Entertainment S.A.S. de C.V.  •  Teléfono: 52 55 7341 3969  •  Email: transpo_rick@hotmail.com", doc.internal.pageSize.getWidth() / 2, footerY + 12, { align: 'center' });
-            doc.text("Banco: Santander  •  Cuenta: 65-51041870-7  •  CLABE: 014180655104187070", doc.internal.pageSize.getWidth() / 2, footerY + 18, { align: 'center' });
-            
-            doc.setFont("times", "italic");
-            doc.setFontSize(8);
+            doc.setFontSize: 8;
             doc.setTextColor(255, 255, 255);
-            doc.text("© 2025 Richy Entertainment - Todos los derechos reservados", doc.internal.pageSize.getWidth() / 2, footerY + 28, { align: 'center' });
-
-            doc.setDrawColor(201, 193, 151);
-            doc.setLineWidth(0.8);
-            doc.line(5, 10, 5, pageHeight - 10);
-            doc.line(doc.internal.pageSize.getWidth() - 5, 10, doc.internal.pageSize.getWidth() - 5, pageHeight - 10);
+            doc.text("Richy Entertainment S.A.S. de C.V.  •  Tel: 52 55 7341 3969  •  Email: transpo_rick@hotmail.com", doc.internal.pageSize.getWidth() / 2, footerY + 15, { align: 'center' });
+            doc.text("Banco: Santander  •  Cuenta: 65-51041870-7  •  CLABE: 014180655104187070", doc.internal.pageSize.getWidth() / 2, footerY + 22, { align: 'center' });
+            doc.text("© 2025 Richy Entertainment - Todos los derechos reservados", doc.internal.pageSize.getWidth() / 2, footerY + 30, { align: 'center' });
 
             createPrintPreview(doc);
             const fileName = `Cotización_${folio}_${clientName.replace(/[^a-z0-9]/gi, '_')}.pdf`;
