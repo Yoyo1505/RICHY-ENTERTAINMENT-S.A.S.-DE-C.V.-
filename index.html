@@ -3,374 +3,628 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Cotización</title>
+    <title>Generador de Cotizaciones | Richy Entertainment</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+        :root {
+            --azul-marino: #002366;
+            --rojo: #d10000;
+            --blanco: #ffffff;
+            --gris-claro: #f5f5f5;
+            --gris-oscuro: #2e2e2e;
         }
-        table { 
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--gris-claro);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: var(--blanco);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--rojo);
+        }
+        
+        .logo {
+            width: 180px;
+            height: auto;
+            margin-right: 30px;
+        }
+        
+        .titulo {
+            flex-grow: 1;
+        }
+        
+        h1 {
+            color: var(--azul-marino);
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        h2 {
+            color: var(--azul-marino);
+            border-bottom: 2px solid var(--rojo);
+            padding-bottom: 8px;
+            margin-top: 30px;
+        }
+        
+        .form-section {
+            background-color: var(--gris-claro);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--azul-marino);
+        }
+        
+        input, select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        button {
+            background-color: var(--azul-marino);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: var(--rojo);
+        }
+        
+        table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin: 20px 0;
         }
-        th, td {
-            border: 1px solid #2196F3; /* Borde azul */
-            padding: 8px;
+        
+        th {
+            background-color: var(--azul-marino);
+            color: white;
+            padding: 12px;
             text-align: left;
         }
-        th {
-            background-color: #2196F3; /* Fondo azul */
-            color: white;
+        
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
         }
-        input[type="number"] {
-            width: 80px;
+        
+        tr:nth-child(even) {
+            background-color: var(--gris-claro);
         }
+        
         .price {
             text-align: right;
         }
-        button {
-            margin: 10px 0;
-            padding: 10px;
+        
+        .total-section {
+            background-color: var(--azul-marino);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .total-section label {
+            color: white;
+        }
+        
+        #total {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .remove-btn {
+            background-color: var(--rojo);
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+        
+        .remove-btn:hover {
+            background-color: #b00000;
+        }
+        
+        .item-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .item-select {
+            flex-grow: 1;
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #pdf-container, #pdf-container * {
+                visibility: visible;
+            }
+            #pdf-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Generador de Cotización</h1>
+    <div class="container">
+        <div class="header">
+            <img class="logo" src="https://raw.githubusercontent.com/Yoyo1505/Cotizaciones/main/logo.png" alt="Richy Entertainment" id="logo" onerror="this.src='logo.png'">
+            <div class="titulo">
+                <h1>Richy Entertainment</h1>
+                <p>Sistema de Generación de Cotizaciones</p>
+            </div>
+        </div>
 
-    <!-- Datos del cliente con folio -->
-    <div>
-        <label>Número de Folio: <input type="text" id="folio-number" placeholder="Folio"></label><br>
-        <label>Nombre del Cliente: <input type="text" id="client-name" placeholder="Nombre del Cliente"></label><br>
-        <label>Ciudad: <input type="text" id="client-city" placeholder="Ciudad"></label><br>
-        <label>Teléfono: <input type="text" id="client-phone" placeholder="Teléfono"></label><br>
-        <label>Email: <input type="text" id="client-email" placeholder="Email"></label><br>
+        <div class="form-section">
+            <h2>Datos del Cliente</h2>
+            <div class="form-group">
+                <label for="folio-number">Número de Folio</label>
+                <input type="text" id="folio-number" placeholder="Ej: COT-2023-001">
+            </div>
+            <div class="form-group">
+                <label for="client-name">Nombre del Cliente</label>
+                <input type="text" id="client-name" placeholder="Nombre completo">
+            </div>
+            <div class="form-group">
+                <label for="client-city">Ciudad</label>
+                <input type="text" id="client-city" placeholder="Ciudad">
+            </div>
+            <div class="form-group">
+                <label for="client-phone">Teléfono</label>
+                <input type="text" id="client-phone" placeholder="Teléfono">
+            </div>
+            <div class="form-group">
+                <label for="client-email">Email</label>
+                <input type="email" id="client-email" placeholder="Email">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Ítems de la Cotización</h2>
+            <div class="item-controls">
+                <select id="item-select" class="item-select">
+                    <option value="">Selecciona un ítem</option>
+                    <option value="AUTOBUS 45 PLAZAS">AUTOBUS 45 PLAZAS</option>
+                    <option value="CAMIONETA CARGA">CAMIONETA CARGA</option>
+                    <option value="CAMIONETA VAN">CAMIONETA VAN</option>
+                    <option value="COMIDAS DEL OPERADOR">COMIDAS DEL OPERADOR</option>
+                    <option value="COORDINADOR">COORDINADOR</option>
+                    <option value="DERECHOS DE PISO">DERECHOS DE PISO</option>
+                    <option value="HORAS EXTRA">HORAS EXTRA</option>
+                    <option value="HOSPEDAJE">HOSPEDAJE</option>
+                    <option value="MINIBUS 31 PLAZAS">MINIBUS 31 PLAZAS</option>
+                    <option value="PARKING">PARKING</option>
+                    <option value="SEDAN">SEDAN</option>
+                    <option value="SPRINTER">SPRINTER</option>
+                    <option value="SUBURBAN">SUBURBAN</option>
+                    <option value="SUBURBAN ADVANCE">SUBURBAN ADVANCE</option>
+                    <option value="SUBURBAN BLINDADA NIVEL 3">SUBURBAN BLINDADA NIVEL 3</option>
+                    <option value="SUBURBAN HIGH COUNTRY">SUBURBAN HIGH COUNTRY</option>
+                    <option value="TOYOTA HIACE">TOYOTA HIACE</option>
+                    <option value="TRAMO CARRETERO">TRAMO CARRETERO</option>
+                    <option value="VAN DE CARGA">VAN DE CARGA</option>
+                    <option value="VIATICOS">VIATICOS</option>
+                </select>
+                <button id="add-item-btn">Agregar Ítem</button>
+            </div>
+
+            <table id="items">
+                <thead>
+                    <tr>
+                        <th width="80px">Cantidad</th>
+                        <th>Concepto</th>
+                        <th>Vehículo/Servicio</th>
+                        <th width="120px">P. Unitario</th>
+                        <th width="120px">Total</th>
+                        <th width="100px">Acción</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="total-section">
+            <div class="form-group">
+                <label for="tax">Impuestos (%)</label>
+                <input type="number" id="tax" value="16" min="0" step="0.1" onchange="calculateTotal()">
+            </div>
+            <div>
+                <strong>TOTAL: <span id="total">$0.00</span></strong>
+            </div>
+        </div>
+
+        <button onclick="generatePDF()">Generar PDF</button>
+        <button onclick="window.print()" style="margin-left: 10px;">Imprimir</button>
     </div>
 
-    <!-- Selección de ítems -->
-    <div>
-        <label>Agregar Ítem: 
-            <select id="item-select">
-                <option value="">Selecciona un ítem</option>
-            </select>
-        </label>
-        <button id="add-item-btn">Agregar</button>
-    </div>
+    <div id="pdf-container" style="display: none;"></div>
 
-    <!-- Tabla de ítems -->
-    <table id="items">
-        <thead>
-            <tr>
-                <th>Unidad</th>
-                <th>Concepto</th>
-                <th>Vehículo</th>
-                <th>P.U.</th>
-                <th>Precio</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-
-    <!-- Impuestos y total -->
-    <div>
-        <label>Impuestos (%): <input type="number" id="tax" value="0" onchange="calculateTotal()"></label><br>
-        <strong>Total: <span id="total">$0.00</span></strong>
-    </div>
-
-    <!-- Botón para descargar PDF -->
-    <button onclick="downloadPDF()">Descargar PDF</button>
-
-    <!-- Incluir jsPDF y autoTable -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script>
         const { jsPDF } = window.jspdf;
+        let logoData = null;
 
-        const items = [
-            "AUTOBUS 45 PLAZAS", "CAMIONETA CARGA", "CAMIONETA VAN", "COMIDAS DEL OPERADOR",
-            "COMISION BANCARIA 0.5%", "COORDINADOR", "DERECHOS DE PISO", "HORAS EXTRA",
-            "HOSPEDAJE", "MINIBUS 31 PLAZAS", "PARKING", "SEDAN", "SPRINTER", "SUBURBAN",
-            "SUBURBAN ADVANCE", "SUBURBAN BLINDADA NIVEL 3", "SUBURBAN HIGW COUNTRY",
-            "SUBURBAN LINEA ANTIGUA", "TOYOTA HIENCE", "TRAMO CARRETERO", "VAN DE CARGA", "VIATICOS"
-        ];
+        function preloadLogo() {
+            return new Promise((resolve, reject) => {
+                const logo = document.getElementById('logo');
+                const img = new Image();
+                img.crossOrigin = "Anonymous";
+                img.src = logo.src;
+                
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    logoData = canvas.toDataURL('image/png');
+                    resolve();
+                };
+                
+                img.onerror = function() {
+                    console.log("Logo no cargado, se usará texto alternativo");
+                    resolve();
+                };
+            });
+        }
+
+        preloadLogo();
 
         const itemsContainer = document.querySelector('#items tbody');
         const itemSelect = document.getElementById('item-select');
+        const addItemBtn = document.getElementById('add-item-btn');
 
-        // Llenar el menú desplegable con los conceptos
-        items.forEach(item => {
-            const option = document.createElement('option');
-            option.value = item;
-            option.textContent = item;
-            itemSelect.appendChild(option);
-        });
-
-        // Agregar evento al botón "Agregar"
-        document.getElementById('add-item-btn').addEventListener('click', addItem);
+        addItemBtn.addEventListener('click', addItem);
 
         function addItem() {
             const selectedItem = itemSelect.value;
             if (selectedItem) {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td><input type="number" placeholder="Cantidad" class="unit" onchange="calculateTotal()"></td>
+                    <td><input type="number" class="unit" min="1" value="1" onchange="calculateTotal()"></td>
                     <td>Servicio de Transportación Ejecutiva</td>
                     <td>${selectedItem}</td>
-                    <td><input type="number" placeholder="P.U." class="unit-price" onchange="calculateTotal()"></td>
+                    <td><input type="number" class="unit-price" min="0" step="0.01" value="0" onchange="calculateTotal()"></td>
                     <td class="price">$0.00</td>
+                    <td><button class="remove-btn" onclick="removeItem(this)">Eliminar</button></td>
                 `;
                 itemsContainer.appendChild(row);
                 itemSelect.value = '';
+                calculateTotal();
             } else {
                 alert('Por favor, selecciona un ítem antes de agregar.');
             }
         }
 
+        function removeItem(button) {
+            const row = button.closest('tr');
+            row.remove();
+            calculateTotal();
+        }
+
         function calculateTotal() {
-            let total = 0;
+            let subtotal = 0;
             const rows = document.querySelectorAll('#items tbody tr');
+            
             rows.forEach(row => {
-                const unitInput = parseFloat(row.querySelector('.unit').value) || 0;
-                const unitPriceInput = parseFloat(row.querySelector('.unit-price').value) || 0;
-                const priceCell = row.querySelector('.price');
-                const price = unitInput * unitPriceInput;
-                priceCell.textContent = `$${price.toFixed(2)}`;
-                total += price;
+                const unit = parseFloat(row.querySelector('.unit').value) || 0;
+                const unitPrice = parseFloat(row.querySelector('.unit-price').value) || 0;
+                const total = unit * unitPrice;
+                row.querySelector('.price').textContent = `$${total.toFixed(2)}`;
+                subtotal += total;
             });
+            
             const taxRate = parseFloat(document.getElementById('tax').value) || 0;
-            total += total * (taxRate / 100);
-            document.getElementById('total').innerText = `$${total.toFixed(2)}`;
+            const taxAmount = subtotal * (taxRate / 100);
+            const total = subtotal + taxAmount;
+            
+            document.getElementById('total').textContent = `$${total.toFixed(2)}`;
         }
 
-        function downloadPDF() {
-            const doc = new jsPDF();
+        async function generatePDF() {
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+            
+            const marginLeft = 15;
+            const marginRight = 15;
+            const pageWidth = doc.internal.pageSize.getWidth() - marginLeft - marginRight;
+            const pageHeight = doc.internal.pageSize.getHeight();
 
-            // Cargar el logo
-            const logo = new Image();
-            logo.src = 'Logo.jpg';
-            logo.onload = function() {
-                const pageWidth = doc.internal.pageSize.getWidth();
-                const logoWidth = 125; // Logo de 145x90
-                const logoHeight = 60; // Proporción ajustada
-                const x = (pageWidth - logoWidth) / 2; // Centrado horizontalmente
-                doc.addImage(logo, 'JPEG', x, 5, logoWidth, logoHeight);
-                generatePDFContent(doc);
-                doc.save("cotizacion_richy_entertainment.pdf");
-            };
-            logo.onerror = function() {
-                console.error("Error al cargar el logo. Generando PDF sin logo.");
-                generatePDFContent(doc);
-                doc.save("cotizacion_richy_entertainment.pdf");
-            };
-        }
+            // Encabezado estilizado
+            function addHeader() {
+                if (logoData) {
+                    // Fondo degradado
+                    doc.setFillColor(0, 35, 102);
+                    doc.rect(0, 0, doc.internal.pageSize.getWidth(), 50, 'F');
+                    for (let i = 0; i < 50; i++) {
+                        doc.setFillColor(0, 35 + i, 102 + i/2);
+                        doc.rect(0, i, doc.internal.pageSize.getWidth(), 1, 'F');
+                    }
 
-        function generatePDFContent(doc) {
-            // Configuración general de fuentes y colores
-            doc.setFont("Helvetica", "normal");
-            doc.setTextColor(33, 33, 33); // Color gris oscuro para el texto
+                    const logoWidth = 45;
+                    const logoHeight = (document.getElementById('logo').naturalHeight / document.getElementById('logo').naturalWidth) * logoWidth;
+                    doc.addImage(logoData, 'PNG', marginLeft + 5, 10, logoWidth, logoHeight);
+                    
+                    doc.setFont("times", "bold"); // Cambio a Times para elegancia
+                    doc.setFontSize(26);
+                    doc.setTextColor(255, 255, 255);
+                    doc.text("Richy Entertainment", marginLeft + logoWidth + 15, 25);
+                    
+                    doc.setFont("times", "italic");
+                    doc.setFontSize(12);
+                    doc.setTextColor(220, 220, 220);
+                    doc.text("Soluciones de Transportación Ejecutiva", marginLeft + logoWidth + 15, 35);
+                    
+                    doc.setDrawColor(209, 0, 0);
+                    doc.setLineWidth(1.2);
+                    doc.line(marginLeft, 55, doc.internal.pageSize.getWidth() - marginRight, 55);
+                    return 60;
+                } else {
+                    // Diseño sin logo con más estilo
+                    doc.setFillColor(0, 35, 102);
+                    doc.rect(0, 0, doc.internal.pageSize.getWidth(), 50, 'F');
+                    for (let i = 0; i < 50; i++) {
+                        doc.setFillColor(0, 35 + i/2, 102 + i);
+                        doc.rect(0, i, doc.internal.pageSize.getWidth(), 1, 'F');
+                    }
+                    
+                    doc.setFont("times", "bold");
+                    doc.setFontSize(30);
+                    doc.setTextColor(255, 255, 255);
+                    doc.text("Richy Entertainment", doc.internal.pageSize.getWidth() / 2, 25, { align: 'center' });
+                    
+                    doc.setFont("times", "italic");
+                    doc.setFontSize(14);
+                    doc.setTextColor(220, 220, 220);
+                    doc.text("Soluciones de Transportación Ejecutiva", doc.internal.pageSize.getWidth() / 2, 38, { align: 'center' });
+                    
+                    doc.setDrawColor(209, 0, 0);
+                    doc.setLineWidth(1.5);
+                    doc.line(marginLeft, 55, doc.internal.pageSize.getWidth() - marginRight, 55);
+                    
+                    // Detalle decorativo
+                    doc.setFillColor(209, 0, 0);
+                    doc.circle(doc.internal.pageSize.getWidth() / 2, 55, 2, 'F');
+                    return 65;
+                }
+            }
 
-            // Fondo de encabezado (rectángulo azul oscuro)
-            doc.setFillColor(33, 62, 99); // Azul oscuro elegante
-            doc.rect(0, 0, 210, 30, 'F'); // Rectángulo de fondo para el encabezado
+            const headerHeight = addHeader();
 
-            // Línea decorativa en el encabezado
-            doc.setDrawColor(255, 215, 0); // Línea dorada
+            // Datos de folio y fecha
+            const folio = document.getElementById('folio-number').value || 'Sin folio';
+            const date = new Date().toLocaleDateString('es-MX', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Folio: ${folio}`, marginLeft, headerHeight + 5);
+            doc.text(`Fecha: ${date}`, doc.internal.pageSize.getWidth() - marginRight, headerHeight + 5, { align: 'right' });
+
+            // Título de la cotización
+            doc.setFont("times", "bold");
+            doc.setFontSize(20);
+            doc.setTextColor(0, 35, 102);
+            doc.text("Cotización", doc.internal.pageSize.getWidth() / 2, headerHeight + 20, { align: 'center' });
+            
+            doc.setDrawColor(209, 0, 0);
             doc.setLineWidth(0.5);
-            doc.line(10, 30, 200, 30);
+            doc.line(marginLeft + 20, headerHeight + 22, doc.internal.pageSize.getWidth() - marginRight - 20, headerHeight + 22);
 
-            // Fecha en el encabezado (izquierda)
-            doc.setFontSize(8);
-            doc.setTextColor(255, 255, 255); // Texto blanco
-            doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 10, 20);
+            // Datos del cliente
+            doc.setFont("times", "bold");
+            doc.setFontSize(14);
+            doc.setTextColor(0, 35, 102);
+            doc.text("Datos del Cliente", marginLeft, headerHeight + 35);
 
-            // Folio en el encabezado (derecha)
-            const folio = document.getElementById('folio-number').value || 'Sin Folio';
-            doc.setFontSize(10);
-            doc.setTextColor(255, 215, 0); // Folio en dorado
-            doc.text(`Folio: ${folio}`, 170, 20);
-            doc.setTextColor(33, 33, 33); // Restaurar color
+            const clientName = document.getElementById('client-name').value || 'No especificado';
+            const clientCity = document.getElementById('client-city').value || 'No especificado';
+            const clientPhone = document.getElementById('client-phone').value || 'No especificado';
+            const clientEmail = document.getElementById('client-email').value || 'No especificado';
 
-            // Título "COTIZACIÓN" centrado con sombra
-            doc.setFontSize(18);
-            doc.setFont("Helvetica", "bold");
-            const title = "RICHY ENTERTAINMENT";
-            const titleWidth = doc.getTextWidth(title);
-            const pageWidth = doc.internal.pageSize.getWidth();
-            doc.setTextColor(33, 62, 99); // Azul oscuro para el título
-            doc.text(title, (pageWidth - titleWidth) / 2, 45);
-
-            // Sombra para el título
-            doc.setTextColor(200, 200, 200); // Sombra gris clara
-            doc.text(title, (pageWidth - titleWidth) / 2 + 0.5, 45 + 0.5);
-            doc.setTextColor(33, 62, 99); // Restaurar color
-
-            // Línea decorativa debajo del título
-            doc.setDrawColor(33, 150, 243); // Línea azul
+            doc.setFillColor(240, 245, 250);
+            doc.roundedRect(marginLeft, headerHeight + 40, pageWidth, 40, 5, 5, 'F');
+            doc.setDrawColor(0, 35, 102);
             doc.setLineWidth(0.3);
-            doc.line(10, 50, 200, 50);
+            doc.roundedRect(marginLeft, headerHeight + 40, pageWidth, 40, 5, 5);
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(11);
+            doc.setTextColor(50, 50, 50);
+            doc.text(`Nombre: ${clientName}`, marginLeft + 5, headerHeight + 50);
+            doc.text(`Ciudad: ${clientCity}`, marginLeft + 5, headerHeight + 57);
+            doc.text(`Teléfono: ${clientPhone}`, marginLeft + 5, headerHeight + 64);
+            doc.text(`Email: ${clientEmail}`, marginLeft + 5, headerHeight + 71);
 
             // Tabla de ítems
-            let y = 60;
             const tableData = [];
             const rows = document.querySelectorAll('#items tbody tr');
+
             rows.forEach(row => {
-                const unit = row.querySelector('.unit').value || '';
+                const quantity = row.querySelector('.unit').value || '1';
                 const concept = 'Servicio de Transportación Ejecutiva';
-                const vehicle = row.cells[2].textContent;
-                const unitPrice = row.querySelector('.unit-price').value || '';
-                const price = row.querySelector('.price').textContent || '$0.00';
-                if (unit && unitPrice && price !== '$0.00') {
-                    tableData.push([unit, concept, vehicle, unitPrice, price]);
+                const item = row.cells[2].textContent;
+                const unitPrice = parseFloat(row.querySelector('.unit-price').value) || 0;
+                const total = parseFloat(row.querySelector('.price').textContent.replace('$', '')) || 0;
+
+                tableData.push([
+                    quantity,
+                    concept,
+                    item,
+                    `$${unitPrice.toFixed(2)}`,
+                    `$${total.toFixed(2)}`
+                ]);
+            });
+
+            doc.autoTable({
+                head: [['Cant.', 'Concepto', 'Descripción', 'P. Unitario', 'Total']],
+                body: tableData,
+                startY: headerHeight + 85,
+                headStyles: {
+                    fillColor: [0, 35, 102],
+                    textColor: [255, 255, 255],
+                    fontSize: 11,
+                    font: "times",
+                    fontStyle: 'bold',
+                    halign: 'center',
+                    cellPadding: 4
+                },
+                bodyStyles: {
+                    fontSize: 10,
+                    textColor: [50, 50, 50],
+                    font: "helvetica"
+                },
+                columnStyles: {
+                    0: { cellWidth: 15, halign: 'center' },
+                    1: { cellWidth: 40, halign: 'left' },
+                    2: { cellWidth: 60, halign: 'left' },
+                    3: { cellWidth: 30, halign: 'right' },
+                    4: { cellWidth: 30, halign: 'right' }
+                },
+                margin: { left: marginLeft, right: marginRight },
+                styles: {
+                    cellPadding: 3,
+                    lineWidth: 0.1,
+                    lineColor: [150, 150, 150],
+                    overflow: 'linebreak'
+                },
+                alternateRowStyles: {
+                    fillColor: [245, 248, 250]
+                },
+                didDrawPage: function(data) {
+                    const pageCount = doc.internal.getNumberOfPages();
+                    doc.setFont("helvetica", "italic");
+                    doc.setFontSize(8);
+                    doc.setTextColor(120, 120, 120);
+                    doc.text(`Página ${data.pageNumber} de ${pageCount}`, doc.internal.pageSize.getWidth() - marginRight - 10, pageHeight - 5, { align: 'right' });
                 }
             });
 
-            // Generar tabla con autoTable (estilo mejorado)
-            doc.autoTable({
-                head: [['Unidad', 'Concepto', 'Vehículo', 'P.U.', 'Precio']],
-                body: tableData,
-                startY: y,
-                theme: 'grid',
-                styles: { 
-                    fontSize: 8, 
-                    font: "Helvetica", 
-                    textColor: [33, 33, 33], 
-                    lineWidth: 0.3, 
-                    lineColor: [33, 150, 243], // Bordes azules
-                    cellPadding: 3
-                },
-                headStyles: { 
-                    fillColor: [33, 150, 243], // Fondo azul para el encabezado
-                    textColor: [255, 255, 255], // Texto blanco
-                    fontSize: 9,
-                    fontStyle: "bold",
-                    halign: 'center'
-                },
-                bodyStyles: {
-                    fillColor: [255, 255, 255], // Fondo blanco para las filas
-                    textColor: [33, 33, 33]
-                },
-                alternateRowStyles: { 
-                    fillColor: [240, 245, 255] // Fondo azul muy claro para filas alternas
-                },
-                columnStyles: {
-                    0: { cellWidth: 20, halign: 'center' }, // Unidad
-                    1: { cellWidth: 50 }, // Concepto
-                    2: { cellWidth: 50 }, // Vehículo
-                    3: { cellWidth: 30, halign: 'right' }, // P.U.
-                    4: { cellWidth: 30, halign: 'right' } // Precio
-                },
-                margin: { top: 60 }
-            });
+            // Totales
+            const finalY = doc.lastAutoTable.finalY + 20;
+            const taxRate = parseFloat(document.getElementById('tax').value) || 0;
+            const totalText = document.getElementById('total').textContent;
+            const total = parseFloat(totalText.replace('$', '')) || 0;
+            const subtotal = total / (1 + taxRate/100);
+            const taxAmount = total - subtotal;
 
-            // Posición después de la tabla
-            y = doc.lastAutoTable.finalY + 10;
-
-            // Impuestos y Total (en un cuadro destacado)
-            const taxRate = document.getElementById('tax').value || 0;
-            const total = document.getElementById('total').innerText;
-
-            // Cuadro de fondo para impuestos y total
-            doc.setFillColor(240, 245, 255); // Fondo azul claro
-            doc.rect(130, y - 5, 70, 20, 'F'); // Cuadro alrededor de impuestos y total
-            doc.setDrawColor(33, 150, 243);
-            doc.setLineWidth(0.3);
-            doc.rect(130, y - 5, 70, 20); // Borde del cuadro
-
-            doc.setFontSize(10);
-            doc.setFont("Helvetica", "bold");
-            doc.setTextColor(33, 62, 99); // Azul oscuro
-            doc.text(`Impuestos: ${taxRate}%`, 135, y);
-            y += 8;
-            doc.text(`Total: ${total}`, 135, y);
-            doc.setTextColor(33, 33, 33); // Restaurar color
-
-            // Línea divisoria antes de los datos del cliente y vendedor
-            y += 10;
-            doc.setDrawColor(33, 150, 243); // Línea azul
+            doc.setFillColor(0, 35, 102);
+            doc.roundedRect(marginLeft, finalY, pageWidth, 45, 8, 8, 'F');
+            doc.setDrawColor(255, 255, 255);
             doc.setLineWidth(0.5);
-            doc.line(10, y, 200, y);
-            y += 10;
+            doc.roundedRect(marginLeft + 2, finalY + 2, pageWidth - 4, 41, 6, 6);
 
-            // Datos del cliente (izquierda) con fondo
-            const clientName = document.getElementById('client-name').value || 'Nombre del Cliente';
-            const clientCity = document.getElementById('client-city').value || 'Ciudad';
-            const clientPhone = document.getElementById('client-phone').value || 'Teléfono';
-            const clientEmail = document.getElementById('client-email').value || 'Email';
+            doc.setFont("times", "bold");
+            doc.setFontSize(16);
+            doc.setTextColor(255, 255, 255);
+            doc.text("Resumen de Pago", marginLeft + 10, finalY + 12);
 
-            // Fondo para datos del cliente
-            doc.setFillColor(245, 245, 245); // Fondo gris claro
-            doc.rect(10, y - 5, 90, 35, 'F');
-            doc.setDrawColor(200, 200, 200);
-            doc.rect(10, y - 5, 90, 35);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(12);
+            doc.text(`Subtotal:`, marginLeft + pageWidth - 80, finalY + 25);
+            doc.text(`$${subtotal.toFixed(2)}`, marginLeft + pageWidth - 10, finalY + 25, { align: 'right' });
+            
+            doc.text(`Impuestos (${taxRate}%):`, marginLeft + pageWidth - 80, finalY + 34);
+            doc.text(`$${taxAmount.toFixed(2)}`, marginLeft + pageWidth - 10, finalY + 34, { align: 'right' });
+            
+            doc.setFont("times", "bold");
+            doc.setFontSize(14);
+            doc.text(`Total:`, marginLeft + pageWidth - 80, finalY + 43);
+            doc.text(`${totalText}`, marginLeft + pageWidth - 10, finalY + 43, { align: 'right' });
 
-            doc.setFontSize(9);
-            doc.setFont("Helvetica", "bold");
-            doc.setTextColor(33, 62, 99);
-            doc.text("Datos del Cliente", 15, y);
-            doc.setFont("Helvetica", "normal");
-            doc.setTextColor(33, 33, 33);
-            y += 5;
-            doc.text(`Nombre: ${clientName}`, 15, y);
-            y += 5;
-            doc.text(`Ciudad: ${clientCity}`, 15, y);
-            y += 5;
-            doc.text(`Teléfono: ${clientPhone}`, 15, y);
-            y += 5;
-            doc.text(`Email: ${clientEmail}`, 15, y);
+            // Pie de página estilizado
+            const footerY = pageHeight - 35;
+            doc.setFillColor(0, 35, 102);
+            doc.rect(0, footerY, doc.internal.pageSize.getWidth(), 35, 'F');
+            for (let i = 0; i < 35; i++) {
+                doc.setFillColor(0, 35 + i/2, 102 + i);
+                doc.rect(0, footerY + i, doc.internal.pageSize.getWidth(), 1, 'F');
+            }
 
-            // Datos del vendedor (derecha) con fondo
-            y -= 20; // Volver a la posición inicial para alinear con los datos del cliente
-            doc.setFillColor(245, 245, 245); // Fondo gris claro
-            doc.rect(110, y - 5, 90, 55, 'F');
-            doc.setDrawColor(200, 200, 200);
-            doc.rect(110, y - 5, 90, 55);
-
-            doc.setFontSize(9);
-            doc.setFont("Helvetica", "bold");
-            doc.setTextColor(33, 62, 99);
-            doc.text("Datos del Vendedor", 115, y);
-            doc.setFont("Helvetica", "normal");
-            doc.setTextColor(33, 33, 33);
-            y += 5;
-            doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 115, y);
-            y += 5;
-            doc.text("CDMX", 115, y);
-            y += 5;
-            doc.text("52 55 7341 3969", 115, y);
-            y += 5;
-            doc.text("transpo_rick@hotmail.com", 115, y);
-
-            // Información bancaria
-            y += 5;
-            doc.setFont("Helvetica", "bold");
-            doc.setTextColor(33, 62, 99);
-            doc.text("Información Bancaria", 115, y);
-            doc.setFont("Helvetica", "normal");
-            doc.setTextColor(33, 33, 33);
-            y += 5;
-            doc.text("Banco: Santander", 115, y);
-            y += 5;
-            doc.text("Nombre: Richy Entertainment, SAS de CV", 115, y);
-            y += 5;
-            doc.text("Cuenta No.: 65-51041870-7", 115, y);
-            y += 5;
-            doc.text("Clabe Interbancaria: 014180655104187070", 115, y);
-
-            // Pie de página con fondo
-            doc.setFillColor(33, 62, 99); // Fondo azul oscuro
-            doc.rect(0, 270, 210, 30, 'F'); // Rectángulo de fondo para el pie de página
-
-            // Línea decorativa en el pie de página
-            doc.setDrawColor(255, 215, 0); // Línea dorada
-            doc.setLineWidth(0.5);
-            doc.line(10, 270, 200, 270);
-
-            // Texto del pie de página
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(7);
+            doc.setTextColor(220, 220, 220);
+            doc.text("Richy Entertainment S.A.S. de C.V.  •  Teléfono: 52 55 7341 3969  •  Email: transpo_rick@hotmail.com", doc.internal.pageSize.getWidth() / 2, footerY + 12, { align: 'center' });
+            doc.text("Banco: Santander  •  Cuenta: 65-51041870-7  •  CLABE: 014180655104187070", doc.internal.pageSize.getWidth() / 2, footerY + 18, { align: 'center' });
+            
+            doc.setFont("times", "italic");
             doc.setFontSize(8);
-            doc.setTextColor(255, 255, 255); // Texto blanco
-            doc.text("© 2025 Richy Entertainment S.A.S. de C.V. | Todos los derechos reservados", 10, 285);
-            doc.text("Generado el: " + new Date().toLocaleDateString('es-MX'), 160, 285);
+            doc.setTextColor(255, 255, 255);
+            doc.text("© 2025 Richy Entertainment - Todos los derechos reservados", doc.internal.pageSize.getWidth() / 2, footerY + 28, { align: 'center' });
+
+            // Detalles decorativos laterales
+            doc.setDrawColor(209, 0, 0);
+            doc.setLineWidth(0.8);
+            doc.line(5, 10, 5, pageHeight - 10);
+            doc.line(doc.internal.pageSize.getWidth() - 5, 10, doc.internal.pageSize.getWidth() - 5, pageHeight - 10);
+
+            createPrintPreview(doc);
+            const fileName = `Cotización_${folio}_${clientName.replace(/[^a-z0-9]/gi, '_')}.pdf`;
+            doc.save(fileName);
         }
+
+        function createPrintPreview(pdf) {
+            const pdfContainer = document.getElementById('pdf-container');
+            pdfContainer.innerHTML = '';
+            
+            const iframe = document.createElement('iframe');
+            iframe.style.width = '100%';
+            iframe.style.height = '800px';
+            iframe.style.border = 'none';
+            
+            pdfContainer.appendChild(iframe);
+            
+            iframe.src = pdf.output('datauristring');
+            pdfContainer.style.display = 'block';
+        }
+
+        calculateTotal();
     </script>
 </body>
 </html>
