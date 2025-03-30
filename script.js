@@ -9,6 +9,7 @@
             --navy-primario: #0d1120;
             --gold-acentuado: #c9c197;
             --blanco: #ffffff;
+            --gris-plata: #b0bec5;
             --texto-oscuro: #333;
             --sombra-suave: rgba(0, 0, 0, 0.05);
         }
@@ -20,15 +21,21 @@
             background-color: var(--blanco);
             color: var(--texto-oscuro);
             line-height: 1.6;
+            background: linear-gradient(45deg, rgba(201, 193, 151, 0.05) 1px, transparent 1px),
+                        linear-gradient(45deg, rgba(201, 193, 151, 0.05) 1px, transparent 1px),
+                        linear-gradient(135deg, rgba(201, 193, 151, 0.05) 1px, transparent 1px),
+                        linear-gradient(135deg, rgba(201, 193, 151, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px, 10px 0, 0 10px;
         }
 
         .container {
             max-width: 1100px;
             margin: 0 auto;
             background-color: var(--blanco);
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 6px 20px var(--sombra-suave);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px var(--sombra-suave);
             position: relative;
             overflow: hidden;
         }
@@ -46,6 +53,7 @@
                 transparent 10px
             );
             height: 100%;
+            z-index: 1;
         }
 
         .container::before {
@@ -59,8 +67,12 @@
         .header {
             display: flex;
             align-items: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
+            margin-bottom: 50px;
+            padding-bottom: 25px;
+            position: relative;
+            background: linear-gradient(to right, #0d1120, #1a1f30);
+            border-radius: 10px;
+            padding: 20px;
         }
 
         .header::after {
@@ -80,145 +92,159 @@
         }
 
         .logo {
-            width: 250px;
+            width: 260px;
             height: auto;
-            margin-right: 50px;
+            margin-right: 60px;
+            z-index: 2;
         }
 
         .titulo {
             flex-grow: 1;
+            z-index: 2;
         }
 
         h1 {
-            color: var(--navy-primario);
+            color: var(--blanco);
             margin: 0;
-            font-size: 36px;
-            font-weight: 700;
+            font-size: 40px;
+            font-weight: 800;
             text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         h2 {
             color: var(--navy-primario);
-            font-size: 26px;
-            font-weight: 600;
-            margin-top: 40px;
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 50px;
             position: relative;
+            padding-left: 15px;
         }
 
         h2::before {
             content: '';
             position: absolute;
-            bottom: -5px;
             left: 0;
-            width: 50px;
-            height: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 5px;
+            height: 30px;
             background-color: var(--gold-acentuado);
         }
 
         .form-section {
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 40px;
-            border: 2px solid var(--gold-acentuado);
+            padding: 35px;
+            border-radius: 12px;
+            margin-bottom: 50px;
+            border: 2px solid var(--gris-plata);
+            background-color: rgba(176, 190, 197, 0.1);
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
+            margin-bottom: 10px;
+            font-weight: 600;
             color: var(--navy-primario);
-            font-size: 15px;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         input, select, textarea {
-            padding: 14px;
-            border: 2px solid var(--gold-acentuado);
-            border-radius: 8px;
+            padding: 16px;
+            border: 2px solid var(--gris-plata);
+            border-radius: 10px;
             width: 100%;
-            max-width: 350px;
-            font-size: 15px;
+            max-width: 400px;
+            font-size: 16px;
             background-color: var(--blanco);
-            transition: border-color 0.3s;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         input:focus, select:focus, textarea:focus {
             border-color: var(--navy-primario);
+            box-shadow: 0 0 5px rgba(13, 17, 32, 0.3);
             outline: none;
         }
 
         textarea {
             max-width: 100%;
             resize: vertical;
-            min-height: 100px;
+            min-height: 120px;
         }
 
         button {
             background-color: var(--navy-primario);
             color: var(--blanco);
             border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
+            padding: 18px 35px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: background-color 0.3s;
-            margin-right: 15px;
+            font-size: 17px;
+            font-weight: 700;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-right: 20px;
         }
 
         button:hover {
-            background-color: var(--gold-acentuado);
-            color: var(--navy-primario);
+            background-color: var(--gris-plata);
+            transform: translateY(-2px);
         }
 
         .button-group {
             display: flex;
             justify-content: center;
-            margin-top: 40px;
+            margin-top: 50px;
+            gap: 20px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 30px 0;
-            border-radius: 10px;
+            margin: 40px 0;
+            border-radius: 12px;
             overflow: hidden;
+            border: 2px solid var(--gris-plata);
         }
 
         th {
             background-color: var(--navy-primario);
             color: var(--blanco);
-            padding: 15px;
+            padding: 18px;
             text-align: left;
-            font-weight: 600;
-            font-size: 15px;
+            font-weight: 700;
+            font-size: 16px;
+            text-transform: uppercase;
         }
 
         td {
-            padding: 15px;
-            border-bottom: 1px solid var(--gold-acentuado);
-            font-size: 14px;
+            padding: 18px;
+            border-bottom: 1px dashed var(--gold-acentuado);
+            font-size: 15px;
         }
 
         tr:nth-child(even) {
-            background-color: rgba(13, 17, 32, 0.05);
+            background-color: rgba(176, 190, 197, 0.15);
         }
 
         .price {
             text-align: right;
+            font-weight: 600;
         }
 
         .total-section {
             background-color: var(--navy-primario);
             color: var(--blanco);
-            padding: 30px;
-            border-radius: 10px;
-            margin-top: 40px;
+            padding: 40px;
+            border-radius: 15px;
+            margin-top: 50px;
             position: relative;
             overflow: hidden;
+            border: 3px solid var(--gris-plata);
         }
 
         .total-section::before {
@@ -226,42 +252,52 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 5px;
+            width: 8px;
             height: 100%;
-            background-color: var(--gold-acentuado);
+            background: repeating-linear-gradient(
+                to bottom,
+                var(--gold-acentuado) 0,
+                var(--gold-acentuado) 5px,
+                transparent 5px,
+                transparent 10px
+            );
         }
 
         .total-section label {
             color: var(--blanco);
-            font-size: 15px;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         #total {
-            font-size: 30px;
-            font-weight: 700;
-            margin-top: 15px;
+            font-size: 32px;
+            font-weight: 800;
+            margin-top: 20px;
             display: block;
+            text-align: right;
         }
 
         .remove-btn {
-            background-color: var(--gold-acentuado);
+            background-color: var(--gris-plata);
             color: var(--navy-primario);
-            padding: 8px 15px;
+            padding: 10px 18px;
             font-size: 14px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
 
         .remove-btn:hover {
-            background-color: #a99e7e;
+            background-color: #90a4ae;
         }
 
         .item-controls {
             display: flex;
-            gap: 20px;
+            gap: 25px;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .item-select {
@@ -270,20 +306,23 @@
 
         .footer {
             text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid var(--gold-acentuado);
-            color: var(--texto-oscuro);
-            font-size: 12px;
+            margin-top: 50px;
+            padding: 20px;
+            background-color: var(--gris-plata);
+            border-radius: 10px;
+            color: var(--navy-primario);
+            font-size: 13px;
+            border: 2px solid var(--gold-acentuado);
         }
 
         .footer a {
-            color: var(--navy-primario);
+            color: var(--gold-acentuado);
             text-decoration: none;
+            font-weight: 600;
         }
 
         .footer a:hover {
-            color: var(--gold-acentuado);
+            color: #a99e7e;
         }
 
         @media print {
@@ -402,7 +441,7 @@
         <div class="footer">
             <p>Contacto: <a href="mailto:transpo_rick@hotmail.com">transpo_rick@hotmail.com</a> | Tel: 52 55 7341 3969</p>
             <p>Banco: Santander | Cuenta: 65-51041870-7 | CLABE: 014180655104187070</p>
-            <p>&copy; 2025 Richy Entertainment - Todos los derechos reservados</p>
+            <p>© 2025 Richy Entertainment - Todos los derechos reservados</p>
         </div>
     </div>
 
@@ -554,41 +593,41 @@
             function addHeader() {
                 if (logoData) {
                     doc.setFillColor(13, 17, 32);
-                    doc.rect(0, 0, doc.internal.pageSize.getWidth(), 50, 'F');
-                    for (let i = 0; i < 50; i += 10) {
-                        doc.setFillColor(13, 17 + i/10, 32 + i/10);
-                        doc.rect(0, i, doc.internal.pageSize.getWidth(), 2, 'F');
+                    doc.rect(0, 0, doc.internal.pageSize.getWidth(), 60, 'F');
+                    for (let i = 0; i < 60; i += 15) {
+                        doc.setFillColor(13 + i/5, 17 + i/5, 32 + i/5);
+                        doc.rect(0, i, doc.internal.pageSize.getWidth(), 5, 'F');
                     }
 
-                    const logoWidth = 60;
+                    const logoWidth = 65;
                     const logoHeight = (document.getElementById('logo').naturalHeight / document.getElementById('logo').naturalWidth) * logoWidth;
                     doc.addImage(logoData, 'PNG', marginLeft, 5, logoWidth, logoHeight);
 
                     doc.setFont("times", "italic");
-                    doc.setFontSize(14);
+                    doc.setFontSize(16);
                     doc.setTextColor(255, 255, 255);
-                    doc.text("Soluciones de Transportación Ejecutiva", marginLeft + logoWidth + 10, 35);
+                    doc.text("Soluciones de Transportación Ejecutiva", marginLeft + logoWidth + 15, 40);
                     
                     doc.setDrawColor(201, 193, 151);
-                    doc.setLineWidth(1.5);
-                    doc.line(marginLeft, 55, doc.internal.pageSize.getWidth() - marginRight, 55);
-                    return 60;
+                    doc.setLineWidth(2);
+                    doc.line(marginLeft, 60, doc.internal.pageSize.getWidth() - marginRight, 60);
+                    return 65;
                 } else {
                     doc.setFillColor(13, 17, 32);
-                    doc.rect(0, 0, doc.internal.pageSize.getWidth(), 50, 'F');
-                    for (let i = 0; i < 50; i += 10) {
-                        doc.setFillColor(13, 17 + i/10, 32 + i/10);
-                        doc.rect(0, i, doc.internal.pageSize.getWidth(), 2, 'F');
+                    doc.rect(0, 0, doc.internal.pageSize.getWidth(), 60, 'F');
+                    for (let i = 0; i < 60; i += 15) {
+                        doc.setFillColor(13 + i/5, 17 + i/5, 32 + i/5);
+                        doc.rect(0, i, doc.internal.pageSize.getWidth(), 5, 'F');
                     }
                     
                     doc.setFont("times", "italic");
-                    doc.setFontSize(16);
+                    doc.setFontSize(18);
                     doc.setTextColor(255, 255, 255);
-                    doc.text("Soluciones de Transportación Ejecutiva", doc.internal.pageSize.getWidth() / 2, 38, { align: 'center' });
+                    doc.text("Soluciones de Transportación Ejecutiva", doc.internal.pageSize.getWidth() / 2, 40, { align: 'center' });
                     
                     doc.setDrawColor(201, 193, 151);
-                    doc.setLineWidth(1.5);
-                    doc.line(marginLeft, 55, doc.internal.pageSize.getWidth() - marginRight, 55);
+                    doc.setLineWidth(2);
+                    doc.line(marginLeft, 60, doc.internal.pageSize.getWidth() - marginRight, 60);
                     return 65;
                 }
             }
@@ -603,24 +642,24 @@
             });
 
             doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
+            doc.setFontSize(11);
             doc.setTextColor(51, 51, 51);
             doc.text(`Folio: ${folio}`, marginLeft, headerHeight + 5);
             doc.text(`Fecha: ${date}`, doc.internal.pageSize.getWidth() - marginRight, headerHeight + 5, { align: 'right' });
 
             doc.setFont("times", "bold");
-            doc.setFontSize(20);
+            doc.setFontSize(22);
             doc.setTextColor(13, 17, 32);
             doc.text("Cotización", doc.internal.pageSize.getWidth() / 2, headerHeight + 20, { align: 'center' });
             
             doc.setDrawColor(201, 193, 151);
-            doc.setLineWidth(0.8);
-            doc.line(marginLeft + 20, headerHeight + 22, doc.internal.pageSize.getWidth() - marginRight - 20, headerHeight + 22);
+            doc.setLineWidth(1);
+            doc.line(marginLeft + 30, headerHeight + 25, doc.internal.pageSize.getWidth() - marginRight - 30, headerHeight + 25);
 
             doc.setFont("times", "bold");
-            doc.setFontSize(16);
+            doc.setFontSize: 18;
             doc.setTextColor(13, 17, 32);
-            doc.text("Datos del Cliente", marginLeft, headerHeight + 35);
+            doc.text("Datos del Cliente", marginLeft, headerHeight + 40);
 
             const clientName = document.getElementById('client-name').value || 'No especificado';
             const clientCity = document.getElementById('client-city').value || 'No especificado';
@@ -628,18 +667,18 @@
             const clientEmail = document.getElementById('client-email').value || 'No especificado';
 
             doc.setFillColor(255, 255, 255);
-            doc.rect(marginLeft, headerHeight + 40, pageWidth, 50, 'F');
-            doc.setDrawColor(13, 17, 32);
+            doc.rect(marginLeft, headerHeight + 50, pageWidth, 60, 'F');
+            doc.setDrawColor(176, 190, 197);
             doc.setLineWidth(0.5);
-            doc.rect(marginLeft, headerHeight + 40, pageWidth, 50);
+            doc.rect(marginLeft, headerHeight + 50, pageWidth, 60);
 
             doc.setFont("helvetica", "normal");
-            doc.setFontSize(12);
+            doc.setFontSize: 13;
             doc.setTextColor(51, 51, 51);
-            doc.text(`Nombre: ${clientName}`, marginLeft + 10, headerHeight + 50);
-            doc.text(`Ciudad: ${clientCity}`, marginLeft + 10, headerHeight + 60);
-            doc.text(`Teléfono: ${clientPhone}`, marginLeft + 10, headerHeight + 70);
-            doc.text(`Email: ${clientEmail}`, marginLeft + 10, headerHeight + 80);
+            doc.text(`Nombre: ${clientName}`, marginLeft + 15, headerHeight + 65);
+            doc.text(`Ciudad: ${clientCity}`, marginLeft + 15, headerHeight + 75);
+            doc.text(`Teléfono: ${clientPhone}`, marginLeft + 15, headerHeight + 85);
+            doc.text(`Email: ${clientEmail}`, marginLeft + 15, headerHeight + 95);
 
             const tableData = [];
             const rows = document.querySelectorAll('#items tbody tr');
@@ -663,32 +702,32 @@
             doc.autoTable({
                 head: [['Cant.', 'Concepto', 'Descripción', 'P. Unitario', 'Total']],
                 body: tableData,
-                startY: headerHeight + 95,
+                startY: headerHeight + 115,
                 headStyles: {
                     fillColor: [13, 17, 32],
                     textColor: [255, 255, 255],
-                    fontSize: 12,
+                    fontSize: 13,
                     font: "times",
                     fontStyle: 'bold',
                     halign: 'center',
-                    cellPadding: 5
+                    cellPadding: 6
                 },
                 bodyStyles: {
-                    fontSize: 11,
+                    fontSize: 12,
                     textColor: [51, 51, 51],
                     font: "helvetica"
                 },
                 columnStyles: {
-                    0: { cellWidth: 20, halign: 'center' },
-                    1: { cellWidth: 45, halign: 'left' },
-                    2: { cellWidth: 65, halign: 'left' },
-                    3: { cellWidth: 35, halign: 'right' },
-                    4: { cellWidth: 35, halign: 'right' }
+                    0: { cellWidth: 25, halign: 'center' },
+                    1: { cellWidth: 50, halign: 'left' },
+                    2: { cellWidth: 70, halign: 'left' },
+                    3: { cellWidth: 40, halign: 'right' },
+                    4: { cellWidth: 40, halign: 'right' }
                 },
                 margin: { left: marginLeft, right: marginRight },
                 styles: {
-                    cellPadding: 4,
-                    lineWidth: 0.2,
+                    cellPadding: 5,
+                    lineWidth: 0.3,
                     lineColor: [201, 193, 151],
                     overflow: 'linebreak'
                 },
@@ -698,9 +737,9 @@
                 didDrawPage: function(data) {
                     const pageCount = doc.internal.getNumberOfPages();
                     doc.setFont("helvetica", "italic");
-                    doc.setFontSize: 8;
+                    doc.setFontSize: 9;
                     doc.setTextColor(51, 51, 51);
-                    doc.text(`Página ${data.pageNumber} de ${pageCount}`, doc.internal.pageSize.getWidth() - marginRight - 10, pageHeight - 10, { align: 'right' });
+                    doc.text(`Página ${data.pageNumber} de ${pageCount}`, doc.internal.pageSize.getWidth() - marginRight - 15, pageHeight - 15, { align: 'right' });
 
                     doc.setDrawColor(201, 193, 151);
                     doc.setLineWidth(0.5);
@@ -711,20 +750,20 @@
 
             const notes = document.getElementById('notes').value;
             if (notes) {
-                const notesY = doc.lastAutoTable.finalY + 15;
+                const notesY = doc.lastAutoTable.finalY + 20;
                 doc.setFont("times", "bold");
-                doc.setFontSize: 14;
+                doc.setFontSize: 15;
                 doc.setTextColor(13, 17, 32);
                 doc.text("Anotaciones", marginLeft, notesY);
 
                 doc.setFont("helvetica", "normal");
-                doc.setFontSize: 11;
+                doc.setFontSize: 12;
                 doc.setTextColor(51, 51, 51);
-                const splitNotes = doc.splitTextToSize(notes, pageWidth - 20);
-                doc.text(splitNotes, marginLeft + 10, notesY + 10);
+                const splitNotes = doc.splitTextToSize(notes, pageWidth - 30);
+                doc.text(splitNotes, marginLeft + 15, notesY + 10);
             }
 
-            const finalY = (notes ? doc.lastAutoTable.finalY + 30 + (doc.splitTextToSize(notes, pageWidth - 20).length * 6) : doc.lastAutoTable.finalY + 30);
+            const finalY = (notes ? doc.lastAutoTable.finalY + 40 + (doc.splitTextToSize(notes, pageWidth - 30).length * 7) : doc.lastAutoTable.finalY + 40);
             const taxRate = parseFloat(document.getElementById('tax').value) || 0;
             const totalText = document.getElementById('total').textContent;
             const total = parseFloat(totalText.replace('$', '').replace(/,/g, '')) || 0;
@@ -733,48 +772,48 @@
             const totalInWords = numberToWordsSpanish(total);
 
             doc.setFillColor(13, 17, 32);
-            doc.rect(marginLeft, finalY, pageWidth, 50, 'F');
-            doc.setDrawColor(255, 255, 255);
+            doc.rect(marginLeft, finalY, pageWidth, 60, 'F');
+            doc.setDrawColor(176, 190, 197);
             doc.setLineWidth(0.5);
-            doc.rect(marginLeft + 5, finalY + 5, pageWidth - 10, 40);
+            doc.rect(marginLeft + 5, finalY + 5, pageWidth - 10, 50);
 
             doc.setFont("times", "bold");
-            doc.setFontSize: 16;
+            doc.setFontSize: 18;
             doc.setTextColor(255, 255, 255);
-            doc.text("Resumen de Pago", marginLeft + 10, finalY + 15);
+            doc.text("Resumen de Pago", marginLeft + 15, finalY + 20);
 
             doc.setFont("helvetica", "normal");
-            doc.setFontSize: 12;
-            doc.text(`Subtotal:`, marginLeft + pageWidth - 90, finalY + 25);
-            doc.text(`$${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 20, finalY + 25, { align: 'right' });
+            doc.setFontSize: 13;
+            doc.text(`Subtotal:`, marginLeft + pageWidth - 100, finalY + 30);
+            doc.text(`$${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 20, finalY + 30, { align: 'right' });
             
-            doc.text(`Impuestos (${taxRate.toLocaleString('en-US')}%):`, marginLeft + pageWidth - 90, finalY + 35);
-            doc.text(`$${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 20, finalY + 35, { align: 'right' });
+            doc.text(`Impuestos (${taxRate.toLocaleString('en-US')}%):`, marginLeft + pageWidth - 100, finalY + 40);
+            doc.text(`$${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 20, finalY + 40, { align: 'right' });
             
             doc.setFont("times", "bold");
-            doc.setFontSize: 14;
-            doc.text(`Total:`, marginLeft + pageWidth - 90, finalY + 45);
-            doc.text(`${totalText}`, marginLeft + pageWidth - 20, finalY + 45, { align: 'right' });
+            doc.setFontSize: 16;
+            doc.text(`Total:`, marginLeft + pageWidth - 100, finalY + 50);
+            doc.text(`${totalText}`, marginLeft + pageWidth - 20, finalY + 50, { align: 'right' });
 
             doc.setFont("helvetica", "italic");
-            doc.setFontSize: 10;
-            const splitTotalInWords = doc.splitTextToSize(totalInWords, pageWidth - 30);
-            doc.text(splitTotalInWords, marginLeft + 10, finalY + 55);
+            doc.setFontSize: 11;
+            const splitTotalInWords = doc.splitTextToSize(totalInWords, pageWidth - 40);
+            doc.text(splitTotalInWords, marginLeft + 15, finalY + 65);
 
-            const footerY = pageHeight - 40;
+            const footerY = pageHeight - 50;
             doc.setFillColor(13, 17, 32);
-            doc.rect(0, footerY, doc.internal.pageSize.getWidth(), 40, 'F');
-            for (let i = 0; i < 40; i += 10) {
-                doc.setFillColor(13, 17 + i/10, 32 + i/10);
-                doc.rect(0, footerY + i, doc.internal.pageSize.getWidth(), 2, 'F');
+            doc.rect(0, footerY, doc.internal.pageSize.getWidth(), 50, 'F');
+            for (let i = 0; i < 50; i += 15) {
+                doc.setFillColor(13 + i/5, 17 + i/5, 32 + i/5);
+                doc.rect(0, footerY + i, doc.internal.pageSize.getWidth(), 5, 'F');
             }
 
             doc.setFont("helvetica", "normal");
-            doc.setFontSize: 8;
-            doc.setTextColor(255, 255, 255);
-            doc.text("Richy Entertainment S.A.S. de C.V.  •  Tel: 52 55 7341 3969  •  Email: transpo_rick@hotmail.com", doc.internal.pageSize.getWidth() / 2, footerY + 15, { align: 'center' });
-            doc.text("Banco: Santander  •  Cuenta: 65-51041870-7  •  CLABE: 014180655104187070", doc.internal.pageSize.getWidth() / 2, footerY + 22, { align: 'center' });
-            doc.text("© 2025 Richy Entertainment - Todos los derechos reservados", doc.internal.pageSize.getWidth() / 2, footerY + 30, { align: 'center' });
+            doc.setFontSize: 9;
+            doc.setTextColor(201, 193, 151);
+            doc.text("Richy Entertainment S.A.S. de C.V.  •  Tel: 52 55 7341 3969  •  Email: transpo_rick@hotmail.com", doc.internal.pageSize.getWidth() / 2, footerY + 20, { align: 'center' });
+            doc.text("Banco: Santander  •  Cuenta: 65-51041870-7  •  CLABE: 014180655104187070", doc.internal.pageSize.getWidth() / 2, footerY + 28, { align: 'center' });
+            doc.text("© 2025 Richy Entertainment - Todos los derechos reservados", doc.internal.pageSize.getWidth() / 2, footerY + 36, { align: 'center' });
 
             createPrintPreview(doc);
             const fileName = `Cotización_${folio}_${clientName.replace(/[^a-z0-9]/gi, '_')}.pdf`;
