@@ -154,34 +154,30 @@
             // Obtener la imagen precargada del HTML
             const logo = document.getElementById('logo-img');
 
-            // Generar el contenido del PDF con el logo
-            generatePDFContent(doc, logo);
-            doc.save("cotizacion_richy_entertainment.pdf");
-        }
+            // Generar el contenido básico del PDF
+            let y = 10;
 
-        function generatePDFContent(doc, logo) {
-            // Configuración general
-            doc.setFont("Helvetica", "normal");
-            doc.setTextColor(33, 33, 33);
-
-            // Agregar el logo en la parte superior
-            if (logo) {
+            // Agregar el logo en la parte superior si está disponible
+            if (logo && logo.complete && logo.naturalWidth !== 0) {
                 const pageWidth = doc.internal.pageSize.getWidth();
                 const logoWidth = 135;
                 const logoHeight = 65;
-                const x = (pageWidth - logoWidth) / 2; // Centrado horizontalmente
-                doc.addImage(logo, 'JPEG', x, 10, logoWidth, logoHeight); // Logo en la parte superior
+                const x = (pageWidth - logoWidth) / 2;
+                doc.addImage(logo, 'JPEG', x, y, logoWidth, logoHeight);
+                y += 70; // Espacio después del logo
+            } else {
+                console.log("Logo no cargado, omitiendo...");
+                y += 10; // Espacio mínimo si no hay logo
             }
 
-            // Encabezado simple (sin fondo azul para simplificar)
-            doc.setFontSize(8);
-            doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 10, 20);
-            const folio = document.getElementById('folio-number').value || 'Sin Folio';
+            // Encabezado básico
             doc.setFontSize(10);
-            doc.text(`Folio: ${folio}`, 170, 20);
+            doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 10, y);
+            const folio = document.getElementById('folio-number').value || 'Sin Folio';
+            doc.text(`Folio: ${folio}`, 170, y);
+            y += 10;
 
             // Tabla de ítems
-            let y = 80; // Espacio para el logo
             const tableData = [];
             const rows = document.querySelectorAll('#items tbody tr');
             rows.forEach(row => {
@@ -199,72 +195,21 @@
                 head: [['Unidad', 'Concepto', 'Vehículo', 'P.U.', 'Precio']],
                 body: tableData,
                 startY: y,
-                theme: 'grid',
-                styles: { fontSize: 8, font: "Helvetica", textColor: [33, 33, 33] },
-                headStyles: { fillColor: [33, 150, 243], textColor: [255, 255, 255], fontSize: 9, fontStyle: "bold" },
-                margin: { top: 80 }
+                theme: 'grid'
             });
 
             // Posición después de la tabla
             y = doc.lastAutoTable.finalY + 10;
 
-            // Impuestos y Total (sin cuadro estilizado)
+            // Impuestos y Total
             const taxRate = document.getElementById('tax').value || 0;
             const total = document.getElementById('total').innerText;
-            doc.setFontSize(10);
             doc.text(`Impuestos: ${taxRate}%`, 10, y);
-            y += 8;
+            y += 10;
             doc.text(`Total: ${total}`, 10, y);
 
-            // Datos del cliente y vendedor (sin fondos estilizados)
-            y += 10;
-            const clientName = document.getElementById('client-name').value || 'Nombre del Cliente';
-            const clientCity = document.getElementById('client-city').value || 'Ciudad';
-            const clientPhone = document.getElementById('client-phone').value || 'Teléfono';
-            const clientEmail = document.getElementById('client-email').value || 'Email';
-
-            doc.setFontSize(9);
-            doc.text("Datos del Cliente", 10, y);
-            y += 5;
-            doc.text(`Nombre: ${clientName}`, 10, y);
-            y += 5;
-            doc.text(`Ciudad: ${clientCity}`, 10, y);
-            y += 5;
-            doc.text(`Teléfono: ${clientPhone}`, 10, y);
-            y += 5;
-            doc.text(`Email: ${clientEmail}`, 10, y);
-
-            y += 10;
-            doc.text("Datos del Vendedor", 10, y);
-            y += 5;
-            doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 10, y);
-            y += 5;
-            doc.text("CDMX", 10, y);
-            y += 5;
-            doc.text("52 55 7341 3969", 10, y);
-            y += 5;
-            doc.text("transpo_rick@hotmail.com", 10, y);
-
-            y += 10;
-            doc.text("Información Bancaria", 10, y);
-            y += 5;
-            doc.text("Banco: Santander", 10, y);
-            y += 5;
-            doc.text("Nombre: Richy Entertainment, SAS de CV", 10, y);
-            y += 5;
-            doc.text("Cuenta No.: 65-51041870-7", 10, y);
-            y += 5;
-            doc.text("Clabe Interbancaria: 014180655104187070", 10, y);
-
-            // Logo en el pie de página (índice de la página)
-            if (logo) {
-                const pageHeight = doc.internal.pageSize.getHeight();
-                doc.addImage(logo, 'JPEG', 10, pageHeight - 20, 30, 14); // Logo pequeño en la esquina inferior izquierda
-            }
-
-            // Pie de página simplificado
-            doc.setFontSize(8);
-            doc.text("© 2025 Richy Entertainment S.A.S. de C.V.", 50, pageHeight - 10);
+            // Guardar el PDF
+            doc.save("cotizacion_richy_entertainment.pdf");
         }
     </script>
 </body>
