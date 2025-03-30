@@ -6,20 +6,20 @@
     <title>Generador de Cotizaciones | Richy Entertainment</title>
     <style>
         :root {
-            --azul-primario: #1a237e; /* Deep indigo blue */
-            --naranja-acentuado: #ff5722; /* Vibrant orange-red */
+            --navy-primario: #0d1120; /* Deep navy from logo background */
+            --gold-acentuado: #c9c197; /* Muted gold from "ENTERTAINMENT" text */
+            --beige-claro: #fefae3; /* Light beige for backgrounds */
             --blanco: #ffffff;
-            --gris-claro: #f7f7f7;
-            --gris-oscuro: #212121;
-            --sombra-suave: rgba(0, 0, 0, 0.15);
+            --texto-oscuro: #333;
+            --sombra-suave: rgba(0, 0, 0, 0.1);
         }
         
         body {
-            font-family: 'Roboto', 'Arial', sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 30px;
-            background-color: var(--gris-claro);
-            color: var(--gris-oscuro);
+            background-color: var(--beige-claro);
+            color: var(--texto-oscuro);
             line-height: 1.6;
         }
         
@@ -29,7 +29,7 @@
             background-color: var(--blanco);
             padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 4px 15px var(--sombra-suave);
+            box-shadow: 0 4px 10px var(--sombra-suave);
         }
         
         .header {
@@ -37,12 +37,11 @@
             align-items: center;
             margin-bottom: 40px;
             padding-bottom: 25px;
-            border-bottom: 3px solid var(--naranja-acentuado);
-            position: relative;
+            border-bottom: 3px solid var(--gold-acentuado);
         }
         
         .logo {
-            width: 240px; /* 3x the original 80px assuming previous small logo was ~80px */
+            width: 240px;
             height: auto;
             margin-right: 40px;
         }
@@ -52,16 +51,15 @@
         }
         
         h1 {
-            color: var(--azul-primario);
+            color: var(--navy-primario);
             margin: 0;
             font-size: 32px;
             font-weight: 700;
-            letter-spacing: 1px;
         }
         
         h2 {
-            color: var(--azul-primario);
-            border-bottom: 2px solid var(--naranja-acentuado);
+            color: var(--navy-primario);
+            border-bottom: 2px solid var(--gold-acentuado);
             padding-bottom: 10px;
             margin-top: 35px;
             font-size: 24px;
@@ -69,11 +67,11 @@
         }
         
         .form-section {
-            background-color: var(--gris-claro);
+            background-color: var(--beige-claro);
             padding: 25px;
             border-radius: 10px;
             margin-bottom: 35px;
-            border: 1px solid rgba(26, 35, 126, 0.1);
+            border: 1px solid var(--gold-acentuado);
         }
         
         .form-group {
@@ -84,21 +82,21 @@
             display: block;
             margin-bottom: 6px;
             font-weight: 500;
-            color: var(--azul-primario);
+            color: var(--navy-primario);
         }
         
         input, select, textarea {
             padding: 12px;
-            border: 1px solid rgba(33, 33, 33, 0.2);
+            border: 1px solid var(--gold-acentuado);
             border-radius: 6px;
             width: 100%;
             max-width: 320px;
             font-size: 14px;
-            transition: border-color 0.3s;
+            background-color: var(--blanco);
         }
         
         input:focus, select:focus, textarea:focus {
-            border-color: var(--naranja-acentuado);
+            border-color: var(--navy-primario);
             outline: none;
         }
         
@@ -108,7 +106,7 @@
         }
         
         button {
-            background-color: var(--azul-primario);
+            background-color: var(--navy-primario);
             color: var(--blanco);
             border: none;
             padding: 14px 25px;
@@ -116,12 +114,12 @@
             cursor: pointer;
             font-size: 16px;
             font-weight: 500;
-            transition: background-color 0.3s, transform 0.2s;
+            transition: background-color 0.3s;
         }
         
         button:hover {
-            background-color: var(--naranja-acentuado);
-            transform: translateY(-2px);
+            background-color: var(--gold-acentuado);
+            color: var(--navy-primario);
         }
         
         table {
@@ -133,7 +131,7 @@
         }
         
         th {
-            background-color: var(--azul-primario);
+            background-color: var(--navy-primario);
             color: var(--blanco);
             padding: 14px;
             text-align: left;
@@ -142,11 +140,11 @@
         
         td {
             padding: 12px;
-            border-bottom: 1px solid rgba(33, 33, 33, 0.1);
+            border-bottom: 1px solid var(--gold-acentuado);
         }
         
         tr:nth-child(even) {
-            background-color: rgba(247, 247, 247, 0.5);
+            background-color: var(--beige-claro);
         }
         
         .price {
@@ -154,12 +152,11 @@
         }
         
         .total-section {
-            background-color: var(--azul-primario);
+            background-color: var(--navy-primario);
             color: var(--blanco);
             padding: 25px;
             border-radius: 10px;
             margin-top: 25px;
-            box-shadow: 0 2px 10px var(--sombra-suave);
         }
         
         .total-section label {
@@ -172,14 +169,14 @@
         }
         
         .remove-btn {
-            background-color: var(--naranja-acentuado);
+            background-color: var(--gold-acentuado);
+            color: var(--navy-primario);
             padding: 6px 12px;
             font-size: 14px;
         }
         
         .remove-btn:hover {
-            background-color: #e64a19;
-            transform: translateY(-2px);
+            background-color: #b0a880;
         }
         
         .item-controls {
@@ -451,40 +448,40 @@
 
             function addHeader() {
                 if (logoData) {
-                    doc.setFillColor(26, 35, 126); // var(--azul-primario)
+                    doc.setFillColor(13, 17, 32); // var(--navy-primario)
                     doc.rect(0, 0, doc.internal.pageSize.getWidth(), 50, 'F');
                     for (let i = 0; i < 50; i++) {
-                        doc.setFillColor(26, 35 + i/2, 126 + i/2);
+                        doc.setFillColor(13, 17 + i/5, 32 + i/5);
                         doc.rect(0, i, doc.internal.pageSize.getWidth(), 1, 'F');
                     }
 
-                    const logoWidth = 60; // 3x larger than previous small logo (20mm -> 60mm)
+                    const logoWidth = 60;
                     const logoHeight = (document.getElementById('logo').naturalHeight / document.getElementById('logo').naturalWidth) * logoWidth;
                     doc.addImage(logoData, 'PNG', marginLeft, 5, logoWidth, logoHeight);
 
                     doc.setFont("times", "italic");
                     doc.setFontSize(14);
-                    doc.setTextColor(245, 245, 245);
+                    doc.setTextColor(254, 250, 227); // var(--beige-claro)
                     doc.text("Soluciones de Transportación Ejecutiva", marginLeft + logoWidth + 10, 35);
                     
-                    doc.setDrawColor(255, 87, 34); // var(--naranja-acentuado)
+                    doc.setDrawColor(201, 193, 151); // var(--gold-acentuado)
                     doc.setLineWidth(1.5);
                     doc.line(marginLeft, 55, doc.internal.pageSize.getWidth() - marginRight, 55);
                     return 60;
                 } else {
-                    doc.setFillColor(26, 35, 126);
+                    doc.setFillColor(13, 17, 32);
                     doc.rect(0, 0, doc.internal.pageSize.getWidth(), 50, 'F');
                     for (let i = 0; i < 50; i++) {
-                        doc.setFillColor(26, 35 + i/2, 126 + i/2);
+                        doc.setFillColor(13, 17 + i/5, 32 + i/5);
                         doc.rect(0, i, doc.internal.pageSize.getWidth(), 1, 'F');
                     }
                     
                     doc.setFont("times", "italic");
                     doc.setFontSize(16);
-                    doc.setTextColor(245, 245, 245);
+                    doc.setTextColor(254, 250, 227);
                     doc.text("Soluciones de Transportación Ejecutiva", doc.internal.pageSize.getWidth() / 2, 38, { align: 'center' });
                     
-                    doc.setDrawColor(255, 87, 34);
+                    doc.setDrawColor(201, 193, 151);
                     doc.setLineWidth(1.5);
                     doc.line(marginLeft, 55, doc.internal.pageSize.getWidth() - marginRight, 55);
                     return 65;
@@ -508,16 +505,16 @@
 
             doc.setFont("times", "bold");
             doc.setFontSize(18);
-            doc.setTextColor(26, 35, 126);
+            doc.setTextColor(13, 17, 32);
             doc.text("Cotización", doc.internal.pageSize.getWidth() / 2, headerHeight + 20, { align: 'center' });
             
-            doc.setDrawColor(255, 87, 34);
+            doc.setDrawColor(201, 193, 151);
             doc.setLineWidth(0.6);
             doc.line(marginLeft + 20, headerHeight + 22, doc.internal.pageSize.getWidth() - marginRight - 20, headerHeight + 22);
 
             doc.setFont("times", "bold");
             doc.setFontSize(16);
-            doc.setTextColor(26, 35, 126);
+            doc.setTextColor(13, 17, 32);
             doc.text("Datos del Cliente", marginLeft, headerHeight + 35);
 
             const clientName = document.getElementById('client-name').value || 'No especificado';
@@ -525,15 +522,15 @@
             const clientPhone = document.getElementById('client-phone').value || 'No especificado';
             const clientEmail = document.getElementById('client-email').value || 'No especificado';
 
-            doc.setFillColor(247, 247, 247);
+            doc.setFillColor(254, 250, 227);
             doc.roundedRect(marginLeft, headerHeight + 40, pageWidth, 40, 5, 5, 'F');
-            doc.setDrawColor(26, 35, 126);
+            doc.setDrawColor(13, 17, 32);
             doc.setLineWidth(0.3);
             doc.roundedRect(marginLeft, headerHeight + 40, pageWidth, 40, 5, 5);
 
             doc.setFont("helvetica", "normal");
             doc.setFontSize(11);
-            doc.setTextColor(33, 33, 33);
+            doc.setTextColor(51, 51, 51);
             doc.text(`Nombre: ${clientName}`, marginLeft + 5, headerHeight + 50);
             doc.text(`Ciudad: ${clientCity}`, marginLeft + 5, headerHeight + 57);
             doc.text(`Teléfono: ${clientPhone}`, marginLeft + 5, headerHeight + 64);
@@ -563,7 +560,7 @@
                 body: tableData,
                 startY: headerHeight + 85,
                 headStyles: {
-                    fillColor: [26, 35, 126],
+                    fillColor: [13, 17, 32],
                     textColor: [255, 255, 255],
                     fontSize: 11,
                     font: "times",
@@ -573,7 +570,7 @@
                 },
                 bodyStyles: {
                     fontSize: 10,
-                    textColor: [33, 33, 33],
+                    textColor: [51, 51, 51],
                     font: "helvetica"
                 },
                 columnStyles: {
@@ -587,11 +584,11 @@
                 styles: {
                     cellPadding: 3,
                     lineWidth: 0.1,
-                    lineColor: [150, 150, 150],
+                    lineColor: [201, 193, 151],
                     overflow: 'linebreak'
                 },
                 alternateRowStyles: {
-                    fillColor: [247, 247, 247]
+                    fillColor: [254, 250, 227]
                 },
                 didDrawPage: function(data) {
                     const pageCount = doc.internal.getNumberOfPages();
@@ -607,12 +604,12 @@
                 const notesY = doc.lastAutoTable.finalY + 10;
                 doc.setFont("times", "bold");
                 doc.setFontSize(12);
-                doc.setTextColor(26, 35, 126);
+                doc.setTextColor(13, 17, 32);
                 doc.text("Anotaciones", marginLeft, notesY);
 
                 doc.setFont("helvetica", "normal");
                 doc.setFontSize(10);
-                doc.setTextColor(33, 33, 33);
+                doc.setTextColor(51, 51, 51);
                 const splitNotes = doc.splitTextToSize(notes, pageWidth);
                 doc.text(splitNotes, marginLeft, notesY + 7);
             }
@@ -625,7 +622,7 @@
             const taxAmount = total - subtotal;
             const totalInWords = numberToWordsSpanish(total);
 
-            doc.setFillColor(26, 35, 126);
+            doc.setFillColor(13, 17, 32);
             doc.roundedRect(marginLeft, finalY, pageWidth, 35, 6, 6, 'F');
             doc.setDrawColor(255, 255, 255);
             doc.setLineWidth(0.5);
@@ -655,16 +652,16 @@
             doc.text(splitTotalInWords, marginLeft + 10, finalY + 41);
 
             const footerY = pageHeight - 35;
-            doc.setFillColor(26, 35, 126);
+            doc.setFillColor(13, 17, 32);
             doc.rect(0, footerY, doc.internal.pageSize.getWidth(), 35, 'F');
             for (let i = 0; i < 35; i++) {
-                doc.setFillColor(26, 35 + i/2, 126 + i/2);
+                doc.setFillColor(13, 17 + i/5, 32 + i/5);
                 doc.rect(0, footerY + i, doc.internal.pageSize.getWidth(), 1, 'F');
             }
 
             doc.setFont("helvetica", "normal");
             doc.setFontSize(7);
-            doc.setTextColor(245, 245, 245);
+            doc.setTextColor(254, 250, 227);
             doc.text("Richy Entertainment S.A.S. de C.V.  •  Teléfono: 52 55 7341 3969  •  Email: transpo_rick@hotmail.com", doc.internal.pageSize.getWidth() / 2, footerY + 12, { align: 'center' });
             doc.text("Banco: Santander  •  Cuenta: 65-51041870-7  •  CLABE: 014180655104187070", doc.internal.pageSize.getWidth() / 2, footerY + 18, { align: 'center' });
             
@@ -673,7 +670,7 @@
             doc.setTextColor(255, 255, 255);
             doc.text("© 2025 Richy Entertainment - Todos los derechos reservados", doc.internal.pageSize.getWidth() / 2, footerY + 28, { align: 'center' });
 
-            doc.setDrawColor(255, 87, 34);
+            doc.setDrawColor(201, 193, 151);
             doc.setLineWidth(0.8);
             doc.line(5, 10, 5, pageHeight - 10);
             doc.line(doc.internal.pageSize.getWidth() - 5, 10, doc.internal.pageSize.getWidth() - 5, pageHeight - 10);
