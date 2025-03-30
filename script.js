@@ -349,7 +349,7 @@
                 const unit = parseFloat(row.querySelector('.unit').value) || 0;
                 const unitPrice = parseFloat(row.querySelector('.unit-price').value) || 0;
                 const total = unit * unitPrice;
-                row.querySelector('.price').textContent = `$${total.toFixed(2)}`;
+                row.querySelector('.price').textContent = `$${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
                 subtotal += total;
             });
             
@@ -357,7 +357,59 @@
             const taxAmount = subtotal * (taxRate / 100);
             const total = subtotal + taxAmount;
             
-            document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+            document.getElementById('total').textContent = `$${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+        }
+
+        function numberToWordsSpanish(num) {
+            const units = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
+            const teens = ["diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve"];
+            const tens = ["", "", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
+            const hundreds = ["", "ciento", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos"];
+            const thousands = ["mil", "millón", "millones"];
+
+            if (num === 0) return "cero pesos";
+
+            let integerPart = Math.floor(num);
+            let decimalPart = Math.round((num - integerPart) * 100);
+            let words = "";
+
+            if (integerPart >= 1000000) {
+                let millions = Math.floor(integerPart / 1000000);
+                integerPart %= 1000000;
+                words += (millions === 1 ? "un " : numberToWordsSpanish(millions)) + (millions === 1 ? "millón " : " millones ");
+            }
+
+            if (integerPart >= 1000) {
+                let thousandsPart = Math.floor(integerPart / 1000);
+                integerPart %= 1000;
+                words += (thousandsPart === 1 ? "mil" : numberToWordsSpanish(thousandsPart) + " mil") + " ";
+            }
+
+            if (integerPart >= 100) {
+                let hundredPart = Math.floor(integerPart / 100);
+                integerPart %= 100;
+                words += hundreds[hundredPart] + " ";
+                if (integerPart > 0) words += integerPart === 1 ? "un" : "";
+            }
+
+            if (integerPart >= 20) {
+                let tenPart = Math.floor(integerPart / 10);
+                integerPart %= 10;
+                words += tens[tenPart] + (integerPart > 0 ? " y " + units[integerPart] : "");
+            } else if (integerPart >= 10) {
+                words += teens[integerPart - 10];
+            } else if (integerPart > 0) {
+                words += units[integerPart];
+            }
+
+            words = words.trim();
+            if (decimalPart > 0) {
+                words += ` pesos con ${decimalPart}/100`;
+            } else {
+                words += " pesos";
+            }
+
+            return words;
         }
 
         async function generatePDF() {
@@ -375,7 +427,6 @@
             // Encabezado estilizado
             function addHeader() {
                 if (logoData) {
-                    // Fondo degradado
                     doc.setFillColor(0, 35, 102);
                     doc.rect(0, 0, doc.internal.pageSize.getWidth(), 50, 'F');
                     for (let i = 0; i < 50; i++) {
@@ -387,11 +438,6 @@
                     const logoHeight = (document.getElementById('logo').naturalHeight / document.getElementById('logo').naturalWidth) * logoWidth;
                     doc.addImage(logoData, 'PNG', marginLeft + 5, 10, logoWidth, logoHeight);
                     
-                    doc.setFont("times", "bold"); // Cambio a Times para elegancia
-                    doc.setFontSize(26);
-                    doc.setTextColor(255, 255, 255);
-                    doc.text("Richy Entertainment", marginLeft + logoWidth + 15, 25);
-                    
                     doc.setFont("times", "italic");
                     doc.setFontSize(12);
                     doc.setTextColor(220, 220, 220);
@@ -402,18 +448,12 @@
                     doc.line(marginLeft, 55, doc.internal.pageSize.getWidth() - marginRight, 55);
                     return 60;
                 } else {
-                    // Diseño sin logo con más estilo
                     doc.setFillColor(0, 35, 102);
                     doc.rect(0, 0, doc.internal.pageSize.getWidth(), 50, 'F');
                     for (let i = 0; i < 50; i++) {
                         doc.setFillColor(0, 35 + i/2, 102 + i);
                         doc.rect(0, i, doc.internal.pageSize.getWidth(), 1, 'F');
                     }
-                    
-                    doc.setFont("times", "bold");
-                    doc.setFontSize(30);
-                    doc.setTextColor(255, 255, 255);
-                    doc.text("Richy Entertainment", doc.internal.pageSize.getWidth() / 2, 25, { align: 'center' });
                     
                     doc.setFont("times", "italic");
                     doc.setFontSize(14);
@@ -424,7 +464,6 @@
                     doc.setLineWidth(1.5);
                     doc.line(marginLeft, 55, doc.internal.pageSize.getWidth() - marginRight, 55);
                     
-                    // Detalle decorativo
                     doc.setFillColor(209, 0, 0);
                     doc.circle(doc.internal.pageSize.getWidth() / 2, 55, 2, 'F');
                     return 65;
@@ -447,9 +486,9 @@
             doc.text(`Folio: ${folio}`, marginLeft, headerHeight + 5);
             doc.text(`Fecha: ${date}`, doc.internal.pageSize.getWidth() - marginRight, headerHeight + 5, { align: 'right' });
 
-            // Título de la cotización
+            // Título de la cotización (tamaño reducido)
             doc.setFont("times", "bold");
-            doc.setFontSize(20);
+            doc.setFontSize(16); // Tamaño reducido de 20 a 16
             doc.setTextColor(0, 35, 102);
             doc.text("Cotización", doc.internal.pageSize.getWidth() / 2, headerHeight + 20, { align: 'center' });
             
@@ -497,8 +536,8 @@
                     quantity,
                     concept,
                     item,
-                    `$${unitPrice.toFixed(2)}`,
-                    `$${total.toFixed(2)}`
+                    `$${unitPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+                    `$${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
                 ]);
             });
 
@@ -546,19 +585,20 @@
                 }
             });
 
-            // Totales
+            // Totales con número en letras
             const finalY = doc.lastAutoTable.finalY + 20;
             const taxRate = parseFloat(document.getElementById('tax').value) || 0;
             const totalText = document.getElementById('total').textContent;
             const total = parseFloat(totalText.replace('$', '')) || 0;
             const subtotal = total / (1 + taxRate/100);
             const taxAmount = total - subtotal;
+            const totalInWords = numberToWordsSpanish(total);
 
             doc.setFillColor(0, 35, 102);
-            doc.roundedRect(marginLeft, finalY, pageWidth, 45, 8, 8, 'F');
+            doc.roundedRect(marginLeft, finalY, pageWidth, 55, 8, 8, 'F');
             doc.setDrawColor(255, 255, 255);
             doc.setLineWidth(0.5);
-            doc.roundedRect(marginLeft + 2, finalY + 2, pageWidth - 4, 41, 6, 6);
+            doc.roundedRect(marginLeft + 2, finalY + 2, pageWidth - 4, 51, 6, 6);
 
             doc.setFont("times", "bold");
             doc.setFontSize(16);
@@ -568,15 +608,19 @@
             doc.setFont("helvetica", "normal");
             doc.setFontSize(12);
             doc.text(`Subtotal:`, marginLeft + pageWidth - 80, finalY + 25);
-            doc.text(`$${subtotal.toFixed(2)}`, marginLeft + pageWidth - 10, finalY + 25, { align: 'right' });
+            doc.text(`$${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 10, finalY + 25, { align: 'right' });
             
-            doc.text(`Impuestos (${taxRate}%):`, marginLeft + pageWidth - 80, finalY + 34);
-            doc.text(`$${taxAmount.toFixed(2)}`, marginLeft + pageWidth - 10, finalY + 34, { align: 'right' });
+            doc.text(`Impuestos (${taxRate.toLocaleString('en-US')}%):`, marginLeft + pageWidth - 80, finalY + 34);
+            doc.text(`$${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft + pageWidth - 10, finalY + 34, { align: 'right' });
             
             doc.setFont("times", "bold");
             doc.setFontSize(14);
             doc.text(`Total:`, marginLeft + pageWidth - 80, finalY + 43);
             doc.text(`${totalText}`, marginLeft + pageWidth - 10, finalY + 43, { align: 'right' });
+
+            doc.setFont("helvetica", "italic");
+            doc.setFontSize(10);
+            doc.text(`(${totalInWords})`, marginLeft + pageWidth - 10, finalY + 52, { align: 'right' });
 
             // Pie de página estilizado
             const footerY = pageHeight - 35;
