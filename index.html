@@ -15,12 +15,12 @@
             margin-top: 20px;
         }
         th, td {
-            border: 1px solid #2196F3; /* Borde azul */
+            border: 1px solid #2196F3;
             padding: 8px;
             text-align: left;
         }
         th {
-            background-color: #2196F3; /* Fondo azul */
+            background-color: #2196F3;
             color: white;
         }
         input[type="number"] {
@@ -160,47 +160,28 @@
         }
 
         function generatePDFContent(doc, logo) {
-            // Configuración general de fuentes y colores
+            // Configuración general
             doc.setFont("Helvetica", "normal");
-            doc.setTextColor(33, 33, 33); // Color gris oscuro para el texto
+            doc.setTextColor(33, 33, 33);
 
-            // Agregar el logo si está disponible
+            // Agregar el logo en la parte superior
             if (logo) {
                 const pageWidth = doc.internal.pageSize.getWidth();
-                const logoWidth = 135; // Ancho del logo
-                const logoHeight = 65; // Alto del logo
+                const logoWidth = 135;
+                const logoHeight = 65;
                 const x = (pageWidth - logoWidth) / 2; // Centrado horizontalmente
-                doc.addImage(logo, 'JPEG', x, 10, logoWidth, logoHeight); // Posicionado en y=10
+                doc.addImage(logo, 'JPEG', x, 10, logoWidth, logoHeight); // Logo en la parte superior
             }
 
-            // Fondo de encabezado (rectángulo azul oscuro)
-            doc.setFillColor(33, 62, 99); // Azul oscuro elegante
-            doc.rect(0, 0, 210, 30, 'F'); // Rectángulo de fondo para el encabezado
-
-            // Línea decorativa en el encabezado
-            doc.setDrawColor(255, 215, 0); // Línea dorada
-            doc.setLineWidth(0.5);
-            doc.line(10, 30, 200, 30);
-
-            // Fecha en el encabezado (izquierda)
+            // Encabezado simple (sin fondo azul para simplificar)
             doc.setFontSize(8);
-            doc.setTextColor(255, 255, 255); // Texto blanco
             doc.text(`Fecha: ${new Date().toLocaleDateString('es-MX')}`, 10, 20);
-
-            // Folio en el encabezado (derecha)
             const folio = document.getElementById('folio-number').value || 'Sin Folio';
             doc.setFontSize(10);
-            doc.setTextColor(255, 215, 0); // Folio en dorado
             doc.text(`Folio: ${folio}`, 170, 20);
-            doc.setTextColor(33, 33, 33); // Restaurar color
-
-            // Línea decorativa debajo del espacio del logo
-            doc.setDrawColor(33, 150, 243); // Línea azul
-            doc.setLineWidth(0.3);
-            doc.line(10, 80, 200, 80); // Ajustado para dejar espacio al logo
 
             // Tabla de ítems
-            let y = 90; // Ajustado para dar espacio al logo
+            let y = 80; // Espacio para el logo
             const tableData = [];
             const rows = document.querySelectorAll('#items tbody tr');
             rows.forEach(row => {
@@ -214,148 +195,76 @@
                 }
             });
 
-            // Generar tabla con autoTable
             doc.autoTable({
                 head: [['Unidad', 'Concepto', 'Vehículo', 'P.U.', 'Precio']],
                 body: tableData,
                 startY: y,
                 theme: 'grid',
-                styles: { 
-                    fontSize: 8, 
-                    font: "Helvetica", 
-                    textColor: [33, 33, 33], 
-                    lineWidth: 0.3, 
-                    lineColor: [33, 150, 243], // Bordes azules
-                    cellPadding: 3
-                },
-                headStyles: { 
-                    fillColor: [33, 150, 243], // Fondo azul para el encabezado
-                    textColor: [255, 255, 255], // Texto blanco
-                    fontSize: 9,
-                    fontStyle: "bold",
-                    halign: 'center'
-                },
-                bodyStyles: {
-                    fillColor: [255, 255, 255], // Fondo blanco para las filas
-                    textColor: [33, 33, 33]
-                },
-                alternateRowStyles: { 
-                    fillColor: [240, 245, 255] // Fondo azul muy claro para filas alternas
-                },
-                columnStyles: {
-                    0: { cellWidth: 20, halign: 'center' }, // Unidad
-                    1: { cellWidth: 50 }, // Concepto
-                    2: { cellWidth: 50 }, // Vehículo
-                    3: { cellWidth: 30, halign: 'right' }, // P.U.
-                    4: { cellWidth: 30, halign: 'right' } // Precio
-                },
-                margin: { top: 90 } // Ajustado para el logo
+                styles: { fontSize: 8, font: "Helvetica", textColor: [33, 33, 33] },
+                headStyles: { fillColor: [33, 150, 243], textColor: [255, 255, 255], fontSize: 9, fontStyle: "bold" },
+                margin: { top: 80 }
             });
 
             // Posición después de la tabla
             y = doc.lastAutoTable.finalY + 10;
 
-            // Impuestos y Total
+            // Impuestos y Total (sin cuadro estilizado)
             const taxRate = document.getElementById('tax').value || 0;
             const total = document.getElementById('total').innerText;
-
-            doc.setFillColor(240, 245, 255); // Fondo azul claro
-            doc.rect(130, y - 5, 70, 20, 'F');
-            doc.setDrawColor(33, 150, 243);
-            doc.setLineWidth(0.3);
-            doc.rect(130, y - 5, 70, 20);
-
             doc.setFontSize(10);
-            doc.setFont("Helvetica", "bold");
-            doc.setTextColor(33, 62, 99);
-            doc.text(`Impuestos: ${taxRate}%`, 135, y);
+            doc.text(`Impuestos: ${taxRate}%`, 10, y);
             y += 8;
-            doc.text(`Total: ${total}`, 135, y);
-            doc.setTextColor(33, 33, 33);
+            doc.text(`Total: ${total}`, 10, y);
 
-            // Línea divisoria
+            // Datos del cliente y vendedor (sin fondos estilizados)
             y += 10;
-            doc.setDrawColor(33, 150, 243);
-            doc.setLineWidth(0.5);
-            doc.line(10, y, 200, y);
-            y += 10;
-
-            // Datos del cliente
             const clientName = document.getElementById('client-name').value || 'Nombre del Cliente';
             const clientCity = document.getElementById('client-city').value || 'Ciudad';
             const clientPhone = document.getElementById('client-phone').value || 'Teléfono';
             const clientEmail = document.getElementById('client-email').value || 'Email';
 
-            doc.setFillColor(245, 245, 245);
-            doc.rect(10, y - 5, 90, 35, 'F');
-            doc.setDrawColor(200, 200, 200);
-            doc.rect(10, y - 5, 90, 35);
-
             doc.setFontSize(9);
-            doc.setFont("Helvetica", "bold");
-            doc.setTextColor(33, 62, 99);
-            doc.text("Datos del Cliente", 15, y);
-            doc.setFont("Helvetica", "normal");
-            doc.setTextColor(33, 33, 33);
+            doc.text("Datos del Cliente", 10, y);
             y += 5;
-            doc.text(`Nombre: ${clientName}`, 15, y);
+            doc.text(`Nombre: ${clientName}`, 10, y);
             y += 5;
-            doc.text(`Ciudad: ${clientCity}`, 15, y);
+            doc.text(`Ciudad: ${clientCity}`, 10, y);
             y += 5;
-            doc.text(`Teléfono: ${clientPhone}`, 15, y);
+            doc.text(`Teléfono: ${clientPhone}`, 10, y);
             y += 5;
-            doc.text(`Email: ${clientEmail}`, 15, y);
+            doc.text(`Email: ${clientEmail}`, 10, y);
 
-            // Datos del vendedor
-            y -= 20;
-            doc.setFillColor(245, 245, 245);
-            doc.rect(110, y - 5, 90, 55, 'F');
-            doc.setDrawColor(200, 200, 200);
-            doc.rect(110, y - 5, 90, 55);
+            y += 10;
+            doc.text("Datos del Vendedor", 10, y);
+            y += 5;
+            doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 10, y);
+            y += 5;
+            doc.text("CDMX", 10, y);
+            y += 5;
+            doc.text("52 55 7341 3969", 10, y);
+            y += 5;
+            doc.text("transpo_rick@hotmail.com", 10, y);
 
-            doc.setFontSize(9);
-            doc.setFont("Helvetica", "bold");
-            doc.setTextColor(33, 62, 99);
-            doc.text("Datos del Vendedor", 115, y);
-            doc.setFont("Helvetica", "normal");
-            doc.setTextColor(33, 33, 33);
+            y += 10;
+            doc.text("Información Bancaria", 10, y);
             y += 5;
-            doc.text("RICHY ENTERTAINMENT S.A.S. DE C.V.", 115, y);
+            doc.text("Banco: Santander", 10, y);
             y += 5;
-            doc.text("CDMX", 115, y);
+            doc.text("Nombre: Richy Entertainment, SAS de CV", 10, y);
             y += 5;
-            doc.text("52 55 7341 3969", 115, y);
+            doc.text("Cuenta No.: 65-51041870-7", 10, y);
             y += 5;
-            doc.text("transpo_rick@hotmail.com", 115, y);
+            doc.text("Clabe Interbancaria: 014180655104187070", 10, y);
 
-            // Información bancaria
-            y += 5;
-            doc.setFont("Helvetica", "bold");
-            doc.setTextColor(33, 62, 99);
-            doc.text("Información Bancaria", 115, y);
-            doc.setFont("Helvetica", "normal");
-            doc.setTextColor(33, 33, 33);
-            y += 5;
-            doc.text("Banco: Santander", 115, y);
-            y += 5;
-            doc.text("Nombre: Richy Entertainment, SAS de CV", 115, y);
-            y += 5;
-            doc.text("Cuenta No.: 65-51041870-7", 115, y);
-            y += 5;
-            doc.text("Clabe Interbancaria: 014180655104187070", 115, y);
+            // Logo en el pie de página (índice de la página)
+            if (logo) {
+                const pageHeight = doc.internal.pageSize.getHeight();
+                doc.addImage(logo, 'JPEG', 10, pageHeight - 20, 30, 14); // Logo pequeño en la esquina inferior izquierda
+            }
 
-            // Pie de página
-            doc.setFillColor(33, 62, 99);
-            doc.rect(0, 270, 210, 30, 'F');
-
-            doc.setDrawColor(255, 215, 0);
-            doc.setLineWidth(0.5);
-            doc.line(10, 270, 200, 270);
-
+            // Pie de página simplificado
             doc.setFontSize(8);
-            doc.setTextColor(255, 255, 255);
-            doc.text("© 2025 Richy Entertainment S.A.S. de C.V. | Todos los derechos reservados", 10, 285);
-            doc.text("Generado el: " + new Date().toLocaleDateString('es-MX'), 160, 285);
+            doc.text("© 2025 Richy Entertainment S.A.S. de C.V.", 50, pageHeight - 10);
         }
     </script>
 </body>
