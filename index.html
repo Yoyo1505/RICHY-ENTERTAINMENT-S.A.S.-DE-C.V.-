@@ -17,7 +17,7 @@
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
-            padding: 30px;
+            padding: 15px;
             background-color: var(--blanco);
             color: var(--texto-oscuro);
             line-height: 1.6;
@@ -27,25 +27,25 @@
             max-width: 1100px;
             margin: 0 auto;
             background-color: var(--blanco);
-            padding: 40px;
+            padding: 20px;
             border-radius: 15px;
             box-shadow: 0 5px 15px var(--sombra-suave);
         }
 
         .header {
             display: flex;
+            flex-direction: row;
             align-items: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
             background-color: var(--navy-primario);
             border-radius: 8px;
-            padding: 15px;
         }
 
         .logo {
-            width: 200px;
+            width: 150px;
             height: auto;
-            margin-right: 40px;
+            margin-right: 20px;
         }
 
         .titulo {
@@ -55,43 +55,42 @@
         h1 {
             color: var(--blanco);
             margin: 0;
-            font-size: 32px;
+            font-size: clamp(20px, 5vw, 32px);
             font-weight: 700;
             text-transform: uppercase;
         }
 
         h2 {
             color: var(--navy-primario);
-            font-size: 24px;
+            font-size: clamp(18px, 4vw, 24px);
             font-weight: 600;
-            margin-top: 40px;
+            margin-top: 20px;
         }
 
         .form-section {
-            padding: 25px;
+            padding: 15px;
             border-radius: 8px;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
             border: 1px solid var(--gris-plata);
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             font-weight: 500;
             color: var(--navy-primario);
             font-size: 14px;
         }
 
         input, select, textarea {
-            padding: 12px;
+            padding: 10px;
             border: 1px solid var(--gris-plata);
             border-radius: 6px;
             width: 100%;
-            max-width: 350px;
             font-size: 14px;
             background-color: var(--blanco);
             transition: border-color 0.3s;
@@ -103,22 +102,20 @@
         }
 
         textarea {
-            max-width: 100%;
             resize: vertical;
-            min-height: 100px;
+            min-height: 80px;
         }
 
         button {
             background-color: var(--navy-primario);
             color: var(--blanco);
             border: none;
-            padding: 12px 25px;
+            padding: 10px 20px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             transition: background-color 0.3s;
-            margin-right: 15px;
         }
 
         button:hover {
@@ -127,31 +124,33 @@
 
         .button-group {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
-            margin-top: 40px;
-            gap: 15px;
+            margin-top: 20px;
+            gap: 10px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 30px 0;
+            margin: 20px 0;
             border: 1px solid var(--gris-plata);
+            font-size: 12px;
         }
 
         th {
             background-color: var(--navy-primario);
             color: var(--blanco);
-            padding: 12px;
+            padding: 10px;
             text-align: left;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         td {
-            padding: 12px;
+            padding: 10px;
             border-bottom: 1px solid var(--gold-acentuado);
-            font-size: 14px;
+            font-size: 12px;
         }
 
         tr:nth-child(even) {
@@ -165,9 +164,9 @@
         .total-section {
             background-color: var(--navy-primario);
             color: var(--blanco);
-            padding: 30px;
+            padding: 20px;
             border-radius: 8px;
-            margin-top: 40px;
+            margin-top: 20px;
             border: 1px solid var(--gris-plata);
         }
 
@@ -177,9 +176,9 @@
         }
 
         #total {
-            font-size: 28px;
+            font-size: clamp(20px, 5vw, 28px);
             font-weight: 700;
-            margin-top: 15px;
+            margin-top: 10px;
             display: block;
             text-align: right;
         }
@@ -187,8 +186,8 @@
         .remove-btn {
             background-color: var(--gris-plata);
             color: var(--navy-primario);
-            padding: 8px 15px;
-            font-size: 13px;
+            padding: 6px 12px;
+            font-size: 12px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -200,23 +199,25 @@
 
         .item-controls {
             display: flex;
-            gap: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .item-select {
             flex-grow: 1;
+            min-width: 150px;
         }
 
         .footer {
             text-align: center;
-            margin-top: 40px;
-            padding: 15px;
+            margin-top: 20px;
+            padding: 10px;
             background-color: var(--gris-plata);
             border-radius: 8px;
             color: var(--navy-primario);
-            font-size: 12px;
+            font-size: 10px;
         }
 
         .footer a {
@@ -226,6 +227,48 @@
 
         .footer a:hover {
             color: var(--gold-acentuado);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .logo {
+                margin-right: 0;
+                margin-bottom: 10px;
+                width: 120px;
+            }
+
+            .form-section, .total-section {
+                padding: 10px;
+            }
+
+            input, select, textarea {
+                max-width: 100%;
+            }
+
+            table {
+                font-size: 10px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                padding: 12px;
+            }
         }
 
         @media print {
@@ -314,12 +357,12 @@
             <table id="items">
                 <thead>
                     <tr>
-                        <th width="80px">Cantidad</th>
+                        <th>Cantidad</th>
                         <th>Concepto</th>
                         <th>Vehículo/Servicio</th>
-                        <th width="120px">P. Unitario</th>
-                        <th width="120px">Total</th>
-                        <th width="100px">Acción</th>
+                        <th>P. Unitario</th>
+                        <th>Total</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -357,14 +400,12 @@
             const { jsPDF } = window.jspdf;
             let logoData = null;
 
-            // Elementos del DOM
             const itemsContainer = document.querySelector('#items tbody');
             const itemSelect = document.getElementById('item-select');
             const addItemBtn = document.getElementById('add-item-btn');
             const taxInput = document.getElementById('tax');
             const totalDisplay = document.getElementById('total');
 
-            // Preload logo
             function preloadLogo() {
                 return new Promise((resolve) => {
                     const img = new Image();
@@ -384,7 +425,6 @@
                 });
             }
 
-            // Añadir ítem
             function addItem() {
                 const selectedItem = itemSelect.value;
                 if (!selectedItem) {
@@ -403,7 +443,6 @@
                 `;
                 itemsContainer.appendChild(row);
 
-                // Añadir event listeners
                 row.querySelector('.unit').addEventListener('input', calculateTotal);
                 row.querySelector('.unit-price').addEventListener('input', calculateTotal);
                 row.querySelector('.remove-btn').addEventListener('click', () => {
@@ -415,7 +454,6 @@
                 calculateTotal();
             }
 
-            // Calcular total
             function calculateTotal() {
                 let subtotal = 0;
                 const rows = itemsContainer.querySelectorAll('tr');
@@ -435,7 +473,6 @@
                 totalDisplay.textContent = `$${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
             }
 
-            // Convertir número a palabras
             function numberToWordsSpanish(num) {
                 const units = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
                 const teens = ["diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve"];
@@ -482,7 +519,6 @@
                 return `${words} pesos ${decimalPart.toString().padStart(2, '0')}/100`;
             }
 
-            // Generar PDF
             window.generatePDF = function() {
                 const doc = new jsPDF({
                     orientation: 'portrait',
@@ -490,52 +526,50 @@
                     format: 'a4'
                 });
 
-                const marginLeft = 15;
-                const marginRight = 15;
+                const marginLeft = 10;
+                const marginRight = 10;
                 const pageWidth = doc.internal.pageSize.getWidth() - marginLeft - marginRight;
 
-                // Header
                 doc.setFillColor(13, 17, 32);
                 doc.rect(0, 0, doc.internal.pageSize.getWidth(), 40, 'F');
                 if (logoData) {
-                    doc.addImage(logoData, 'PNG', marginLeft, 5, 40, 30);
+                    doc.addImage(logoData, 'PNG', marginLeft, 5, 30, 25);
                     doc.setFont("helvetica", "bold");
                     doc.setFontSize(12);
                     doc.setTextColor(255, 255, 255);
-                    doc.text("Richy Entertainment", marginLeft + 45, 25);
+                    doc.text("Richy Entertainment", marginLeft + 35, 20);
                 } else {
                     doc.setFont("helvetica", "bold");
                     doc.setFontSize(14);
                     doc.setTextColor(255, 255, 255);
-                    doc.text("Richy Entertainment", doc.internal.pageSize.getWidth() / 2, 25, { align: 'center' });
+                    doc.text("Richy Entertainment", doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
                 }
 
-                let y = 50;
+                let y = 45;
                 const folio = document.getElementById('folio-number').value || 'Sin folio';
                 const date = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
                 doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
+                doc.setFontSize(9);
                 doc.setTextColor(51, 51, 51);
                 doc.text(`Folio: ${folio}`, marginLeft, y);
                 doc.text(`Fecha: ${date}`, doc.internal.pageSize.getWidth() - marginRight, y, { align: 'right' });
                 y += 10;
 
                 doc.setFont("helvetica", "bold");
-                doc.setFontSize(16);
+                doc.setFontSize(14);
                 doc.setTextColor(13, 17, 32);
                 doc.text("Cotización", doc.internal.pageSize.getWidth() / 2, y, { align: 'center' });
                 y += 15;
 
-                // Datos del cliente
-                doc.setFontSize(14);
+                doc.setFontSize(12);
                 doc.text("Datos del Cliente", marginLeft, y);
-                y += 10;
+                y += 8;
                 const clientName = document.getElementById('client-name').value || 'No especificado';
                 const clientCity = document.getElementById('client-city').value || 'No especificado';
                 const clientPhone = document.getElementById('client-phone').value || 'No especificado';
                 const clientEmail = document.getElementById('client-email').value || 'No especificado';
                 doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
+                doc.setFontSize(9);
                 doc.setTextColor(51, 51, 51);
                 doc.text(`Nombre: ${clientName}`, marginLeft, y);
                 y += 5;
@@ -546,7 +580,6 @@
                 doc.text(`Email: ${clientEmail}`, marginLeft, y);
                 y += 10;
 
-                // Tabla de ítems
                 const tableData = Array.from(itemsContainer.querySelectorAll('tr')).map(row => [
                     parseFloat(row.querySelector('.unit').value) || 1,
                     'Servicio de Transportación Ejecutiva',
@@ -562,70 +595,75 @@
                     headStyles: {
                         fillColor: [13, 17, 32],
                         textColor: [255, 255, 255],
-                        fontSize: 10,
+                        fontSize: 9,
                         halign: 'center'
                     },
                     bodyStyles: {
-                        fontSize: 9,
+                        fontSize: 8,
                         textColor: [51, 51, 51]
                     },
                     columnStyles: {
-                        0: { cellWidth: 20, halign: 'center' },
-                        1: { cellWidth: 45 },
-                        2: { cellWidth: 65 },
-                        3: { cellWidth: 35, halign: 'right' },
-                        4: { cellWidth: 35, halign: 'right' }
+                        0: { cellWidth: 15, halign: 'center' },
+                        1: { cellWidth: 40 },
+                        2: { cellWidth: 60 },
+                        3: { cellWidth: 30, halign: 'right' },
+                        4: { cellWidth: 30, halign: 'right' }
                     },
-                    margin: { left: marginLeft, right: marginRight }
+                    margin: { left: marginLeft, right: marginRight },
+                    didDrawPage: (data) => {
+                        y = data.cursor.y + 10;
+                    }
                 });
 
                 y = doc.lastAutoTable.finalY + 10;
 
-                // Notas
                 const notes = document.getElementById('notes').value;
                 if (notes) {
                     doc.setFont("helvetica", "bold");
-                    doc.setFontSize(12);
+                    doc.setFontSize(10);
                     doc.setTextColor(13, 17, 32);
                     doc.text("Anotaciones", marginLeft, y);
                     y += 5;
                     doc.setFont("helvetica", "normal");
-                    doc.setFontSize(9);
+                    doc.setFontSize(8);
                     doc.setTextColor(51, 51, 51);
                     const splitNotes = doc.splitTextToSize(notes, pageWidth - 20);
                     doc.text(splitNotes, marginLeft, y);
                     y += splitNotes.length * 4;
                 }
 
-                // Totales
                 const taxRate = parseFloat(taxInput.value) || 0;
                 const totalNum = parseFloat(totalDisplay.textContent.replace('$', '').replace(/,/g, '')) || 0;
                 const subtotal = totalNum / (1 + taxRate / 100);
                 const taxAmount = totalNum - subtotal;
 
+                if (y > 240) {
+                    doc.addPage();
+                    y = 20;
+                }
+
                 doc.setFont("helvetica", "bold");
-                doc.setFontSize(12);
+                doc.setFontSize(10);
                 doc.setTextColor(13, 17, 32);
                 doc.text("Resumen de Pago", marginLeft, y);
                 y += 5;
                 doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
+                doc.setFontSize(9);
                 doc.setTextColor(51, 51, 51);
                 doc.text(`Subtotal: $${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft, y);
                 y += 5;
                 doc.text(`Impuestos (${taxRate}%): $${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft, y);
                 y += 5;
                 doc.setFont("helvetica", "bold");
-                doc.setFontSize(12);
+                doc.setFontSize(10);
                 doc.text(`Total: $${totalNum.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft, y);
                 y += 5;
                 doc.setFont("helvetica", "italic");
-                doc.setFontSize(9);
+                doc.setFontSize(8);
                 const totalInWords = numberToWordsSpanish(totalNum);
                 const splitTotalInWords = doc.splitTextToSize(totalInWords, pageWidth - 20);
                 doc.text(splitTotalInWords, marginLeft, y);
 
-                // Footer
                 doc.setFont("helvetica", "normal");
                 doc.setFontSize(8);
                 doc.setTextColor(51, 51, 51);
@@ -637,7 +675,6 @@
                 doc.save(`Cotización_${folio}_${clientName.replace(/[^a-z0-9]/gi, '_')}.pdf`);
             }
 
-            // Inicialización
             preloadLogo().then(() => {
                 addItemBtn.addEventListener('click', addItem);
                 taxInput.addEventListener('input', calculateTotal);
