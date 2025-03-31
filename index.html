@@ -353,55 +353,72 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', () => {
             const { jsPDF } = window.jspdf;
+            let logoData = null;
+
+            // Elementos del DOM
             const itemsContainer = document.querySelector('#items tbody');
             const itemSelect = document.getElementById('item-select');
             const addItemBtn = document.getElementById('add-item-btn');
             const taxInput = document.getElementById('tax');
+            const totalDisplay = document.getElementById('total');
 
-            // Añadir ítem
-            addItemBtn.addEventListener('click', addItem);
-
-            function addItem() {
-                const selectedItem = itemSelect.value;
-                if (selectedItem) {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td><input type="number" class="unit" min="1" value="1"></td>
-                        <td>Servicio de Transportación Ejecutiva</td>
-                        <td>${selectedItem}</td>
-                        <td><input type="number" class="unit-price" min="0" step="0.01" value="0"></td>
-                        <td class="price">$0.00</td>
-                        <td><button class="remove-btn">Eliminar</button></td>
-                    `;
-                    itemsContainer.appendChild(row);
-                    
-                    // Añadir event listeners a los nuevos inputs
-                    const unitInput = row.querySelector('.unit');
-                    const priceInput = row.querySelector('.unit-price');
-                    const removeBtn = row.querySelector('.remove-btn');
-                    
-                    unitInput.addEventListener('input', calculateTotal);
-                    priceInput.addEventListener('input', calculateTotal);
-                    removeBtn.addEventListener('click', function() {
-                        row.remove();
-                        calculateTotal();
-                    });
-                    
-                    itemSelect.value = '';
-                    calculateTotal();
-                } else {
-                    alert('Por favor, selecciona un ítem antes de agregar.');
-                }
+            // Preload logo
+            function preloadLogo() {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.src = 'logo.png';
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        canvas.getContext('2d').drawImage(img, 0, 0);
+                        logoData = canvas.toDataURL('image/png');
+                        resolve();
+                    };
+                    img.onerror = () => {
+                        logoData = null;
+                        resolve();
+                    };
+                });
             }
 
-            // Añadir listener al input de impuestos
-            taxInput.addEventListener('input', calculateTotal);
+            // Añadir ítem
+            function addItem() {
+                const selectedItem = itemSelect.value;
+                if (!selectedItem) {
+                    alert('Por favor, selecciona un ítem antes de agregar.');
+                    return;
+                }
 
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="number" class="unit" min="1" value="1"></td>
+                    <td>Servicio de Transportación Ejecutiva</td>
+                    <td>${selectedItem}</td>
+                    <td><input type="number" class="unit-price" min="0" step="0.01" value="0"></td>
+                    <td class="price">$0.00</td>
+                    <td><button class="remove-btn">Eliminar</button></td>
+                `;
+                itemsContainer.appendChild(row);
+
+                // Añadir event listeners
+                row.querySelector('.unit').addEventListener('input', calculateTotal);
+                row.querySelector('.unit-price').addEventListener('input', calculateTotal);
+                row.querySelector('.remove-btn').addEventListener('click', () => {
+                    row.remove();
+                    calculateTotal();
+                });
+
+                itemSelect.value = '';
+                calculateTotal();
+            }
+
+            // Calcular total
             function calculateTotal() {
                 let subtotal = 0;
-                const rows = document.querySelectorAll('#items tbody tr');
+                const rows = itemsContainer.querySelectorAll('tr');
 
                 rows.forEach(row => {
                     const unit = parseFloat(row.querySelector('.unit').value) || 0;
@@ -411,13 +428,14 @@
                     subtotal += total;
                 });
 
-                const taxRate = parseFloat(document.getElementById('tax').value) || 0;
+                const taxRate = parseFloat(taxInput.value) || 0;
                 const taxAmount = subtotal * (taxRate / 100);
                 const total = subtotal + taxAmount;
 
-                document.getElementById('total').textContent = `$${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+                totalDisplay.textContent = `$${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
             }
 
+            // Convertir número a palabras
             function numberToWordsSpanish(num) {
                 const units = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
                 const teens = ["diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve"];
@@ -447,7 +465,7 @@
                     let hundredPart = Math.floor(integerPart / 100);
                     integerPart %= 100;
                     words += hundreds[hundredPart] + " ";
-                    if (integerPart > 0) words += integerPart === 1 ? "un" : "";
+                    if (integerPart > 0 && integerPart < 100) words += "";
                 }
 
                 if (integerPart >= 20) {
@@ -461,15 +479,10 @@
                 }
 
                 words = words.trim();
-                if (decimalPart > 0) {
-                    words += ` pesos con ${decimalPart}/100`;
-                } else {
-                    words += " pesos";
-                }
-
-                return words;
+                return `${words} pesos ${decimalPart.toString().padStart(2, '0')}/100`;
             }
 
+            // Generar PDF
             window.generatePDF = function() {
                 const doc = new jsPDF({
                     orientation: 'portrait',
@@ -484,13 +497,20 @@
                 // Header
                 doc.setFillColor(13, 17, 32);
                 doc.rect(0, 0, doc.internal.pageSize.getWidth(), 40, 'F');
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(14);
-                doc.setTextColor(255, 255, 255);
-                doc.text("Richy Entertainment", doc.internal.pageSize.getWidth() / 2, 25, { align: 'center' });
-                let y = 50;
+                if (logoData) {
+                    doc.addImage(logoData, 'PNG', marginLeft, 5, 40, 30);
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(12);
+                    doc.setTextColor(255, 255, 255);
+                    doc.text("Richy Entertainment", marginLeft + 45, 25);
+                } else {
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(14);
+                    doc.setTextColor(255, 255, 255);
+                    doc.text("Richy Entertainment", doc.internal.pageSize.getWidth() / 2, 25, { align: 'center' });
+                }
 
-                // Datos del cliente
+                let y = 50;
                 const folio = document.getElementById('folio-number').value || 'Sin folio';
                 const date = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
                 doc.setFont("helvetica", "normal");
@@ -506,15 +526,14 @@
                 doc.text("Cotización", doc.internal.pageSize.getWidth() / 2, y, { align: 'center' });
                 y += 15;
 
+                // Datos del cliente
                 doc.setFontSize(14);
                 doc.text("Datos del Cliente", marginLeft, y);
                 y += 10;
-
                 const clientName = document.getElementById('client-name').value || 'No especificado';
                 const clientCity = document.getElementById('client-city').value || 'No especificado';
                 const clientPhone = document.getElementById('client-phone').value || 'No especificado';
                 const clientEmail = document.getElementById('client-email').value || 'No especificado';
-
                 doc.setFont("helvetica", "normal");
                 doc.setFontSize(10);
                 doc.setTextColor(51, 51, 51);
@@ -528,23 +547,13 @@
                 y += 10;
 
                 // Tabla de ítems
-                const tableData = [];
-                const rows = document.querySelectorAll('#items tbody tr');
-                rows.forEach(row => {
-                    const quantity = parseFloat(row.querySelector('.unit').value).toLocaleString('en-US') || '1';
-                    const concept = 'Servicio de Transportación Ejecutiva';
-                    const item = row.cells[2].textContent;
-                    const unitPrice = parseFloat(row.querySelector('.unit-price').value) || 0;
-                    const total = parseFloat(row.querySelector('.price').textContent.replace('$', '').replace(/,/g, '')) || 0;
-
-                    tableData.push([
-                        quantity,
-                        concept,
-                        item,
-                        `$${unitPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
-                        `$${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`
-                    ]);
-                });
+                const tableData = Array.from(itemsContainer.querySelectorAll('tr')).map(row => [
+                    parseFloat(row.querySelector('.unit').value) || 1,
+                    'Servicio de Transportación Ejecutiva',
+                    row.cells[2].textContent,
+                    `$${parseFloat(row.querySelector('.unit-price').value || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+                    row.querySelector('.price').textContent
+                ]);
 
                 doc.autoTable({
                     head: [['Cant.', 'Concepto', 'Descripción', 'P. Unitario', 'Total']],
@@ -585,51 +594,55 @@
                     doc.setTextColor(51, 51, 51);
                     const splitNotes = doc.splitTextToSize(notes, pageWidth - 20);
                     doc.text(splitNotes, marginLeft, y);
-                    y += splitNotes.length * 4 + 5;
+                    y += splitNotes.length * 4;
                 }
 
                 // Totales
-                const taxRate = parseFloat(document.getElementById('tax').value) || 0;
-                const totalText = document.getElementById('total').textContent;
-                const total = parseFloat(totalText.replace('$', '').replace(/,/g, '')) || 0;
-                const subtotal = total / (1 + taxRate/100);
-                const taxAmount = total - subtotal;
-                const totalInWords = numberToWordsSpanish(total);
+                const taxRate = parseFloat(taxInput.value) || 0;
+                const totalNum = parseFloat(totalDisplay.textContent.replace('$', '').replace(/,/g, '')) || 0;
+                const subtotal = totalNum / (1 + taxRate / 100);
+                const taxAmount = totalNum - subtotal;
 
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(12);
                 doc.setTextColor(13, 17, 32);
                 doc.text("Resumen de Pago", marginLeft, y);
                 y += 5;
-
                 doc.setFont("helvetica", "normal");
                 doc.setFontSize(10);
+                doc.setTextColor(51, 51, 51);
                 doc.text(`Subtotal: $${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft, y);
                 y += 5;
-                doc.text(`Impuestos (${taxRate.toLocaleString('en-US')}%): $${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft, y);
+                doc.text(`Impuestos (${taxRate}%): $${taxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft, y);
                 y += 5;
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(12);
-                doc.text(`Total: ${totalText}`, marginLeft, y);
+                doc.text(`Total: $${totalNum.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, marginLeft, y);
                 y += 5;
                 doc.setFont("helvetica", "italic");
                 doc.setFontSize(9);
+                const totalInWords = numberToWordsSpanish(totalNum);
                 const splitTotalInWords = doc.splitTextToSize(totalInWords, pageWidth - 20);
                 doc.text(splitTotalInWords, marginLeft, y);
 
                 // Footer
-                const pageHeight = doc.internal.pageSize.getHeight();
                 doc.setFont("helvetica", "normal");
                 doc.setFontSize(8);
                 doc.setTextColor(51, 51, 51);
-                doc.text("Richy Entertainment • Tel: 52 55 7341 3969 • Email: transpo_rick@hotmail.com", doc.internal.pageSize.getWidth() / 2, pageHeight - 15, { align: 'center' });
-                doc.text("© 2025 Richy Entertainment - Todos los derechos reservados", doc.internal.pageSize.getWidth() / 2, pageHeight - 10, { align: 'center' });
+                doc.text("Richy Entertainment • Tel: 52 55 7341 3969 • Email: transpo_rick@hotmail.com", 
+                    doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 15, { align: 'center' });
+                doc.text("© 2025 Richy Entertainment - Todos los derechos reservados", 
+                    doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
 
-                const fileName = `Cotización_${folio}_${clientName.replace(/[^a-z0-9]/gi, '_')}.pdf`;
-                doc.save(fileName);
+                doc.save(`Cotización_${folio}_${clientName.replace(/[^a-z0-9]/gi, '_')}.pdf`);
             }
 
-            calculateTotal();
+            // Inicialización
+            preloadLogo().then(() => {
+                addItemBtn.addEventListener('click', addItem);
+                taxInput.addEventListener('input', calculateTotal);
+                calculateTotal();
+            }).catch(err => console.error('Error loading logo:', err));
         });
     </script>
 </body>
