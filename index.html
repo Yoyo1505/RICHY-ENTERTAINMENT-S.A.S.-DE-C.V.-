@@ -348,6 +348,7 @@
                     <option value="VIATICOS">VIATICOS</option>
                 </select>
                 <button id="add-item-btn">Agregar Ítem</button>
+                <button id="clear-history-btn">Limpiar Historial</button>
             </div>
             <div class="form-group">
                 <label for="notes">Anotaciones</label>
@@ -403,8 +404,15 @@
             const itemsContainer = document.querySelector('#items tbody');
             const itemSelect = document.getElementById('item-select');
             const addItemBtn = document.getElementById('add-item-btn');
+            const clearHistoryBtn = document.getElementById('clear-history-btn');
             const taxInput = document.getElementById('tax');
             const totalDisplay = document.getElementById('total');
+            const folioInput = document.getElementById('folio-number');
+            const clientNameInput = document.getElementById('client-name');
+            const clientCityInput = document.getElementById('client-city');
+            const clientPhoneInput = document.getElementById('client-phone');
+            const clientEmailInput = document.getElementById('client-email');
+            const notesInput = document.getElementById('notes');
 
             function preloadLogo() {
                 return new Promise((resolve) => {
@@ -425,6 +433,81 @@
                 });
             }
 
+            function saveQuotation() {
+                const items = Array.from(itemsContainer.querySelectorAll('tr')).map(row => ({
+                    unit: row.querySelector('.unit').value,
+                    description: row.cells[2].textContent,
+                    unitPrice: row.querySelector('.unit-price').value
+                }));
+                const quotationData = {
+                    items,
+                    folio: folioInput.value,
+                    clientName: clientNameInput.value,
+                    clientCity: clientCityInput.value,
+                    clientPhone: clientPhoneInput.value,
+                    clientEmail: clientEmailInput.value,
+                    tax: taxInput.value,
+                    notes: notesInput.value
+                };
+                localStorage.setItem('quotationData', JSON.stringify(quotationData));
+            }
+
+            function loadQuotation() {
+                const savedData = localStorage.getItem('quotationData');
+                if (savedData) {
+                    const quotationData = JSON.parse(savedData);
+                    folioInput.value = quotationData.folio || '';
+                    clientNameInput.value = quotationData.clientName || '';
+                    clientCityInput.value = quotationData.clientCity || '';
+                    clientPhoneInput.value = quotationData.clientPhone || '';
+                    clientEmailInput.value = quotationData.clientEmail || '';
+                    taxInput.value = quotationData.tax || '16';
+                    notesInput.value = quotationData.notes || '';
+
+                    itemsContainer.innerHTML = '';
+                    quotationData.items.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><input type="number" class="unit" min="1" value="${item.unit}"></td>
+                            <td>Servicio de Transportación Ejecutiva</td>
+                            <td>${item.description}</td>
+                            <td><input type="number" class="unit-price" min="0" step="0.01" value="${item.unitPrice}"></td>
+                            <td class="price">$0.00</td>
+                            <td><button class="remove-btn">Eliminar</button></td>
+                        `;
+                        itemsContainer.appendChild(row);
+
+                        row.querySelector('.unit').addEventListener('input', () => {
+                            calculateTotal();
+                            saveQuotation();
+                        });
+                        row.querySelector('.unit-price').addEventListener('input', () => {
+                            calculateTotal();
+                            saveQuotation();
+                        });
+                        row.querySelector('.remove-btn').addEventListener('click', () => {
+                            row.remove();
+                            calculateTotal();
+                            saveQuotation();
+                        });
+                    });
+                    calculateTotal();
+                }
+            }
+
+            function clearHistory() {
+                localStorage.removeItem('quotationData');
+                itemsContainer.innerHTML = '';
+                folioInput.value = '';
+                clientNameInput.value = '';
+                clientCityInput.value = '';
+                clientPhoneInput.value = '';
+                clientEmailInput.value = '';
+                taxInput.value = '16';
+                notesInput.value = '';
+                calculateTotal();
+            }
+
             function addItem() {
                 const selectedItem = itemSelect.value;
                 if (!selectedItem) {
@@ -443,15 +526,23 @@
                 `;
                 itemsContainer.appendChild(row);
 
-                row.querySelector('.unit').addEventListener('input', calculateTotal);
-                row.querySelector('.unit-price').addEventListener('input', calculateTotal);
+                row.querySelector('.unit').addEventListener('input', () => {
+                    calculateTotal();
+                    saveQuotation();
+                });
+                row.querySelector('.unit-price').addEventListener('input', () => {
+                    calculateTotal();
+                    saveQuotation();
+                });
                 row.querySelector('.remove-btn').addEventListener('click', () => {
                     row.remove();
                     calculateTotal();
+                    saveQuotation();
                 });
 
                 itemSelect.value = '';
                 calculateTotal();
+                saveQuotation();
             }
 
             function calculateTotal() {
@@ -546,7 +637,7 @@
                 }
 
                 let y = 45;
-                const folio = document.getElementById('folio-number').value || 'Sin folio';
+                const folio = folioInput.value || 'Sin folio';
                 const date = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
                 doc.setFont("helvetica", "normal");
                 doc.setFontSize(9);
@@ -564,10 +655,10 @@
                 doc.setFontSize(12);
                 doc.text("Datos del Cliente", marginLeft, y);
                 y += 8;
-                const clientName = document.getElementById('client-name').value || 'No especificado';
-                const clientCity = document.getElementById('client-city').value || 'No especificado';
-                const clientPhone = document.getElementById('client-phone').value || 'No especificado';
-                const clientEmail = document.getElementById('client-email').value || 'No especificado';
+                const clientName = clientNameInput.value || 'No especificado';
+                const clientCity = clientCityInput.value || 'No especificado';
+                const clientPhone = clientPhoneInput.value || 'No especificado';
+                const clientEmail = clientEmailInput.value || 'No especificado';
                 doc.setFont("helvetica", "normal");
                 doc.setFontSize(9);
                 doc.setTextColor(51, 51, 51);
@@ -617,7 +708,7 @@
 
                 y = doc.lastAutoTable.finalY + 10;
 
-                const notes = document.getElementById('notes').value;
+                const notes = notesInput.value;
                 if (notes) {
                     doc.setFont("helvetica", "bold");
                     doc.setFontSize(10);
@@ -673,12 +764,20 @@
                     doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
 
                 doc.save(`Cotización_${folio}_${clientName.replace(/[^a-z0-9]/gi, '_')}.pdf`);
+                clearHistory(); // Clear history after generating PDF
             }
 
             preloadLogo().then(() => {
                 addItemBtn.addEventListener('click', addItem);
-                taxInput.addEventListener('input', calculateTotal);
-                calculateTotal();
+                clearHistoryBtn.addEventListener('click', clearHistory);
+                taxInput.addEventListener('input', () => {
+                    calculateTotal();
+                    saveQuotation();
+                });
+                [folioInput, clientNameInput, clientCityInput, clientPhoneInput, clientEmailInput, notesInput].forEach(input => {
+                    input.addEventListener('input', saveQuotation);
+                });
+                loadQuotation();
             }).catch(err => console.error('Error loading logo:', err));
         });
     </script>
