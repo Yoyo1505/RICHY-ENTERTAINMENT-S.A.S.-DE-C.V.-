@@ -222,11 +222,23 @@
 
         .footer a {
             color: var(--navy-primario);
-            text-decoration: none;
+            text-decoration: none
         }
 
         .footer a:hover {
             color: var(--gold-acentuado);
+        }
+
+        .history-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #history-select {
+            flex-grow: 1;
+            min-width: 200px;
         }
 
         @media (max-width: 768px) {
@@ -261,7 +273,7 @@
                 padding: 8px;
             }
 
-            .button-group {
+            .button-group, .history-controls {
                 flex-direction: column;
             }
 
@@ -294,6 +306,17 @@
             <div class="titulo">
                 <h1>Richy Entertainment</h1>
                 <p>Sistema de Generación de Cotizaciones</p>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Historial de Cotizaciones</h2>
+            <div class="history-controls">
+                <select id="history-select">
+                    <option value="">Selecciona una cotización anterior</option>
+                </select>
+                <button id="load-history-btn">Cargar Cotización</button>
+                <button id="delete-history-btn">Eliminar Cotización</button>
             </div>
         </div>
 
@@ -348,7 +371,7 @@
                     <option value="VIATICOS">VIATICOS</option>
                 </select>
                 <button id="add-item-btn">Agregar Ítem</button>
-                <button id="clear-history-btn">Limpiar Historial</button>
+                <button id="clear-history-btn">Limpiar Cotización Actual</button>
             </div>
             <div class="form-group">
                 <label for="notes">Anotaciones</label>
@@ -400,11 +423,15 @@
         document.addEventListener('DOMContentLoaded', () => {
             const { jsPDF } = window.jspdf;
             let logoData = null;
+            let currentQuotationId = null;
 
             const itemsContainer = document.querySelector('#items tbody');
             const itemSelect = document.getElementById('item-select');
             const addItemBtn = document.getElementById('add-item-btn');
             const clearHistoryBtn = document.getElementById('clear-history-btn');
+            const loadHistoryBtn = document.getElementById('load-history-btn');
+            const deleteHistoryBtn = document.getElementById('delete-history-btn');
+            const historySelect = document.getElementById('history-select');
             const taxInput = document.getElementById('tax');
             const totalDisplay = document.getElementById('total');
             const folioInput = document.getElementById('folio-number');
@@ -413,6 +440,13 @@
             const clientPhoneInput = document.getElementById('client-phone');
             const clientEmailInput = document.getElementById('client-email');
             const notesInput = document.getElementById('notes');
+
+            function generateUUID() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
 
             function preloadLogo() {
                 return new Promise((resolve) => {
@@ -440,6 +474,7 @@
                     unitPrice: row.querySelector('.unit-price').value
                 }));
                 const quotationData = {
+                    id: currentQuotationId || generateUUID(),
                     items,
                     folio: folioInput.value,
                     clientName: clientNameInput.value,
@@ -447,56 +482,91 @@
                     clientPhone: clientPhoneInput.value,
                     clientEmail: clientEmailInput.value,
                     tax: taxInput.value,
-                    notes: notesInput.value
+                    notes: notesInput.value,
+                    date: new Date().toISOString()
                 };
-                localStorage.setItem('quotationData', JSON.stringify(quotationData));
-            }
 
-            function loadQuotation() {
-                const savedData = localStorage.getItem('quotationData');
-                if (savedData) {
-                    const quotationData = JSON.parse(savedData);
-                    folioInput.value = quotationData.folio || '';
-                    clientNameInput.value = quotationData.clientName || '';
-                    clientCityInput.value = quotationData.clientCity || '';
-                    clientPhoneInput.value = quotationData.clientPhone || '';
-                    clientEmailInput.value = quotationData.clientEmail || '';
-                    taxInput.value = quotationData.tax || '16';
-                    notesInput.value = quotationData.notes || '';
-
-                    itemsContainer.innerHTML = '';
-                    quotationData.items.forEach(item => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td><input type="number" class="unit" min="1" value="${item.unit}"></td>
-                            <td>Servicio de Transportación Ejecutiva</td>
-                            <td>${item.description}</td>
-                            <td><input type="number" class="unit-price" min="0" step="0.01" value="${item.unitPrice}"></td>
-                            <td class="price">$0.00</td>
-                            <td><button class="remove-btn">Eliminar</button></td>
-                        `;
-                        itemsContainer.appendChild(row);
-
-                        row.querySelector('.unit').addEventListener('input', () => {
-                            calculateTotal();
-                            saveQuotation();
-                        });
-                        row.querySelector('.unit-price').addEventListener('input', () => {
-                            calculateTotal();
-                            saveQuotation();
-                        });
-                        row.querySelector('.remove-btn').addEventListener('click', () => {
-                            row.remove();
-                            calculateTotal();
-                            saveQuotation();
-                        });
-                    });
-                    calculateTotal();
+                let quotations = JSON.parse(localStorage.getItem('quotations') || '[]');
+                const index = quotations.findIndex(q => q.id === quotationData.id);
+                if (index !== -1) {
+                    quotations[index] = quotationData;
+                } else {
+                    quotations.push(quotationData);
                 }
+                localStorage.setItem('quotations', JSON.stringify(quotations));
+                currentQuotationId = quotationData.id;
+                updateHistorySelect();
             }
 
-            function clearHistory() {
-                localStorage.removeItem('quotationData');
+            function updateHistorySelect() {
+                const quotations = JSON.parse(localStorage.getItem('quotations') || '[]');
+                historySelect.innerHTML = '<option value="">Selecciona una cotización anterior</option>';
+                quotations.forEach(q => {
+                    const option = document.createElement('option');
+                    option.value = q.id;
+                    option.textContent = `${q.folio || 'Sin folio'} - ${q.clientName || 'Sin nombre'} (${new Date(q.date).toLocaleDateString('es-MX')})`;
+                    historySelect.appendChild(option);
+                });
+            }
+
+            function loadQuotation(id) {
+                const quotations = JSON.parse(localStorage.getItem('quotations') || '[]');
+                const quotationData = quotations.find(q => q.id === id);
+                if (!quotationData) return;
+
+                currentQuotationId = quotationData.id;
+                folioInput.value = quotationData.folio || '';
+                clientNameInput.value = quotationData.clientName || '';
+                clientCityInput.value = quotationData.clientCity || '';
+                clientPhoneInput.value = quotationData.clientPhone || '';
+                clientEmailInput.value = quotationData.clientEmail || '';
+                taxInput.value = quotationData.tax || '16';
+                notesInput.value = quotationData.notes || '';
+
+                itemsContainer.innerHTML = '';
+                quotationData.items.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><input type="number" class="unit" min="1" value="${item.unit}"></td>
+                        <td>Servicio de Transportación Ejecutiva</td>
+                        <td>${item.description}</td>
+                        <td><input type="number" class="unit-price" min="0" step="0.01" value="${item.unitPrice}"></td>
+                        <td class="price">$0.00</td>
+                        <td><button class="remove-btn">Eliminar</button></td>
+                    `;
+                    itemsContainer.appendChild(row);
+
+                    row.querySelector('.unit').addEventListener('input', () => {
+                        calculateTotal();
+                        saveQuotation();
+                    });
+                    row.querySelector('.unit-price').addEventListener('input', () => {
+                        calculateTotal();
+                        saveQuotation();
+                    });
+                    row.querySelector('.remove-btn').addEventListener('click', () => {
+                        row.remove();
+                        calculateTotal();
+                        saveQuotation();
+                    });
+                });
+                calculateTotal();
+            }
+
+            function deleteQuotation() {
+                if (!currentQuotationId) {
+                    alert('No hay ninguna cotización seleccionada para eliminar.');
+                    return;
+                }
+                let quotations = JSON.parse(localStorage.getItem('quotations') || '[]');
+                quotations = quotations.filter(q => q.id !== currentQuotationId);
+                localStorage.setItem('quotations', JSON.stringify(quotations));
+                clearForm();
+                updateHistorySelect();
+            }
+
+            function clearForm() {
+                currentQuotationId = null;
                 itemsContainer.innerHTML = '';
                 folioInput.value = '';
                 clientNameInput.value = '';
@@ -764,12 +834,20 @@
                     doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
 
                 doc.save(`Cotización_${folio}_${clientName.replace(/[^a-z0-9]/gi, '_')}.pdf`);
-                clearHistory(); // Clear history after generating PDF
+                clearForm();
             }
 
             preloadLogo().then(() => {
                 addItemBtn.addEventListener('click', addItem);
-                clearHistoryBtn.addEventListener('click', clearHistory);
+                clearHistoryBtn.addEventListener('click', clearForm);
+                loadHistoryBtn.addEventListener('click', () => {
+                    if (historySelect.value) {
+                        loadQuotation(historySelect.value);
+                    } else {
+                        alert('Por favor, selecciona una cotización para cargar.');
+                    }
+                });
+                deleteHistoryBtn.addEventListener('click', deleteQuotation);
                 taxInput.addEventListener('input', () => {
                     calculateTotal();
                     saveQuotation();
@@ -777,7 +855,7 @@
                 [folioInput, clientNameInput, clientCityInput, clientPhoneInput, clientEmailInput, notesInput].forEach(input => {
                     input.addEventListener('input', saveQuotation);
                 });
-                loadQuotation();
+                updateHistorySelect();
             }).catch(err => console.error('Error loading logo:', err));
         });
     </script>
