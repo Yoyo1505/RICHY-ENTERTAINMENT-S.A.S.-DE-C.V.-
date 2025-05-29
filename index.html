@@ -222,7 +222,7 @@
 
         .footer a {
             color: var(--navy-primario);
-            text-decoration: none
+            text-decoration: none;
         }
 
         .footer a:hover {
@@ -348,7 +348,7 @@
             <h2>Ítems de la Cotización</h2>
             <div class="item-controls">
                 <select id="item-select" class="item-select">
-                    <option value="">Selecciona un ítem</option>
+                    <option value="">SELECCIONA UN ÍTEM</option>
                     <option value="AUTOBUS 45 PLAZAS">AUTOBUS 45 PLAZAS</option>
                     <option value="CAMIONETA CARGA">CAMIONETA CARGA</option>
                     <option value="CAMIONETA VAN">CAMIONETA VAN</option>
@@ -360,24 +360,23 @@
                     <option value="MINIBUS 31 PLAZAS">MINIBUS 31 PLAZAS</option>
                     <option value="PARKING">PARKING</option>
                     <option value="SEDAN">SEDAN</option>
+                    <option value="SEDAN AIFA">SEDAN AIFA</option>
+                    <option value="SEDAN TOLUCA">SEDAN TOLUCA</option>
                     <option value="SPRINTER">SPRINTER</option>
+                    <option value="SPRINTER AIFA">SPRINTER AIFA</option>
                     <option value="SUBURBAN">SUBURBAN</option>
                     <option value="SUBURBAN ADVANCE">SUBURBAN ADVANCE</option>
                     <option value="SUBURBAN BLINDADA NIVEL 3">SUBURBAN BLINDADA NIVEL 3</option>
                     <option value="SUBURBAN HIGH COUNTRY">SUBURBAN HIGH COUNTRY</option>
+                    <option value="SUBURBAN AIFA">SUBURBAN AIFA</option>
+                    <option value="SUBURBAN TOLUCA">SUBURBAN TOLUCA</option>
+                    <option value="TOYOTA AIFA">TOYOTA AIFA</option>
                     <option value="TOYOTA HIACE">TOYOTA HIACE</option>
+                    <option value="TOYOTA SPRINTER 20 PLAZAS">TOYOTA SPRINTER 20 PLAZAS</option>
+                    <option value="TOYOTA TOLUCA">TOYOTA TOLUCA</option>
                     <option value="TRAMO CARRETERO">TRAMO CARRETERO</option>
                     <option value="VAN DE CARGA">VAN DE CARGA</option>
                     <option value="VIATICOS">VIATICOS</option>
-                    <option value="Camioneta Van">Camioneta Van</option>
-                    <option value="Toyota sprinter 20 plazas"> Toyota sprinter 20 plazas</option>
-                    <option value="Suburban Toluca">Suburban Toluca</option>
-                    <option value="Suburban ifa">Suburban ifa</option>
-                    <option value="Sprinter ifa">Sprinter ifa</option>
-                    <option value="Toyota Toluca">Toyota Toluca</option>
-                    <option value="Toyota aifa">Toyota aifa</option>
-                    <option value="Sedán aifa">Sedán aifa</option>
-                    <option value="Sedán Toluca">Sedán Toluca</option>
                 </select>
                 <button id="add-item-btn">Agregar Ítem</button>
                 <button id="clear-history-btn">Limpiar Cotización Actual</button>
@@ -644,13 +643,13 @@
             }
 
             function numberToWordsSpanish(num) {
-                const units = ["", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
-                const teens = ["diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve"];
-                const tens = ["", "", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
-                const hundreds = ["", "ciento", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos"];
-                const thousands = ["mil", "millón", "millones"];
+                const units = ["", "UN", "DOS", "TRES", "CUATRO", "CINCO", "SEIS", "SIETE", "OCHO", "NUEVE"];
+                const teens = ["DIEZ", "ONCE", "DOCE", "TRECE", "CATORCE", "QUINCE", "DIECISÉIS", "DIECISIETE", "DIECIOCHO", "DIECINUEVE"];
+                const tens = ["", "", "VEINTE", "TREINTA", "CUARENTA", "CINCUENTA", "SESENTA", "SETENTA", "OCHENTA", "NOVENTA"];
+                const hundreds = ["", "CIENTO", "DOSCIENTOS", "TRESCIENTOS", "CUATROCIENTOS", "QUINIENTOS", "SEISCIENTOS", "SETECIENTOS", "OCHOCIENTOS", "NOVECIENTOS"];
+                const thousands = ["MIL", "MILLÓN", "MILLONES"];
 
-                if (num === 0) return "cero pesos";
+                if (num === 0) return "CERO PESOS";
 
                 let integerPart = Math.floor(num);
                 let decimalPart = Math.round((num - integerPart) * 100);
@@ -659,13 +658,13 @@
                 if (integerPart >= 1000000) {
                     let millions = Math.floor(integerPart / 1000000);
                     integerPart %= 1000000;
-                    words += (millions === 1 ? "un " : numberToWordsSpanish(millions)) + (millions === 1 ? "millón " : " millones ");
+                    words += (millions === 1 ? "UN " : numberToWordsSpanish(millions)) + (millions === 1 ? "MILLÓN " : " MILLONES ");
                 }
 
                 if (integerPart >= 1000) {
                     let thousandsPart = Math.floor(integerPart / 1000);
                     integerPart %= 1000;
-                    words += (thousandsPart === 1 ? "mil" : numberToWordsSpanish(thousandsPart) + " mil") + " ";
+                    words += (thousandsPart === 1 ? "MIL" : numberToWordsSpanish(thousandsPart) + " MIL") + " ";
                 }
 
                 if (integerPart >= 100) {
@@ -678,7 +677,7 @@
                 if (integerPart >= 20) {
                     let tenPart = Math.floor(integerPart / 10);
                     integerPart %= 10;
-                    words += tens[tenPart] + (integerPart > 0 ? " y " + units[integerPart] : "");
+                    words += tens[tenPart] + (integerPart > 0 ? " Y " + units[integerPart] : "");
                 } else if (integerPart >= 10) {
                     words += teens[integerPart - 10];
                 } else if (integerPart > 0) {
@@ -686,7 +685,7 @@
                 }
 
                 words = words.trim();
-                return `${words} pesos ${decimalPart.toString().padStart(2, '0')}/100`;
+                return `${words} PESOS ${decimalPart.toString().padStart(2, '0')}/100`;
             }
 
             window.generatePDF = function() {
